@@ -9,52 +9,43 @@
 	<name>OpenMRS 2.x UI Framework</name>
 	<description></description>
 	<url></url>
-	
+
 	<developers>
 		<developer>
 			<name>OpenMRS</name>
 		</developer>
 	</developers>
-	
+
 	<organization>
 		<name>OpenMRS</name>
 		<url>http://openmrs.org</url>
 	</organization>
 
-	<!--
-	<scm>
-		<connection>scm:svn:http://svn.openmrs.org/openmrs-modules/htmlformentry19ext/trunk/</connection>
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/htmlformentry19ext/trunk/</developerConnection>
-		<url>https://github.com/OpenMRS/openmrs-module-htmlformentry19ext</url>
-	</scm>
-	-->
+	<!-- <scm> <connection>scm:svn:http://svn.openmrs.org/openmrs-modules/htmlformentry19ext/trunk/</connection> 
+		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/htmlformentry19ext/trunk/</developerConnection> 
+		<url>https://github.com/OpenMRS/openmrs-module-htmlformentry19ext</url> </scm> -->
 
 	<modules>
 		<module>api</module>
 		<module>omod</module>
 	</modules>
-	
+
 	<properties>
 		<openMRSVersion>1.8.3</openMRSVersion>
+		<springVersion>3.0.5.RELEASE</springVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-		
-			<!--
-			Libraries to add as dependencies with compile or runtime scope:
-			Find matching dependencies in the maven central repository.
-			<dependency>
-				<groupId>org.other.library</groupId>
-				<artifactId>library-name</artifactId>
-				<version>library.version</version>
-				<scope>compile</scope>
-			</dependency>
-			-->
+
+			<!-- Libraries to add as dependencies with compile or runtime scope: Find 
+				matching dependencies in the maven central repository. <dependency> <groupId>org.other.library</groupId> 
+				<artifactId>library-name</artifactId> <version>library.version</version> 
+				<scope>compile</scope> </dependency> -->
 
 			<!-- Begin OpenMRS core -->
-			
+
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -62,7 +53,7 @@
 				<type>jar</type>
 				<scope>provided</scope>
 			</dependency>
-						
+
 			<dependency>
 				<groupId>org.openmrs.api</groupId>
 				<artifactId>openmrs-api</artifactId>
@@ -70,7 +61,7 @@
 				<type>test-jar</type>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.openmrs.test</groupId>
 				<artifactId>openmrs-test</artifactId>
@@ -78,9 +69,40 @@
 				<type>pom</type>
 				<scope>test</scope>
 			</dependency>
-						
+
 			<!-- End OpenMRS core -->
+
+			<dependency>
+				<groupId>org.codehaus.groovy</groupId>
+				<artifactId>groovy</artifactId>
+				<version>1.8.3</version>
+				<type>jar</type>
+				<scope>compile</scope>
+			</dependency>
 			
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${springVersion}</version>
+				<scope>provided</scope>
+			</dependency>
+			
+			<!-- Jackson JSON -->
+	        <dependency>
+	            <groupId>org.codehaus.jackson</groupId>
+	            <artifactId>jackson-mapper-asl</artifactId>
+	            <version>1.6.0</version>
+	            <type>jar</type>
+	            <scope>compile</scope>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.codehaus.jackson</groupId>
+	            <artifactId>jackson-core-asl</artifactId>
+	            <version>1.6.0</version>
+	            <type>jar</type>
+	            <scope>compile</scope>
+	        </dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -132,13 +154,13 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
-	
+
 	<distributionManagement>
-	    <repository>
-	        <id>openmrs-repo-modules</id>
-	        <name>Modules</name>
-	        <url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules/</url>
-	    </repository>
+		<repository>
+			<id>openmrs-repo-modules</id>
+			<name>Modules</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules/</url>
+		</repository>
 	</distributionManagement>
 
 </project>
