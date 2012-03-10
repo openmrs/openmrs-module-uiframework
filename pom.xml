@@ -61,6 +61,21 @@
 				<type>test-jar</type>
 				<scope>test</scope>
 			</dependency>
+			
+			<dependency>
+				<groupId>org.openmrs.web</groupId>
+				<artifactId>openmrs-web</artifactId>
+				<version>${openMRSVersion}</version>
+				<type>jar</type>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.openmrs.web</groupId>
+				<artifactId>openmrs-web</artifactId>
+				<version>${openMRSVersion}</version>
+				<type>test-jar</type>
+				<scope>test</scope>
+			</dependency>
 
 			<dependency>
 				<groupId>org.openmrs.test</groupId>

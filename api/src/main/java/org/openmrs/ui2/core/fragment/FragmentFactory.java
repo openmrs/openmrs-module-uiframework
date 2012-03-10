@@ -53,7 +53,7 @@ public class FragmentFactory {
 	@Autowired
 	SessionFactory sessionFactory;
 	
-	@Autowired
+	@Autowired(required=false)
 	ServletContext servletContext;
 	
 	private boolean developmentMode = false;
@@ -223,10 +223,12 @@ public class FragmentFactory {
 	 * @return
 	 */
 	private Object getController(FragmentRequest request) {
-		for (FragmentControllerProvider p : controllerProviders.values()) {
-			Object ret = p.getController(request.getId());
-			if (ret != null)
-				return ret;
+		if (controllerProviders != null) {
+			for (FragmentControllerProvider p : controllerProviders.values()) {
+				Object ret = p.getController(request.getId());
+				if (ret != null)
+					return ret;
+			}
 		}
 		return null;
 	}

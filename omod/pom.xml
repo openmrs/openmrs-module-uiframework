@@ -14,6 +14,12 @@
 	<description></description>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.openmrs.module</groupId>
+			<artifactId>ui2framework-api</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		
 		<!-- 
 		Add other dependencies from parent's pom: 
 		<dependency> 
@@ -33,6 +39,19 @@
 		<dependency>
 			<groupId>org.openmrs.api</groupId>
 			<artifactId>openmrs-api</artifactId>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.openmrs.web</groupId>
+			<artifactId>openmrs-web</artifactId>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.openmrs.web</groupId>
+			<artifactId>openmrs-web</artifactId>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>

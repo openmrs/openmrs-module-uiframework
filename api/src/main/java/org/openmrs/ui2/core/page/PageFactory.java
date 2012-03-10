@@ -38,7 +38,7 @@ public class PageFactory {
 	@Qualifier("coreFragmentFactory")
 	FragmentFactory fragmentFactory;
 	
-	@Autowired
+	@Autowired(required=false)
 	List<PageRequestMapper> requestMappers;
 	
 	@Autowired
@@ -188,10 +188,12 @@ public class PageFactory {
 	
 	private Object getController(String controllerName) {
 		// TODO BW: could be slow in prod. possibly use a cached version should be used for non debug modes?
-		for (PageControllerProvider p : controllerProviders.values()) {
-			Object ret = p.getController(controllerName);
-			if (ret != null)
-				return ret;
+		if (controllerProviders != null) {
+			for (PageControllerProvider p : controllerProviders.values()) {
+				Object ret = p.getController(controllerName);
+				if (ret != null)
+					return ret;
+			}
 		}
 		return null;
 	}
