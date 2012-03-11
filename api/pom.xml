@@ -4,13 +4,13 @@
 
 	<parent>
 		<groupId>org.openmrs.module</groupId>
-		<artifactId>ui2framework</artifactId>
+		<artifactId>uiframework</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ui2framework-api</artifactId>
+	<artifactId>uiframework-api</artifactId>
 	<packaging>jar</packaging>
-	<name>OpenMRS 2.x UI Framework API</name>
+	<name>OpenMRS UI Framework API</name>
 	<description></description>
 
 	<dependencies>

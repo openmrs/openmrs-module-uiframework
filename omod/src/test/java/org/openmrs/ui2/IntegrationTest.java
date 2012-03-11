@@ -40,7 +40,7 @@ public class IntegrationTest extends BaseModuleWebContextSensitiveTest {
 	public void integrationTest() throws Exception {
 		MockHttpSession httpSession = new MockHttpSession();
 		Session session = sessionFactory.getSession(httpSession);
-		PageRequest req = new PageRequest("testing", new MockHttpServletRequest(), new MockHttpServletResponse(), session);
+		PageRequest req = new PageRequest("home", new MockHttpServletRequest(), new MockHttpServletResponse(), session);
 		String html = pageFactory.handle(req);
 		System.out.println("Result = " + html);
 	}

@@ -1,5 +1,6 @@
 package org.openmrs.ui2.core.fragment;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -9,6 +10,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.ui2.core.RequestValidationException;
 import org.openmrs.ui2.core.UiFrameworkException;
@@ -281,9 +283,33 @@ public class FragmentFactory {
 		viewProviders = newViewProviders;
 	}
 	
+	/**
+	 * Adds the given view providers to the existing ones. (I.e. this is not a proper setter.)
+	 * If a system property exists called "uiFramework.development.${ key }", and the view provider has
+	 * a "developmentFolder" property, the value of "${systemProperty}/omod/src/main/webapp/fragments" will be set
+	 * for that property
+	 * @param additional
+	 */
 	public void setAdditionalViewProviders(Map<String, FragmentViewProvider> additional) {
 		if (viewProviders == null)
 			viewProviders = new LinkedHashMap<String, FragmentViewProvider>();
+		
+		for (Map.Entry<String, FragmentViewProvider> e : additional.entrySet()) {
+			String devRootFolder = System.getProperty("uiFramework.development." + e.getKey());
+			if (devRootFolder != null) {
+				File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "fragments");
+				if (devFolder.exists() && devFolder.isDirectory()) {
+					try {
+						PropertyUtils.setProperty(e.getValue(), "developmentFolder", devFolder);
+					} catch (Exception ex) {
+						// pass
+					}
+				} else {
+					log.warn("Failed to set development mode for FragmentViewProvider " + e.getKey() + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
+				}
+			}
+		}
+		
 		viewProviders.putAll(additional);
 	}
 	

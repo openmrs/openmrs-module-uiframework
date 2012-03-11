@@ -4,19 +4,19 @@
 
 	<parent>
 		<groupId>org.openmrs.module</groupId>
-		<artifactId>ui2framework</artifactId>
+		<artifactId>uiframework</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>ui2framework-omod</artifactId>
+	<artifactId>uiframework-omod</artifactId>
 	<packaging>jar</packaging>
-	<name>OpenMRS 2.x UI Framework OMOD</name>
+	<name>OpenMRS UI Framework OMOD</name>
 	<description></description>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
-			<artifactId>ui2framework-api</artifactId>
+			<artifactId>uiframework-api</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		
@@ -64,6 +64,11 @@
 		</dependency>
 		
 		<!-- End OpenMRS core -->
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+		</dependency>
 
 	</dependencies>
 

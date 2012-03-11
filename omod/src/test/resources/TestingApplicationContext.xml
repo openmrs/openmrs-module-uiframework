@@ -9,67 +9,30 @@
 		http://www.springframework.org/schema/util
 		http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 	
-	<bean id="corePageFactory" class="org.openmrs.ui2.core.page.PageFactory">
-		<!--
-		<property name="additionalControllerProviders">
-			<map>
-                <entry key="widgetlibrary">
-                    <bean class="org.openmrs.ui2.core.page.ConventionBasedClasspathPageControllerProvider">
-                        <property name="basePackage" value="org.openmrs.ui2.reference.page.controller"/>
-                    </bean>
-                </entry>
-				<entry key="webapp">
-					<bean class="org.openmrs.ui2.core.page.ConventionBasedClasspathPageControllerProvider">
-						<property name="basePackage" value="org.openmrs.ui2.webapp.page.controller"/>
-						<property name="reloadClassesFrom" value="target/classes"/>
-					</bean>
-				</entry>
-			</map>
-		</property>
-		-->
+	<!--
+	
+	<bean id="testingPageFactory" class="org.openmrs.ui2.core.page.PageFactory">
 		<property name="additionalViewProviders">
 			<map>
-				<entry key="webapp-groovy">
-					<bean class="org.openmrs.ui2.core.page.GroovyPageViewProvider">
-						<property name="templateDirectory" value="src/test/webapp/WEB-INF/pages"/>
-					</bean>
+				<entry key="testing-groovy">
+					<bean class="org.openmrs.ui2.core.page.GroovyPageViewProvider"/>
 				</entry>
 			</map>
 		</property>
 	</bean>
 	
-	<bean id="coreFragmentFactory" class="org.openmrs.ui2.core.fragment.FragmentFactory">
+	<bean id="testingFragmentFactory" class="org.openmrs.ui2.core.fragment.FragmentFactory">
 		<property name="developmentMode" value="true"/>
-		<!--
-		<property name="additionalControllerProviders">
-			<map>
-                <entry key="widgetlibrary">
-                    <bean class="org.openmrs.ui2.core.fragment.ConventionBasedClasspathFragmentControllerProvider">
-                        <property name="basePackage" value="org.openmrs.ui2.reference.fragment.controller"/>
-                    </bean>
-                </entry>
-				<entry key="webapp">
-					<bean class="org.openmrs.ui2.core.fragment.ConventionBasedClasspathFragmentControllerProvider">
-						<property name="basePackage" value="org.openmrs.ui2.webapp.fragment.controller"/>
-						<property name="reloadClassesFrom" value="target/classes"/>
-					</bean>
-				</entry>
-			</map>
-		</property>
-		 -->
 		<property name="additionalViewProviders">
 			<map>
                 <entry key="testing-groovy">
-                    <bean class="org.openmrs.ui2.core.fragment.GroovyFragmentViewProvider">
-                        <property name="templateDirectory" value="src/test/webapp/WEB-INF/fragments"/>
-                    </bean>
+                    <bean class="org.openmrs.ui2.core.fragment.GroovyFragmentViewProvider"/>
                 </entry>
 			</map>
 		</property>
 
 	</bean>
 	
-	<!-- Conversion Service -->
 	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
 		<property name="converters">
 			<list>
@@ -100,9 +63,9 @@
 		</property>
 	</bean>
 	
-	<!-- A basic implementation of UiUtils that can be autowired into other beans -->
 	<bean id="uiUtils" class="org.openmrs.ui2.core.BasicUiUtils" init-method="init"/>
 	
 	<bean id="uiSessionFactory" class="org.openmrs.ui2.core.session.SessionFactory"/>
 
+ -->
 </beans>

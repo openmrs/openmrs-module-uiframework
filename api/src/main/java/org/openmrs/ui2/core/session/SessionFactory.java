@@ -70,7 +70,14 @@ public class SessionFactory {
 	 * @param httpSession
 	 */
 	public void destroySession(HttpSession httpSession) {
-		Session session = (Session) httpSession.getAttribute(WebConstants.SESSION_SESSION_ATTRIBUTE);
+		Session session;
+		try {
+			session = (Session) httpSession.getAttribute(WebConstants.SESSION_SESSION_ATTRIBUTE);
+		} catch (ClassCastException ex) {
+			// this means the UI Framework module was reloaded
+			httpSession.removeAttribute(WebConstants.SESSION_SESSION_ATTRIBUTE);
+			return;
+		}
 		if (session != null) {
 			if (sessionListeners != null) {
 				for (SessionListener listener : sessionListeners) {

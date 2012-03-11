@@ -1,5 +1,6 @@
 package org.openmrs.ui2.core.page;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.ui2.core.Model;
 import org.openmrs.ui2.core.UiFrameworkUtil;
 import org.openmrs.ui2.core.UiUtils;
@@ -248,9 +250,32 @@ public class PageFactory {
 		viewProviders = newViewProviders;
 	}
 	
+	
+	/**
+	 * Adds the given view providers to the existing ones. (I.e. this is not a proper setter.)
+	 * If a system property exists called "uiFramework.development.${ key }", and the view provider has
+	 * a "developmentFolder" property, the value of "${systemProperty}/omod/src/main/webapp/pages" will be set
+	 * for that property 
+	 * @param additional
+	 */
 	public void setAdditionalViewProviders(Map<String, PageViewProvider> additional) {
 		if (viewProviders == null)
 			viewProviders = new LinkedHashMap<String, PageViewProvider>();
+		for (Map.Entry<String, PageViewProvider> e : additional.entrySet()) {
+			String devRootFolder = System.getProperty("uiFramework.development." + e.getKey());
+			if (devRootFolder != null) {
+				File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages");
+				if (devFolder.exists() && devFolder.isDirectory()) {
+					try {
+						PropertyUtils.setProperty(e.getValue(), "developmentFolder", devFolder);
+					} catch (Exception ex) {
+						// pass
+					}
+				} else {
+					log.warn("Failed to set development mode for PageViewProvider " + e.getKey() + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
+				}
+			}
+		}
 		viewProviders.putAll(additional);
 	}
 	
