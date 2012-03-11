@@ -51,7 +51,7 @@ public class PageController {
 	                       HttpServletResponse response, Model model, HttpSession httpSession) {
 		String ret = handlePage(pageName, request, response, model, httpSession);
 		if ("showHtml".equals(ret))
-			return "/module/ui2framework/showHtml";
+			return "/module/uiframework/showHtml";
 		else
 			return ret;
 	}
