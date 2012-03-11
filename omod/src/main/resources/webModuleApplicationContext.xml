@@ -21,17 +21,15 @@
   		    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 		<bean id="corePageFactory" class="org.openmrs.ui.framework.page.PageFactory">
-		<!--
 		<property name="additionalControllerProviders">
 			<map>
                 <entry key="core">
-                    <bean class="org.openmrs.ui2.page.ConventionBasedClasspathPageControllerProvider">
+                    <bean class="org.openmrs.ui.framework.page.ConventionBasedClasspathPageControllerProvider">
                         <property name="basePackage" value="org.openmrs.module.uiframework.page.controller"/>
                     </bean>
                 </entry>
 			</map>
 		</property>
-		-->
 		<property name="additionalViewProviders">
 			<map>
 				<entry key="testing">
