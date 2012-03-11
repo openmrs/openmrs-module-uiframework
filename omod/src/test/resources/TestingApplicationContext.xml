@@ -11,22 +11,22 @@
 	
 	<!--
 	
-	<bean id="testingPageFactory" class="org.openmrs.ui2.core.page.PageFactory">
+	<bean id="testingPageFactory" class="org.openmrs.ui.framework.page.PageFactory">
 		<property name="additionalViewProviders">
 			<map>
 				<entry key="testing-groovy">
-					<bean class="org.openmrs.ui2.core.page.GroovyPageViewProvider"/>
+					<bean class="org.openmrs.ui.framework.page.GroovyPageViewProvider"/>
 				</entry>
 			</map>
 		</property>
 	</bean>
 	
-	<bean id="testingFragmentFactory" class="org.openmrs.ui2.core.fragment.FragmentFactory">
+	<bean id="testingFragmentFactory" class="org.openmrs.ui.framework.fragment.FragmentFactory">
 		<property name="developmentMode" value="true"/>
 		<property name="additionalViewProviders">
 			<map>
                 <entry key="testing-groovy">
-                    <bean class="org.openmrs.ui2.core.fragment.GroovyFragmentViewProvider"/>
+                    <bean class="org.openmrs.ui.framework.fragment.GroovyFragmentViewProvider"/>
                 </entry>
 			</map>
 		</property>
@@ -36,36 +36,36 @@
 	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
 		<property name="converters">
 			<list>
-				<bean class="org.openmrs.ui2.core.converter.StringToFormConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToLocationConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToPatientIdentifierConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToPatientIdentifierTypeConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToPersonAttributeConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToPersonAttributeTypeConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToEncounterConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToEncounterTypeConverter"/>
-                <bean class="org.openmrs.ui2.core.converter.StringToRelationshipTypeConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToUserConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToPatientConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToPersonConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToDateConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToRelationshipConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToProgramConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToConceptConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.StringToPatientProblemConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.OpenmrsObjectToStringConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.MultipartFileToInputStreamConverter"/>
-				<bean class="org.openmrs.ui2.core.converter.PatientToSimpleObjectConverter"/>
-                <bean class="org.openmrs.ui2.core.converter.PatientIdentifierToSimpleObjectConverter"/>
-                <bean class="org.openmrs.ui2.core.converter.OpenmrsMetadataToSimpleObjectConverter"/>
-                <bean class="org.openmrs.ui2.core.converter.OpenmrsObjectToSimpleObjectConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToFormConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToLocationConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToPatientIdentifierConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToPatientIdentifierTypeConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToPersonAttributeConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToPersonAttributeTypeConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToEncounterConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToEncounterTypeConverter"/>
+                <bean class="org.openmrs.ui.framework.converter.StringToRelationshipTypeConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToUserConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToPatientConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToPersonConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToDateConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToRelationshipConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToProgramConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToConceptConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.StringToPatientProblemConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.OpenmrsObjectToStringConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.MultipartFileToInputStreamConverter"/>
+				<bean class="org.openmrs.ui.framework.converter.PatientToSimpleObjectConverter"/>
+                <bean class="org.openmrs.ui.framework.converter.PatientIdentifierToSimpleObjectConverter"/>
+                <bean class="org.openmrs.ui.framework.converter.OpenmrsMetadataToSimpleObjectConverter"/>
+                <bean class="org.openmrs.ui.framework.converter.OpenmrsObjectToSimpleObjectConverter"/>
 			</list>
 		</property>
 	</bean>
 	
-	<bean id="uiUtils" class="org.openmrs.ui2.core.BasicUiUtils" init-method="init"/>
+	<bean id="uiUtils" class="org.openmrs.ui.framework.BasicUiUtils" init-method="init"/>
 	
-	<bean id="uiSessionFactory" class="org.openmrs.ui2.core.session.SessionFactory"/>
+	<bean id="uiSessionFactory" class="org.openmrs.ui.framework.session.SessionFactory"/>
 
  -->
 </beans>

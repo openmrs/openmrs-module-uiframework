@@ -14,10 +14,10 @@
 package org.openmrs.ui2;
 
 import org.junit.Test;
-import org.openmrs.ui2.core.page.PageFactory;
-import org.openmrs.ui2.core.page.PageRequest;
-import org.openmrs.ui2.core.session.Session;
-import org.openmrs.ui2.core.session.SessionFactory;
+import org.openmrs.ui.framework.page.PageFactory;
+import org.openmrs.ui.framework.page.PageRequest;
+import org.openmrs.ui.framework.session.Session;
+import org.openmrs.ui.framework.session.SessionFactory;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
