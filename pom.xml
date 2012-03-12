@@ -21,9 +21,11 @@
 		<url>http://openmrs.org</url>
 	</organization>
 
-	<!-- <scm> <connection>scm:svn:http://svn.openmrs.org/openmrs-modules/htmlformentry19ext/trunk/</connection> 
-		<developerConnection>scm:svn:http://svn.openmrs.org/openmrs-modules/htmlformentry19ext/trunk/</developerConnection> 
-		<url>https://github.com/OpenMRS/openmrs-module-htmlformentry19ext</url> </scm> -->
+	<scm>
+		<connection>scm:git:git@github.com:djazayeri/openmrs-module-uiframework.git</connection> 
+		<developerConnection>scm:git:git@github.com:djazayeri/openmrs-module-uiframework.git</developerConnection> 
+		<url>scm:git:git@github.com:djazayeri/openmrs-module-uiframework.git</url>
+	</scm>
 
 	<modules>
 		<module>api</module>
