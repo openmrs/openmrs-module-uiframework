@@ -34,7 +34,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 
 /**
- *
+ * Lets clients access pages via:
+ * (in 2.x) .../openmrs/pageName.page
+ * (in 1.x) .../openmrs/pages/pageName.form
  */
 @Controller
 public class PageController {
@@ -46,6 +48,10 @@ public class PageController {
 	@Qualifier("corePageFactory")
 	PageFactory pageFactory;
 	
+	/**
+	 * Since the 1.x web application only lets spring handle certain file extensions (not including .page) we
+	 * need to let people access pages like: ".../openmrs/pages/home.form"
+	 */
 	@RequestMapping("/pages/{pageName}")
 	public String helper1x(@PathVariable("pageName") String pageName, HttpServletRequest request,
 	                       HttpServletResponse response, Model model, HttpSession httpSession) {

@@ -9,13 +9,13 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	
 	private String basePackage;
 	
-	private File reloadClassesFrom;
+	private File developmentFolder;
 	
 	@Override
 	public Object getController(String fragmentName) {
 		StringBuilder className = new StringBuilder();
 		className.append(basePackage).append('.').append(fragmentName.replaceAll("/", ".")).append("FragmentController");
-		if (reloadClassesFrom == null)
+		if (developmentFolder == null)
 			return getClassIfExistsInProductionMode(capitalizeClassName(className).toString());
 		else
 			return getClassIfExistsInDevelopmentMode(capitalizeClassName(className).toString());
@@ -38,7 +38,7 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	
 	private Object getClassIfExistsInDevelopmentMode(String className) {
 		try {
-			Class<?> clazz = clazz = new DevelopmentClassLoader(reloadClassesFrom, basePackage).loadClass(className);
+			Class<?> clazz = new DevelopmentClassLoader(developmentFolder, basePackage).loadClass(className);
 			return clazz.newInstance();
 		}
 		catch (ClassNotFoundException ex) {
@@ -69,18 +69,18 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 		this.basePackage = basePackage;
 	}
 	
-	/**
-	 * @return the reloadClassesFrom
-	 */
-	public File getReloadClassesFrom() {
-		return reloadClassesFrom;
-	}
-	
-	/**
-	 * @param reloadClassesFrom the reloadClassesFrom to set
-	 */
-	public void setReloadClassesFrom(File reloadClassesFrom) {
-		this.reloadClassesFrom = reloadClassesFrom;
-	}
+    /**
+     * @return the developmentFolder
+     */
+    public File getDevelopmentFolder() {
+    	return developmentFolder;
+    }
+
+    /**
+     * @param developmentFolder the developmentFolder to set
+     */
+    public void setDevelopmentFolder(File developmentFolder) {
+    	this.developmentFolder = developmentFolder;
+    }
 	
 }

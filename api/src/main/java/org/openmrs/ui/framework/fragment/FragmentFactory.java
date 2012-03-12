@@ -263,9 +263,33 @@ public class FragmentFactory {
 		controllerProviders = newControllerProviders;
 	}
 	
+	/**
+	 * Adds the given controller providers to the existing ones. (I.e. this is not a proper setter.)
+	 * If a system property exists called "uiFramework.development.${ key }", and the controller provider has
+	 * a "developmentFolder" property, the value of "${systemProperty}/omod/target/classes" will be set
+	 * for that property 
+	 * @param additional
+	 */
 	public void setAdditionalControllerProviders(Map<String, FragmentControllerProvider> additional) {
 		if (controllerProviders == null)
 			controllerProviders = new LinkedHashMap<String, FragmentControllerProvider>();
+		
+		for (Map.Entry<String, FragmentControllerProvider> e : additional.entrySet()) {
+			String devRootFolder = System.getProperty("uiFramework.development." + e.getKey());
+			if (devRootFolder != null) {
+				File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "target" + File.separator + "classes");
+				if (devFolder.exists() && devFolder.isDirectory()) {
+					try {
+						PropertyUtils.setProperty(e.getValue(), "developmentFolder", devFolder);
+					} catch (Exception ex) {
+						// pass
+					}
+				} else {
+					log.warn("Failed to set development mode for FragmentControllerProvider " + e.getKey() + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
+				}
+			}
+		}
+		
 		controllerProviders.putAll(additional);
 	}
 	

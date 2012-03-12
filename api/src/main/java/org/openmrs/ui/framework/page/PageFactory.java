@@ -230,9 +230,33 @@ public class PageFactory {
 		controllerProviders = newControllerProviders;
 	}
 	
+	/**
+	 * Adds the given controller providers to the existing ones. (I.e. this is not a proper setter.)
+	 * If a system property exists called "uiFramework.development.${ key }", and the controller provider has
+	 * a "developmentFolder" property, the value of "${systemProperty}/omod/target/classes" will be set
+	 * for that property 
+	 * @param additional
+	 */
 	public void setAdditionalControllerProviders(Map<String, PageControllerProvider> additional) {
 		if (controllerProviders == null)
 			controllerProviders = new LinkedHashMap<String, PageControllerProvider>();
+		
+		for (Map.Entry<String, PageControllerProvider> e : additional.entrySet()) {
+			String devRootFolder = System.getProperty("uiFramework.development." + e.getKey());
+			if (devRootFolder != null) {
+				File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "target" + File.separator + "classes");
+				if (devFolder.exists() && devFolder.isDirectory()) {
+					try {
+						PropertyUtils.setProperty(e.getValue(), "developmentFolder", devFolder);
+					} catch (Exception ex) {
+						// pass
+					}
+				} else {
+					log.warn("Failed to set development mode for PageControllerProvider " + e.getKey() + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
+				}
+			}
+		}
+		
 		controllerProviders.putAll(additional);
 	}
 	

@@ -23,7 +23,7 @@
 		<bean id="corePageFactory" class="org.openmrs.ui.framework.page.PageFactory">
 		<property name="additionalControllerProviders">
 			<map>
-                <entry key="core">
+                <entry key="uiframework">
                     <bean class="org.openmrs.ui.framework.page.ConventionBasedClasspathPageControllerProvider">
                         <property name="basePackage" value="org.openmrs.module.uiframework.page.controller"/>
                     </bean>
@@ -32,7 +32,7 @@
 		</property>
 		<property name="additionalViewProviders">
 			<map>
-				<entry key="testing">
+				<entry key="uiframework">
 					<bean class="org.openmrs.ui.framework.page.GroovyPageViewProvider"/>
 				</entry>
 			</map>
@@ -43,7 +43,7 @@
 		<property name="developmentMode" value="true"/>
 		<property name="additionalControllerProviders">
 			<map>
-				<entry key="core">				
+				<entry key="uiframework">				
 					<bean class="org.openmrs.ui.framework.fragment.ConventionBasedClasspathFragmentControllerProvider">
 						<property name="basePackage" value="org.openmrs.module.uiframework.fragment.controller"/>
 					</bean>
@@ -52,7 +52,7 @@
 		</property>
 		<property name="additionalViewProviders">
 			<map>
-                <entry key="testing">
+                <entry key="uiframework">
                     <bean class="org.openmrs.ui.framework.fragment.GroovyFragmentViewProvider"/>
                 </entry>
 			</map>
