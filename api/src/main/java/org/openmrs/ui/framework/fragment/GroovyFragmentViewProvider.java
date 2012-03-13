@@ -33,11 +33,13 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 	@Override
 	public FragmentView getView(String name) {
 		try {
-			String fileContents = getViewContents(name);
+			String gsp = getViewContents(name);
+			if (gsp == null)
+				return null;
 
 			if (developmentFolder != null) {
 				// we are in development mode, so we do not cache view templates
-				Template template = engine.createTemplate(fileContents);
+				Template template = engine.createTemplate(gsp);
 				GroovyFragmentView view = new GroovyFragmentView(name, template);
 				return view;
 			}
@@ -47,7 +49,7 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 				if (cached == null) {
 					if (log.isDebugEnabled())
 						log.debug("generating Groovy Template for view: " + name);
-					Template template = engine.createTemplate(fileContents);
+					Template template = engine.createTemplate(gsp);
 					GroovyFragmentView view = new GroovyFragmentView(name, template);
 					cache.put(name, view);
 					cached = view;
