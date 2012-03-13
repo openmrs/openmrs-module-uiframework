@@ -25,6 +25,7 @@ public class GroovyPageViewProvider implements PageViewProvider {
 	Log log = LogFactory.getLog(getClass());
 	
 	//config properties
+	private ClassLoader viewClassLoader;
 	private String resourcePrefix = "web/module/pages/";
 	private File developmentFolder;
 	
@@ -69,9 +70,9 @@ public class GroovyPageViewProvider implements PageViewProvider {
 				return null;
 			return OpenmrsUtil.getFileAsString(file);
 		}
+		// we're not in development mode, so we get the view from the module's classpath 
 		else {
-			// we're not in development mode, so we get the view from the module's classpath 
-			URL resource = getClass().getClassLoader().getResource(resourcePrefix + name + ".gsp");
+			URL resource = (viewClassLoader != null ? viewClassLoader : getClass().getClassLoader()).getResource(resourcePrefix + name + ".gsp");
 			if (resource == null)
 				return null;
 			InputStream inputStream = resource.openStream();
@@ -114,6 +115,22 @@ public class GroovyPageViewProvider implements PageViewProvider {
      */
     public void setDevelopmentFolder(File developmentFolder) {
     	this.developmentFolder = developmentFolder;
+    }
+
+	
+    /**
+     * @return the viewClassLoader
+     */
+    public ClassLoader getViewClassLoader() {
+    	return viewClassLoader;
+    }
+
+
+    /**
+     * @param viewClassLoader the viewClassLoader to set
+     */
+    public void setViewClassLoader(ClassLoader viewClassLoader) {
+    	this.viewClassLoader = viewClassLoader;
     }
 	
 }

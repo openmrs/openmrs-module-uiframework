@@ -232,32 +232,44 @@ public class PageFactory {
 	
 	/**
 	 * Adds the given controller providers to the existing ones. (I.e. this is not a proper setter.)
+	 * @param additional
+	 * @see #addControllerProvider(String, PageControllerProvider)
+	 */
+	public void setAdditionalControllerProviders(Map<String, PageControllerProvider> additional) {
+		for (Map.Entry<String, PageControllerProvider> e : additional.entrySet()) {
+			addControllerProvider(e.getKey(), e.getValue());
+		}
+	}
+	
+	/**
+	 * Registers a Controller Provider.
+	 * 
 	 * If a system property exists called "uiFramework.development.${ key }", and the controller provider has
 	 * a "developmentFolder" property, the value of "${systemProperty}/omod/target/classes" will be set
 	 * for that property 
-	 * @param additional
+	 * 
+	 * @param key
+	 * @param provider
 	 */
-	public void setAdditionalControllerProviders(Map<String, PageControllerProvider> additional) {
+	public void addControllerProvider(String key, PageControllerProvider provider) {
 		if (controllerProviders == null)
 			controllerProviders = new LinkedHashMap<String, PageControllerProvider>();
 		
-		for (Map.Entry<String, PageControllerProvider> e : additional.entrySet()) {
-			String devRootFolder = System.getProperty("uiFramework.development." + e.getKey());
-			if (devRootFolder != null) {
-				File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "target" + File.separator + "classes");
-				if (devFolder.exists() && devFolder.isDirectory()) {
-					try {
-						PropertyUtils.setProperty(e.getValue(), "developmentFolder", devFolder);
-					} catch (Exception ex) {
-						// pass
-					}
-				} else {
-					log.warn("Failed to set development mode for PageControllerProvider " + e.getKey() + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
+		String devRootFolder = System.getProperty("uiFramework.development." + key);
+		if (devRootFolder != null) {
+			File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "target" + File.separator + "classes");
+			if (devFolder.exists() && devFolder.isDirectory()) {
+				try {
+					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
+				} catch (Exception ex) {
+					// pass
 				}
+			} else {
+				log.warn("Failed to set development mode for PageControllerProvider " + key + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
 			}
 		}
 		
-		controllerProviders.putAll(additional);
+		controllerProviders.put(key, provider);
 	}
 	
 	/**
@@ -277,30 +289,43 @@ public class PageFactory {
 	
 	/**
 	 * Adds the given view providers to the existing ones. (I.e. this is not a proper setter.)
+	 * @param additional
+	 * @see #addViewProvider(String, PageViewProvider)
+	 */
+	public void setAdditionalViewProviders(Map<String, PageViewProvider> additional) {
+		for (Map.Entry<String, PageViewProvider> e : additional.entrySet()) {
+			addViewProvider(e.getKey(), e.getValue());
+		}
+	}
+			
+		
+	/**
 	 * If a system property exists called "uiFramework.development.${ key }", and the view provider has
 	 * a "developmentFolder" property, the value of "${systemProperty}/omod/src/main/webapp/pages" will be set
 	 * for that property 
-	 * @param additional
+	 * 
+	 * @param key
+	 * @param provider
 	 */
-	public void setAdditionalViewProviders(Map<String, PageViewProvider> additional) {
+	public void addViewProvider(String key, PageViewProvider provider) {
 		if (viewProviders == null)
 			viewProviders = new LinkedHashMap<String, PageViewProvider>();
-		for (Map.Entry<String, PageViewProvider> e : additional.entrySet()) {
-			String devRootFolder = System.getProperty("uiFramework.development." + e.getKey());
-			if (devRootFolder != null) {
-				File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages");
-				if (devFolder.exists() && devFolder.isDirectory()) {
-					try {
-						PropertyUtils.setProperty(e.getValue(), "developmentFolder", devFolder);
-					} catch (Exception ex) {
-						// pass
-					}
-				} else {
-					log.warn("Failed to set development mode for PageViewProvider " + e.getKey() + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
+		
+		String devRootFolder = System.getProperty("uiFramework.development." + key);
+		if (devRootFolder != null) {
+			File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages");
+			if (devFolder.exists() && devFolder.isDirectory()) {
+				try {
+					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
+				} catch (Exception ex) {
+					// pass
 				}
+			} else {
+				log.warn("Failed to set development mode for PageViewProvider " + key + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
 			}
 		}
-		viewProviders.putAll(additional);
+		
+		viewProviders.put(key, provider);
 	}
 	
 	/**

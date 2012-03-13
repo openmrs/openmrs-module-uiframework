@@ -20,6 +20,7 @@ import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
+import org.openmrs.ui.framework.page.PageControllerProvider;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.page.PageRequest;
 import org.openmrs.ui.framework.page.Redirect;
@@ -55,7 +56,7 @@ public class FragmentFactory {
 	@Autowired
 	SessionFactory sessionFactory;
 	
-	@Autowired(required=false)
+	@Autowired(required = false)
 	ServletContext servletContext;
 	
 	private boolean developmentMode = false;
@@ -265,32 +266,46 @@ public class FragmentFactory {
 	
 	/**
 	 * Adds the given controller providers to the existing ones. (I.e. this is not a proper setter.)
-	 * If a system property exists called "uiFramework.development.${ key }", and the controller provider has
-	 * a "developmentFolder" property, the value of "${systemProperty}/omod/target/classes" will be set
-	 * for that property 
+	 * 
 	 * @param additional
+	 * @see #addControllerProvider(String, FragmentControllerProvider)
 	 */
 	public void setAdditionalControllerProviders(Map<String, FragmentControllerProvider> additional) {
+		for (Map.Entry<String, FragmentControllerProvider> e : additional.entrySet()) {
+			addControllerProvider(e.getKey(), e.getValue());
+		}
+	}
+	
+	/**
+	 * Registers a Controller Provider. If a system property exists called
+	 * "uiFramework.development.${ key }", and the controller provider has a "developmentFolder"
+	 * property, the value of "${systemProperty}/omod/target/classes" will be set for that property
+	 * 
+	 * @param key
+	 * @param provider
+	 */
+	public void addControllerProvider(String key, FragmentControllerProvider provider) {
 		if (controllerProviders == null)
 			controllerProviders = new LinkedHashMap<String, FragmentControllerProvider>();
 		
-		for (Map.Entry<String, FragmentControllerProvider> e : additional.entrySet()) {
-			String devRootFolder = System.getProperty("uiFramework.development." + e.getKey());
-			if (devRootFolder != null) {
-				File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "target" + File.separator + "classes");
-				if (devFolder.exists() && devFolder.isDirectory()) {
-					try {
-						PropertyUtils.setProperty(e.getValue(), "developmentFolder", devFolder);
-					} catch (Exception ex) {
-						// pass
-					}
-				} else {
-					log.warn("Failed to set development mode for FragmentControllerProvider " + e.getKey() + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
+		String devRootFolder = System.getProperty("uiFramework.development." + key);
+		if (devRootFolder != null) {
+			File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "target" + File.separator
+			        + "classes");
+			if (devFolder.exists() && devFolder.isDirectory()) {
+				try {
+					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
 				}
+				catch (Exception ex) {
+					// pass
+				}
+			} else {
+				log.warn("Failed to set development mode for FragmentControllerProvider " + key + " because "
+				        + devFolder.getAbsolutePath() + " does not exist or is not a directory");
 			}
 		}
 		
-		controllerProviders.putAll(additional);
+		controllerProviders.put(key, provider);
 	}
 	
 	/**
@@ -309,32 +324,46 @@ public class FragmentFactory {
 	
 	/**
 	 * Adds the given view providers to the existing ones. (I.e. this is not a proper setter.)
-	 * If a system property exists called "uiFramework.development.${ key }", and the view provider has
-	 * a "developmentFolder" property, the value of "${systemProperty}/omod/src/main/webapp/fragments" will be set
-	 * for that property
+	 * 
 	 * @param additional
+	 * @see #addViewProvider(String, FragmentViewProvider)
 	 */
 	public void setAdditionalViewProviders(Map<String, FragmentViewProvider> additional) {
+		for (Map.Entry<String, FragmentViewProvider> e : additional.entrySet()) {
+			addViewProvider(e.getKey(), e.getValue());
+		}
+	}
+	
+	/**
+	 * If a system property exists called "uiFramework.development.${ key }", and the view provider
+	 * has a "developmentFolder" property, the value of
+	 * "${systemProperty}/omod/src/main/webapp/fragments" will be set for that property
+	 * 
+	 * @param key
+	 * @param provider
+	 */
+	public void addViewProvider(String key, FragmentViewProvider provider) {
 		if (viewProviders == null)
 			viewProviders = new LinkedHashMap<String, FragmentViewProvider>();
 		
-		for (Map.Entry<String, FragmentViewProvider> e : additional.entrySet()) {
-			String devRootFolder = System.getProperty("uiFramework.development." + e.getKey());
-			if (devRootFolder != null) {
-				File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "fragments");
-				if (devFolder.exists() && devFolder.isDirectory()) {
-					try {
-						PropertyUtils.setProperty(e.getValue(), "developmentFolder", devFolder);
-					} catch (Exception ex) {
-						// pass
-					}
-				} else {
-					log.warn("Failed to set development mode for FragmentViewProvider " + e.getKey() + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
+		String devRootFolder = System.getProperty("uiFramework.development." + key);
+		if (devRootFolder != null) {
+			File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "src" + File.separator
+			        + "main" + File.separator + "webapp" + File.separator + "fragments");
+			if (devFolder.exists() && devFolder.isDirectory()) {
+				try {
+					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
 				}
+				catch (Exception ex) {
+					// pass
+				}
+			} else {
+				log.warn("Failed to set development mode for FragmentViewProvider " + key + " because "
+				        + devFolder.getAbsolutePath() + " does not exist or is not a directory");
 			}
 		}
 		
-		viewProviders.putAll(additional);
+		viewProviders.put(key, provider);
 	}
 	
 	public Object invokeFragmentAction(String fragmentName, String action, HttpServletRequest httpRequest) {

@@ -20,6 +20,7 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 	Log log = LogFactory.getLog(getClass());
 	
 	//config properties
+	private ClassLoader viewClassLoader;
 	private String resourcePrefix = "web/module/fragments/";
 	private File developmentFolder;
 	
@@ -120,4 +121,18 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
     	this.developmentFolder = developmentFolder;
     }
 
+    /**
+     * @return the viewClassLoader
+     */
+    public ClassLoader getViewClassLoader() {
+    	return viewClassLoader;
+    }
+
+    /**
+     * @param viewClassLoader the viewClassLoader to set
+     */
+    public void setViewClassLoader(ClassLoader viewClassLoader) {
+    	this.viewClassLoader = viewClassLoader;
+    }
+    
 }
