@@ -22,6 +22,7 @@ import org.openmrs.module.BaseModuleActivator;
 import org.openmrs.module.ModuleActivator;
 import org.openmrs.ui.framework.StandardModuleUiConfiguration;
 import org.openmrs.ui.framework.UiContextRefreshedCallback;
+import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.page.PageFactory;
 
@@ -57,6 +58,18 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 	 */
 	@Override
 	public void contextRefreshed() {
+		// START HACK
+		// since we're not using a Listener anymore, these are not set at startup
+		try {
+			Class<?> webConstants1x = Context.loadClass("org.openmrs.web.WebConstants");
+			String webappName = (String) webConstants1x.getField("WEBAPP_NAME").get(null);
+			WebConstants.CONTEXT_PATH = webappName;
+			WebConstants.WEBAPP_NAME = webappName;
+		} catch (Exception ex) {
+			log.error("Failed to get CONTEXT_PATH from WebConstants during UI Framework startup");
+		}
+		// END HACK
+		
 		PageFactory pageFactory = getComponent(PageFactory.class);
 		FragmentFactory fragmentFactory = getComponent(FragmentFactory.class);
 
