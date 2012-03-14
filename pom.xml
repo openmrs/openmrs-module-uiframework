@@ -108,7 +108,7 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-webmvc</artifactId>
 				<version>${springVersion}</version>
-				<scope>provided</scope>
+				<scope>compile</scope>
 			</dependency>
 			
 			<!-- Jackson JSON -->
