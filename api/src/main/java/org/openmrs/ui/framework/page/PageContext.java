@@ -53,15 +53,13 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	// TODO move this
 	private static Map<String, String> resourceReplacements = new HashMap<String, String>();
 	static {
-		resourceReplacements.put("jquery.js", "jquery-1.5.min.js");
-		resourceReplacements.put("jquery-ui.js", "jquery-ui-1.8.9.custom.min.js");
-		resourceReplacements.put("jquery-ui.css", "jquery-ui-1.8.9.custom.css");
+		resourceReplacements.put("jquery.js", "jquery-1.7.1.min.js");
+		resourceReplacements.put("jquery-ui.js", "jquery-ui-1.8.18.custom.min.js");
+		resourceReplacements.put("jquery-ui.css", "cupertino/jquery-ui-1.8.18.custom.css");
 		
-		resourceReplacements.put("/scripts/jquery/jquery-1.3.2.min.js", "/scripts/jquery-1.5.min.js");
-		resourceReplacements.put("/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js",
-		    "/scripts/jquery-ui-1.8.9.custom.min.js");
-		resourceReplacements.put("/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css",
-		    "/styles/jquery-ui-1.8.9.custom.css");
+		resourceReplacements.put("/scripts/jquery/jquery-1.3.2.min.js", resourceReplacements.get("jquery.js"));
+		resourceReplacements.put("/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js", resourceReplacements.get("jquery-ui.js"));
+		resourceReplacements.put("/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css", resourceReplacements.get("jquery-ui.css"));
 		resourceReplacements.put("/scripts/openmrsmessages.js", "/scripts/openmrsmessages.js.withjstl");
 	}
 	
@@ -94,8 +92,8 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	public String getUrl(boolean includeContextPath) {
 		StringBuilder ret = new StringBuilder();
 		if (includeContextPath)
-			ret.append(WebConstants.CONTEXT_PATH + "/");
-		ret.append(request.getPageName() + ".page?");
+			ret.append("/" + WebConstants.CONTEXT_PATH + "/");
+		ret.append("pages/" + request.getPageName() + ".page?");
 		Map<String, String[]> params = request.getRequest().getParameterMap();
 		for (Map.Entry<String, String[]> e : params.entrySet()) {
 			for (String val : e.getValue()) {

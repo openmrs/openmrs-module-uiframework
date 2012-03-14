@@ -172,11 +172,11 @@ public class PageFactory {
 		if (context.getPageTitle() != null)
 			ret.append("<title>" + context.getPageTitle() + "</title>\n");
 		for (String file : context.getJavascriptToInclude()) {
-			ret.append("<script type=\"text/javascript\" src=\"" + WebConstants.CONTEXT_PATH + "/scripts/" + file
+			ret.append("<script type=\"text/javascript\" src=\"/" + WebConstants.CONTEXT_PATH + "/moduleResources/uiframework/scripts/" + file
 			        + "\"></script>\n");
 		}
 		for (String file : context.getCssToInclude()) {
-			ret.append("<link rel=\"stylesheet\" href=\"" + WebConstants.CONTEXT_PATH + "/styles/" + file
+			ret.append("<link rel=\"stylesheet\" href=\"/" + WebConstants.CONTEXT_PATH + "/moduleResources/uiframework/styles/" + file
 			        + "\" type=\"text/css\"/>\n");
 		}
 		ret.append("</head>\n");

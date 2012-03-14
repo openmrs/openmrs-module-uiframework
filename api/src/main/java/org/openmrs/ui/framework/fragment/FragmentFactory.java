@@ -82,7 +82,7 @@ public class FragmentFactory {
 		applyDefaultConfiguration(context);
 		// it's possible someone has pre-requested that this fragment be decorated
 		if (context.getRequest().getConfiguration().containsKey("decorator")) {
-			String decoratorName = "decorators/" + context.getRequest().getConfiguration().get("decorator");
+			String decoratorName = "decorator/" + context.getRequest().getConfiguration().get("decorator");
 			@SuppressWarnings("unchecked")
 			Map<String, Object> decoratorConfigurationMap = (Map<String, Object>) context.getRequest().getConfiguration()
 			        .get("decoratorConfig");

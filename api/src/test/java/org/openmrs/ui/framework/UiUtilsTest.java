@@ -28,7 +28,7 @@ public class UiUtilsTest {
 		params.put("one", "1");
 		params.put("two", "2");
 		String link = ui.pageLink("myPage", params);
-		Assert.assertEquals("null/myPage.page?one=1&two=2&", link);
+		Assert.assertTrue(link.endsWith("/myPage.page?one=1&two=2&"));
 	}
 	
 	/**
@@ -41,7 +41,7 @@ public class UiUtilsTest {
 		params.put("one", "1");
 		params.put("two", "2");
 		String link = ui.pageLink("myPage?three=3&four=4", params);
-		Assert.assertEquals("null/myPage.page?one=1&two=2&three=3&four=4", link);
+		Assert.assertTrue(link.endsWith("/myPage.page?one=1&two=2&three=3&four=4"));
 	}
 	
 	/**
@@ -51,7 +51,7 @@ public class UiUtilsTest {
 	@Test
 	public void pageLink_shouldHandlePageNameWithAnchor() throws Exception {
 		String link = ui.pageLink("myPage#mySection", null);
-		Assert.assertEquals("null/myPage.page#mySection", link);
+		Assert.assertTrue(link.endsWith("/myPage.page#mySection"));
 	}
 	
 	/**
@@ -61,6 +61,6 @@ public class UiUtilsTest {
 	@Test
 	public void pageLink_shouldHandlePageNameWithAnchorAndQueryString() throws Exception {
 		String link = ui.pageLink("myPage?param=val#mySection", null);
-		Assert.assertEquals("null/myPage.page?param=val#mySection", link);
+		Assert.assertTrue(link.endsWith("/myPage.page?param=val#mySection"));
 	}
 }

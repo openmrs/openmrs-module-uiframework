@@ -93,7 +93,7 @@ public abstract class UiUtils {
 	}
 	
 	public void decorateWith(String fragmentName, Map<String, Object> config) {
-		decoratable.setDecorateWith(new FragmentRequest("decorators/" + fragmentName, config));
+		decoratable.setDecorateWith(new FragmentRequest("decorator/" + fragmentName, config));
 	}
 	
 	public String decorate(String decoratorName, String contents) throws PageAction {
@@ -104,7 +104,7 @@ public abstract class UiUtils {
 		if (decoratorConfig == null)
 			decoratorConfig = new HashMap<String, Object>();
 		decoratorConfig.put("content", contents);
-		return includeFragment("decorators/" + decoratorName, decoratorConfig);
+		return includeFragment("decorator/" + decoratorName, decoratorConfig);
 	}
 	
 	public String contextPath() {
@@ -113,7 +113,7 @@ public abstract class UiUtils {
 	
 	public String resourceLink(String path) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(contextPath());
+		sb.append("/").append(contextPath()).append("/moduleResources/uiframework");
 		if (!path.startsWith("/"))
 			sb.append("/");
 		sb.append(path);
@@ -146,7 +146,7 @@ public abstract class UiUtils {
 			pageName = pageAndAnchor[0];
 			extraAnchor = pageAndAnchor[1];
 		}
-		String ret = resourceLink(pageName + ".page");
+		String ret = "/" + contextPath() + "/pages/" + pageName + ".page";
 		if (params != null || extraQuery != null) {
 			ret += "?";
 			if (params != null) {
@@ -175,7 +175,7 @@ public abstract class UiUtils {
 	}
 	
 	public String actionLink(String controllerName, String action, Map<String, ?> args) {
-		StringBuilder sb = new StringBuilder(resourceLink(controllerName + "/" + action + ".action?"));
+		StringBuilder sb = new StringBuilder("/" + contextPath() + "/action/" + controllerName + "/" + action + ".form?");
 		String successUrl = null;
 		if (args != null) {
 			for (Map.Entry<String, ?> e : args.entrySet()) {
