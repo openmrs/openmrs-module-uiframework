@@ -15,6 +15,7 @@ import org.openmrs.ui.framework.FragmentException;
 import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.ViewException;
 import org.openmrs.ui.framework.WebConstants;
+import org.openmrs.ui.util.ExceptionUtil;
 
 public class GroovyFragmentView implements FragmentView {
 	
@@ -64,6 +65,10 @@ public class GroovyFragmentView implements FragmentView {
 			throw ex;
 		}
 		catch (Exception ex) {
+			APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
+			if (authEx != null)
+				throw authEx;
+
 			throw new FragmentException("Error evaluating view: " + viewName, ex);
 		}
 	}

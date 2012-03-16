@@ -17,8 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageFactory;
 import org.openmrs.ui.framework.page.PageRequest;
@@ -94,7 +94,7 @@ public class PageController {
 			if (!Context.isAuthenticated()) {
 				// most likely this is an uncaught exception due to the user not being logged in
 				// TODO consider whether this is a good idea
-				throw new ContextAuthenticationException(ex);
+				throw new APIAuthenticationException(ex);
 			} else {
 				throw ex;
 			}

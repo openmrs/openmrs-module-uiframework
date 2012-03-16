@@ -54,7 +54,8 @@ public abstract class UiUtils {
 	}
 	
 	public String thisUrl() {
-		return pageContext.getUrl(false);
+		// TODO determine whether we still need both this method and thisUrlWithContextPath()
+		return pageContext.getUrl(true);
 	}
 	
 	public String thisUrlWithContextPath() {
