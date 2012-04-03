@@ -30,7 +30,7 @@ public class GroovyPageViewProvider implements PageViewProvider {
 	private File developmentFolder;
 	
 	// internal data
-	SimpleTemplateEngine engine = new SimpleTemplateEngine();
+	SimpleTemplateEngine engine = new SimpleTemplateEngine(getClass().getClassLoader());
 	
 	@Override
 	public PageView getView(String name) {

@@ -78,7 +78,7 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 			return OpenmrsUtil.getFileAsString(file);
     	}
     	else {
-			URL resource = getClass().getClassLoader().getResource(resourcePrefix + name + ".gsp");
+			URL resource = (viewClassLoader != null ? viewClassLoader : getClass().getClassLoader()).getResource(resourcePrefix + name + ".gsp");
 			if (resource == null)
 				return null;
 			InputStream inputStream = resource.openStream();
