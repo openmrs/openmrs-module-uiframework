@@ -57,8 +57,10 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class FragmentActionController {
-	
+
 	private final Logger log = LoggerFactory.getLogger(FragmentActionController.class);
+	
+	public final static String SHOW_HTML_VIEW = "/module/uiframework/showHtml";
 	
 	@Autowired
 	@Qualifier("coreFragmentFactory")
@@ -79,6 +81,16 @@ public class FragmentActionController {
 	        @RequestParam(value = "successUrl", required = false) String successUrl,
 	        @RequestParam(value = "failureUrl", required = false) String failureUrl, HttpServletRequest request,
 	        Model model, HttpServletResponse response) throws Exception {
+		
+		if (returnFormat == null) {
+			String acceptHeader = request.getHeader("Accept");
+			if (StringUtils.isNotEmpty(acceptHeader)) {
+				if (acceptHeader.startsWith("application/json")) {
+					returnFormat = "json";
+				}
+			}
+		}
+		
 		Object resultObject;
 		try {
 			resultObject = fragmentFactory.invokeFragmentAction(fragmentName, action, request);
@@ -126,7 +138,7 @@ public class FragmentActionController {
 				result = resultObject.toString();
 			}
 			model.addAttribute("html", result);
-			return "showHtml";
+			return SHOW_HTML_VIEW;
 			
 		} else {
 			// this is a regular post, so we will return a page
@@ -172,7 +184,7 @@ public class FragmentActionController {
 				// the best we can do is just display a formatted version of the wrapped object
 				String formatted = new FormatterImpl().format(((ObjectResult) resultObject).getWrapped());
 				model.addAttribute("html", formatted);
-				return "showHtml";
+				return SHOW_HTML_VIEW;
 				
 			} else {
 				throw new RuntimeException("Don't know how to handle fragment action result type: "

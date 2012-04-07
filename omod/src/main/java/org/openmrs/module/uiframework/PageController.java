@@ -41,6 +41,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class PageController {
 
+	public final static String SHOW_HTML_VIEW = "/module/uiframework/showHtml";
+	
 	@Autowired
 	SessionFactory sessionFactory;
 	
@@ -55,11 +57,7 @@ public class PageController {
 	@RequestMapping("/pages/{pageName}")
 	public String helper1x(@PathVariable("pageName") String pageName, HttpServletRequest request,
 	                       HttpServletResponse response, Model model, HttpSession httpSession) {
-		String ret = handlePage(pageName, request, response, model, httpSession);
-		if ("showHtml".equals(ret))
-			return "/module/uiframework/showHtml";
-		else
-			return ret;
+		return handlePage(pageName, request, response, model, httpSession);
 	}
 	
 	@RequestMapping("/{pageName}.page")
@@ -77,7 +75,7 @@ public class PageController {
 		try {
 			String html = pageFactory.handle(pageRequest);
 			model.addAttribute("html", html);
-			return "showHtml";
+			return SHOW_HTML_VIEW;
 		}
 		catch (Redirect redirect) {
 			String ret = "redirect:";
