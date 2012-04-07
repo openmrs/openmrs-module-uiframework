@@ -18,6 +18,7 @@ import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.session.Session;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,7 +214,7 @@ public class PageFactory {
 				return ret;
 		}
 		// pages are required to have views, so we throw an exception if we couldn't find one
-		throw new RuntimeException("Could not find page view: " + viewName);
+		throw new RuntimeException("Could not find page view '" + viewName + "' in any of the view providers (" + OpenmrsUtil.join(viewProviders.keySet(), ", ") + ")");
 	}
 	
 	/**
