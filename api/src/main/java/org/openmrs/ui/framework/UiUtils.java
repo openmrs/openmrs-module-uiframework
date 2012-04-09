@@ -114,7 +114,7 @@ public abstract class UiUtils {
 	
 	public String resourceLink(String path) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("/").append(contextPath()).append("/moduleResources/uiframework");
+		sb.append("/").append(contextPath()).append("/moduleResources/*");
 		if (!path.startsWith("/"))
 			sb.append("/");
 		sb.append(path);
