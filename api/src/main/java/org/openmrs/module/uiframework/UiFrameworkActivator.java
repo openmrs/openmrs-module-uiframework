@@ -25,6 +25,7 @@ import org.openmrs.ui.framework.UiContextRefreshedCallback;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.page.PageFactory;
+import org.openmrs.ui.framework.resource.ResourceFactory;
 
 /**
  * Activator for the UI Framework module
@@ -72,11 +73,12 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 		
 		PageFactory pageFactory = getComponent(PageFactory.class);
 		FragmentFactory fragmentFactory = getComponent(FragmentFactory.class);
+		ResourceFactory resourceFactory = getComponent(ResourceFactory.class);
 
 		List<UiContextRefreshedCallback> callbacks = Context.getRegisteredComponents(UiContextRefreshedCallback.class);
 		for (UiContextRefreshedCallback callback : callbacks) {
 			try {
-				callback.afterContextRefreshed(pageFactory, fragmentFactory);
+				callback.afterContextRefreshed(pageFactory, fragmentFactory, resourceFactory);
 			} catch (Exception ex) {
 				log.error("Error in UiContextRefreshedCallback: " + callback, ex);
 			}

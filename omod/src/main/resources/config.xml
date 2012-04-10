@@ -11,7 +11,7 @@
 	<description>
 		${project.parent.description}
 	</description>
-	<updateURL>https://dev.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
+	<updateURL>https://modules.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
 	<require_version>${openMRSVersion}</require_version>
 	<!-- / Module Properties -->
 		
@@ -29,6 +29,11 @@
 		<file>messages.properties</file>
 	</messages>
 	<!-- /Internationalization -->
+	
+	<servlet>
+		<servlet-name>resource</servlet-name>
+		<servlet-class>org.openmrs.module.uiframework.ResourceServlet</servlet-class>
+	</servlet>
 
 </module>
 

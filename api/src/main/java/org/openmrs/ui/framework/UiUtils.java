@@ -14,6 +14,7 @@ import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.fragment.action.ObjectResult;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
+import org.openmrs.ui.framework.resource.Resource;
 import org.springframework.core.convert.ConversionService;
 
 /**
@@ -46,11 +47,19 @@ public abstract class UiUtils {
 	}
 	
 	public void includeCss(String file) {
-		resourceIncluder.includeCss(file);
+		includeCss(null, file);
+	}
+	
+	public void includeCss(String providerName, String file) {
+		resourceIncluder.includeCss(new Resource(providerName, "styles/" + file));
 	}
 	
 	public void includeJavascript(String file) {
-		resourceIncluder.includeJavascript(file);
+		includeJavascript(null, file);
+	}
+	
+	public void includeJavascript(String providerName, String file) {
+		resourceIncluder.includeJavascript(new Resource(providerName, "scripts/" + file));
 	}
 	
 	public String thisUrl() {
@@ -113,8 +122,14 @@ public abstract class UiUtils {
 	}
 	
 	public String resourceLink(String path) {
+		return resourceLink(null, path);
+	}
+	
+	public String resourceLink(String providerName, String path) {
+		if (providerName == null)
+			providerName = "*";
 		StringBuilder sb = new StringBuilder();
-		sb.append("/").append(contextPath()).append("/moduleResources/*");
+		sb.append("/").append(contextPath()).append("/ms/uiframework/resource/" + providerName);
 		if (!path.startsWith("/"))
 			sb.append("/");
 		sb.append(path);

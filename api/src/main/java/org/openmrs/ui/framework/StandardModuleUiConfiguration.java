@@ -13,16 +13,18 @@
  */
 package org.openmrs.ui.framework;
 
-import org.openmrs.module.Module;
+import java.util.Map;
+
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleFactory;
-import org.openmrs.module.ModuleUtil;
 import org.openmrs.ui.framework.fragment.ConventionBasedClasspathFragmentControllerProvider;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.GroovyFragmentViewProvider;
 import org.openmrs.ui.framework.page.ConventionBasedClasspathPageControllerProvider;
 import org.openmrs.ui.framework.page.GroovyPageViewProvider;
 import org.openmrs.ui.framework.page.PageFactory;
+import org.openmrs.ui.framework.resource.ModuleResourceProvider;
+import org.openmrs.ui.framework.resource.ResourceFactory;
 
 /**
  *
@@ -30,6 +32,7 @@ import org.openmrs.ui.framework.page.PageFactory;
 public class StandardModuleUiConfiguration implements UiContextRefreshedCallback {
 	
 	private String moduleId;
+	private Map<String, String> resourceShortcuts;
 	
 	/**
 	 * @return the moduleId
@@ -45,12 +48,26 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 		this.moduleId = moduleId;
 	}
 	
+    /**
+     * @return the resourceShortcuts
+     */
+    public Map<String, String> getResourceShortcuts() {
+    	return resourceShortcuts;
+    }
+	
+    /**
+     * @param resourceShortcuts the resourceShortcuts to set
+     */
+    public void setResourceShortcuts(Map<String, String> resourceShortcuts) {
+    	this.resourceShortcuts = resourceShortcuts;
+    }
+
 	/**
 	 * @see org.openmrs.ui.framework.UiContextRefreshedCallback#afterContextRefreshed(org.openmrs.ui.framework.page.PageFactory,
-	 *      org.openmrs.ui.framework.fragment.FragmentFactory)
+	 *      org.openmrs.ui.framework.fragment.FragmentFactory, ResourceFactory)
 	 */
 	@Override
-	public void afterContextRefreshed(PageFactory pageFactory, FragmentFactory fragmentFactory) {
+	public void afterContextRefreshed(PageFactory pageFactory, FragmentFactory fragmentFactory, ResourceFactory resourceFactory) {
 
 		ModuleClassLoader moduleClassLoader = ModuleFactory.getModuleClassLoader(moduleId);
 		if (moduleClassLoader == null)
@@ -82,6 +99,14 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 			GroovyFragmentViewProvider fvp = new GroovyFragmentViewProvider();
 			fvp.setViewClassLoader(moduleClassLoader);
 			fragmentFactory.addViewProvider(moduleId, fvp);
+		}
+		
+		// standards provider for resources
+		{
+			ModuleResourceProvider rp = new ModuleResourceProvider();
+			rp.setModuleClassLoader(moduleClassLoader);
+			rp.setResourceShortcuts(resourceShortcuts);
+			resourceFactory.addResourceProvider(moduleId, rp);
 		}
 	}
 	

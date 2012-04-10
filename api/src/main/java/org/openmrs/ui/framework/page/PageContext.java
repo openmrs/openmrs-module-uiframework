@@ -1,7 +1,6 @@
 package org.openmrs.ui.framework.page;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Locale;
@@ -20,6 +19,7 @@ import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
+import org.openmrs.ui.framework.resource.Resource;
 import org.springframework.context.MessageSource;
 
 public class PageContext implements ResourceIncluder, Messager, Decoratable, FragmentIncluder, ExtensionAware {
@@ -46,23 +46,10 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	
 	private String pageTitle;
 	
-	private Set<String> javascriptToInclude = new LinkedHashSet<String>();
+	private Set<Resource> javascriptToInclude = new LinkedHashSet<Resource>();
 	
-	private Set<String> cssToInclude = new LinkedHashSet<String>();
-	
-	// TODO move this
-	private static Map<String, String> resourceReplacements = new HashMap<String, String>();
-	static {
-		resourceReplacements.put("jquery.js", "jquery-1.7.1.min.js");
-		resourceReplacements.put("jquery-ui.js", "jquery-ui-1.8.18.custom.min.js");
-		resourceReplacements.put("jquery-ui.css", "cupertino/jquery-ui-1.8.18.custom.css");
+	private Set<Resource> cssToInclude = new LinkedHashSet<Resource>();
 		
-		resourceReplacements.put("/scripts/jquery/jquery-1.3.2.min.js", resourceReplacements.get("jquery.js"));
-		resourceReplacements.put("/scripts/jquery-ui/js/jquery-ui-1.7.2.custom.min.js", resourceReplacements.get("jquery-ui.js"));
-		resourceReplacements.put("/scripts/jquery-ui/css/redmond/jquery-ui-1.7.2.custom.css", resourceReplacements.get("jquery-ui.css"));
-		resourceReplacements.put("/scripts/openmrsmessages.js", "/scripts/openmrsmessages.js.withjstl");
-	}
-	
 	public PageContext(PageRequest request) {
 		this.request = request;
 		this.model = new PageModel();
@@ -187,8 +174,8 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	 * @param file
 	 */
 	@Override
-	public void includeJavascript(String file) {
-		javascriptToInclude.add(translateResource(file));
+	public void includeJavascript(Resource resource) {
+		javascriptToInclude.add(resource);
 	}
 	
 	/**
@@ -196,17 +183,17 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	 * @param file
 	 */
 	@Override
-	public void includeCss(String file) {
-		cssToInclude.add(translateResource(file));
+	public void includeCss(Resource resource) {
+		cssToInclude.add(resource);
 	}
 	
 	@Override
-	public Set<String> getJavascriptToInclude() {
+	public Set<Resource> getJavascriptToInclude() {
 		return javascriptToInclude;
 	}
 	
 	@Override
-	public Set<String> getCssToInclude() {
+	public Set<Resource> getCssToInclude() {
 		return cssToInclude;
 	}
 	
@@ -300,10 +287,5 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	public void setPageTitle(String pageTitle) {
 		this.pageTitle = pageTitle;
 	}
-	
-	public static String translateResource(String requestedName) {
-		String replacement = resourceReplacements.get(requestedName);
-		return replacement == null ? requestedName : replacement;
-	}
-	
+		
 }

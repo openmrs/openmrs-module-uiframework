@@ -20,8 +20,9 @@
   		    http://www.springframework.org/schema/util
   		    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-		<bean id="corePageFactory" class="org.openmrs.ui.framework.page.PageFactory">
+	<bean id="corePageFactory" class="org.openmrs.ui.framework.page.PageFactory">
 		<property name="additionalControllerProviders">
+			<!-- I tried moving this to a StandardModuleUiConfiguration, but that broke IntregrationTest -->
 			<map>
                 <entry key="uiframework">
                     <bean class="org.openmrs.ui.framework.page.ConventionBasedClasspathPageControllerProvider">
@@ -57,8 +58,9 @@
                 </entry>
 			</map>
 		</property>
-
 	</bean>
+	
+	<bean id="coreResourceFactory" class="org.openmrs.ui.framework.resource.ResourceFactory"/>
 	
 	<!-- Conversion Service -->
 	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">

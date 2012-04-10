@@ -2,14 +2,16 @@ package org.openmrs.ui.framework;
 
 import java.util.Set;
 
+import org.openmrs.ui.framework.resource.Resource;
+
 public interface ResourceIncluder {
 	
-	public void includeJavascript(String file);
+	public void includeJavascript(Resource resource);
 	
-	public void includeCss(String file);
+	public void includeCss(Resource resource);
 	
-	public Set<String> getJavascriptToInclude();
+	public Set<Resource> getJavascriptToInclude();
 	
-	public Set<String> getCssToInclude();
+	public Set<Resource> getCssToInclude();
 	
 }

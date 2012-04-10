@@ -15,11 +15,12 @@ package org.openmrs.ui.framework;
 
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.page.PageFactory;
+import org.openmrs.ui.framework.resource.ResourceFactory;
 
 
 /**
  * Any implementation of this interface that you instantiate a Spring-managed bean for will receive a callback
- * from the UI Framework module after the Spring context is refreshed. 
+ * from the UI Framework module after the Spring context is refreshed.
  */
 public interface UiContextRefreshedCallback {
 	
@@ -27,7 +28,8 @@ public interface UiContextRefreshedCallback {
 	 * This will be called by the UI Framework module every time the spring context is refreshed.
 	 * @param pageFactory
 	 * @param fragmentFactory
+	 * @param resourceFactory TODO
 	 */
-	void afterContextRefreshed(PageFactory pageFactory, FragmentFactory fragmentFactory);
+	void afterContextRefreshed(PageFactory pageFactory, FragmentFactory fragmentFactory, ResourceFactory resourceFactory);
 	
 }

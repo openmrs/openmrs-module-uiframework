@@ -17,6 +17,7 @@ import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
+import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -172,13 +173,11 @@ public class PageFactory {
 		ret.append("<head>\n");
 		if (context.getPageTitle() != null)
 			ret.append("<title>" + context.getPageTitle() + "</title>\n");
-		for (String file : context.getJavascriptToInclude()) {
-			ret.append("<script type=\"text/javascript\" src=\"/" + WebConstants.CONTEXT_PATH + "/moduleResources/*/scripts/" + file
-			        + "\"></script>\n");
+		for (Resource resource : context.getJavascriptToInclude()) {
+			ret.append("<script type=\"text/javascript\" src=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\"></script>\n");
 		}
-		for (String file : context.getCssToInclude()) {
-			ret.append("<link rel=\"stylesheet\" href=\"/" + WebConstants.CONTEXT_PATH + "/moduleResources/*/styles/" + file
-			        + "\" type=\"text/css\"/>\n");
+		for (Resource resource : context.getCssToInclude()) {
+			ret.append("<link rel=\"stylesheet\" href=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\" type=\"text/css\"/>\n");
 		}
 		ret.append("</head>\n");
 		ret.append("<body>\n");
