@@ -46,14 +46,10 @@ public class ModuleResourceProvider implements ResourceProvider {
 			return file.exists() ? file : null;
     	}
     	else {
-			URL resource = (moduleClassLoader == null ? getClass().getClassLoader() : moduleClassLoader).getResource(resourcePrefix + path);
-			if (resource == null)
-				return null;
-			try {
-				return (File) resource.getContent();
-			} catch (IOException ex) {
-				throw new UiFrameworkException("Error fetching resource", ex);
-			}
+    		ModuleClassLoader mcl = moduleClassLoader != null ? moduleClassLoader : (ModuleClassLoader) getClass().getClassLoader();
+    		File folderForModule = ModuleClassLoader.getLibCacheFolderForModule(mcl.getModule());
+    		File resourceFile = new File(folderForModule, resourcePrefix + path);
+    		return resourceFile.exists() ? resourceFile : null;
     	}
 	}
 	
