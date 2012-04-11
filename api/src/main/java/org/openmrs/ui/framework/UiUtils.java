@@ -191,7 +191,7 @@ public abstract class UiUtils {
 	}
 	
 	public String actionLink(String controllerName, String action, Map<String, ?> args) {
-		StringBuilder sb = new StringBuilder("/" + contextPath() + "/action/" + controllerName + "/" + action + ".form?");
+		StringBuilder sb = new StringBuilder("/" + contextPath() + "/action/" + controllerName + "/" + action + ".action?");
 		String successUrl = null;
 		if (args != null) {
 			for (Map.Entry<String, ?> e : args.entrySet()) {
