@@ -109,9 +109,10 @@ public class UiFrameworkUtil {
 	/**
 	 * Determines the appropriate value to a method argument, for a given type and annotations
 	 * 
-	 * @param possibleArguments
-	 * @param class1
+	 * @param valuesByType
+	 * @param argClass
 	 * @param annotations
+	 * @param conversionService
 	 * @return
 	 */
 	public static Object determineArgumentValue(Map<Class<?>, Object> valuesByType, Class<?> argClass,
@@ -307,7 +308,7 @@ public class UiFrameworkUtil {
 		if (!accessor.isWritableProperty(beanPropertyName))
 			return false;
 		
-		accessor.setPropertyValue(beanPropertyName, request.getParameter(requestParamName));
+		accessor.setPropertyValue(beanPropertyName, request.getParameterValues(requestParamName));
 		return true;
 	}
 	
