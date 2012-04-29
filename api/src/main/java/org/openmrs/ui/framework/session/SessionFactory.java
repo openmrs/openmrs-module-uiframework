@@ -58,7 +58,16 @@ public class SessionFactory {
 	 * @return
 	 */
 	public Session getSession(HttpSession httpSession) {
-		Session ret = (Session) httpSession.getAttribute(WebConstants.SESSION_SESSION_ATTRIBUTE);
+		Session ret;
+		try {
+			ret = (Session) httpSession.getAttribute(WebConstants.SESSION_SESSION_ATTRIBUTE);
+		}
+		catch (ClassCastException ex) {
+			// this means that the module has been reloaded, and our old session is invalid
+			httpSession.removeAttribute(WebConstants.SESSION_SESSION_ATTRIBUTE);
+			ret = null;
+		}
+		
 		if (ret != null)
 			return ret;
 		else
