@@ -68,19 +68,41 @@ public class FragmentActionController {
 	
 	@RequestMapping("/action/{fragmentName}/{action}")
 	public String helper1x(@PathVariable("fragmentName") String fragmentName, @PathVariable("action") String action,
-	           	        @RequestParam(value = "returnFormat", required = false) String returnFormat,
-	        	        @RequestParam(value = "successUrl", required = false) String successUrl,
-	        	        @RequestParam(value = "failureUrl", required = false) String failureUrl, HttpServletRequest request,
-	        	        Model model, HttpServletResponse response) throws Exception {
+	                       @RequestParam(value = "returnFormat", required = false) String returnFormat,
+	                       @RequestParam(value = "successUrl", required = false) String successUrl,
+	                       @RequestParam(value = "failureUrl", required = false) String failureUrl,
+	                       HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
 		return handleAction(fragmentName, action, returnFormat, successUrl, failureUrl, request, model, response);
+	}
+	
+	@RequestMapping("/action/{directoryName}/{fragmentName}/{action}")
+	public String helper1x(@PathVariable("directoryName") String directoryName,
+	                       @PathVariable("fragmentName") String fragmentName,
+	                       @PathVariable("action") String action,
+	                       @RequestParam(value = "returnFormat", required = false) String returnFormat,
+	                       @RequestParam(value = "successUrl", required = false) String successUrl,
+	                       @RequestParam(value = "failureUrl", required = false) String failureUrl, HttpServletRequest request,
+	                       Model model, HttpServletResponse response) throws Exception {
+		return handleAction(directoryName + "/" + fragmentName, action, returnFormat, successUrl, failureUrl, request, model, response);
+	}
+
+	@RequestMapping("/{directoryName}/{fragmentName}/{action}.action")
+	public String handleAction(@PathVariable("directoryName") String directoryName,
+	                           @PathVariable("fragmentName") String fragmentName, @PathVariable("action") String action,
+	                           @RequestParam(value = "returnFormat", required = false) String returnFormat,
+	                           @RequestParam(value = "successUrl", required = false) String successUrl,
+	                           @RequestParam(value = "failureUrl", required = false) String failureUrl,
+	                           HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
+		return handleAction(directoryName + "/" + fragmentName, action, returnFormat, successUrl, failureUrl, request,
+		    model, response);
 	}
 	
 	@RequestMapping("/{fragmentName}/{action}.action")
 	public String handleAction(@PathVariable("fragmentName") String fragmentName, @PathVariable("action") String action,
-	        @RequestParam(value = "returnFormat", required = false) String returnFormat,
-	        @RequestParam(value = "successUrl", required = false) String successUrl,
-	        @RequestParam(value = "failureUrl", required = false) String failureUrl, HttpServletRequest request,
-	        Model model, HttpServletResponse response) throws Exception {
+	                           @RequestParam(value = "returnFormat", required = false) String returnFormat,
+	                           @RequestParam(value = "successUrl", required = false) String successUrl,
+	                           @RequestParam(value = "failureUrl", required = false) String failureUrl,
+	                           HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
 		
 		if (returnFormat == null) {
 			String acceptHeader = request.getHeader("Accept");
