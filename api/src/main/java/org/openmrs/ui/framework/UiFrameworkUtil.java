@@ -22,8 +22,10 @@ import org.openmrs.ui.framework.page.PageAction;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -57,10 +59,9 @@ public class UiFrameworkUtil {
 	        ConversionService conversionService) throws PageAction {
 		try {
 			Class<?>[] types = method.getParameterTypes();
-			Annotation[][] annotations = method.getParameterAnnotations();
 			Object[] params = new Object[types.length];
 			for (int i = 0; i < types.length; ++i) {
-				params[i] = determineArgumentValue(possibleArguments, types[i], annotations[i], conversionService);
+				params[i] = determineArgumentValue(possibleArguments, new MethodParameter(method, i), conversionService);
 			}
 			return method.invoke(target, params);
 		}
@@ -88,11 +89,10 @@ public class UiFrameworkUtil {
 	public static Object[] determineControllerMethodParameters(Method method, Map<Class<?>, Object> argumentsByType,
 	        ConversionService conversionService) throws RequestValidationException {
 		Class<?>[] types = method.getParameterTypes();
-		Annotation[][] annotations = method.getParameterAnnotations();
 		int numParams = types.length;
 		Object[] ret = new Object[numParams];
 		for (int i = 0; i < numParams; ++i) {
-			Object result = determineArgumentValue(argumentsByType, types[i], annotations[i], conversionService);
+			Object result = determineArgumentValue(argumentsByType, new MethodParameter(method, i), conversionService);
 			if (result instanceof BindingResult) {
 				ret[i] = ((BindingResult) result).getTarget();
 				if ((i + 1 < numParams) && Errors.class.isAssignableFrom(types[i + 1])) {
@@ -115,15 +115,16 @@ public class UiFrameworkUtil {
 	 * @param conversionService
 	 * @return
 	 */
-	public static Object determineArgumentValue(Map<Class<?>, Object> valuesByType, Class<?> argClass,
-	        Annotation[] annotations, ConversionService conversionService) {
+	public static Object determineArgumentValue(Map<Class<?>, Object> valuesByType, MethodParameter methodParam,
+	        ConversionService conversionService) {
 		
 		// first, try to handle by type
-		Object byType = valuesByType.get(argClass);
+		Object byType = valuesByType.get(methodParam.getParameterType());
 		if (byType != null)
 			return byType;
 		
 		// next try to handle by annotation
+		Annotation[] annotations = methodParam.getParameterAnnotations();
 		Object ret = null;
 		for (Annotation ann : annotations) {
 			if (ann instanceof FragmentParam) {
@@ -139,10 +140,10 @@ public class UiFrameworkUtil {
 				if (value == null && fp.required())
 					throw new UiFrameworkException(param + " is required");
 				try {
-					ret = conversionService.convert(value, argClass);
+					ret = conversionService.convert(value, TypeDescriptor.forObject(value), new TypeDescriptor(methodParam));
 				}
 				catch (ConversionException ex) {
-					throw new UiFrameworkException(param + " couldn't be converted to " + argClass, ex);
+					throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
 				}
 				
 			} else if (ann instanceof RequestParam) {
@@ -173,14 +174,14 @@ public class UiFrameworkUtil {
 				}
 				
 				try {
-					ret = conversionService.convert(ret, argClass);
+					ret = conversionService.convert(ret, TypeDescriptor.forObject(ret), new TypeDescriptor(methodParam));
 				}
 				catch (ConversionException ex) {
 					APIAuthenticationException authEx = findCause(ex, APIAuthenticationException.class);
 					if (authEx != null)
 						throw authEx;
 					else
-						throw new UiFrameworkException(param + " couldn't be converted to " + argClass, ex);
+						throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
 				}
 				
 			} else if (ann instanceof SpringBean) {
@@ -192,10 +193,10 @@ public class UiFrameworkUtil {
 				if ("".equals(sb.value())) {
 					// autowire by type
 					try {
-						ret = spring.getBean(argClass);
+						ret = spring.getBean(methodParam.getParameterType());
 					}
 					catch (NoSuchBeanDefinitionException ex) {
-						throw new UiFrameworkException("Tried to autowire a " + argClass
+						throw new UiFrameworkException("Tried to autowire a " + methodParam.getParameterType()
 						        + " by type, but did not find exactly one matching Spring bean", ex);
 					}
 				} else {
@@ -216,10 +217,10 @@ public class UiFrameworkUtil {
 			if (ann instanceof BindParams) {
 				if (ret == null) {
 					try {
-						ret = argClass.newInstance();
+						ret = methodParam.getParameterType().newInstance();
 					}
 					catch (Exception ex) {
-						throw new UiFrameworkException("Failed to instantiate a new " + argClass.getSimpleName()
+						throw new UiFrameworkException("Failed to instantiate a new " + methodParam.getParameterType().getSimpleName()
 						        + " for @BindParams annotated parameter", ex);
 					}
 				}

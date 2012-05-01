@@ -3,6 +3,7 @@ package org.openmrs.ui.framework;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -75,6 +76,26 @@ public class UiFrameworkUtilTest {
 	}
 	
 	@Test
+	public void test_determineControllerMethodParameters_requestParamList() throws Exception {
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.addParameter("numbers", new String[] { "1", "2", "3" });
+		
+		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
+		argumentsByType.put(HttpServletRequest.class, req);
+		
+		Method method = new MockController().getClass().getMethod("integerList", List.class);
+		
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+
+		@SuppressWarnings("unchecked")
+        List<Integer> list = (List<Integer>) temp[0];
+		Assert.assertNotNull(list);
+		Assert.assertEquals(3, list.size());
+		for (int i = 0; i < 3; ++i)
+			Assert.assertEquals(Integer.valueOf(i + 1), list.get(i));
+	}
+	
+	@Test
 	public void test_determineControllerMethodParameters_requestParamRequired() throws Exception {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 
@@ -113,6 +134,10 @@ public class UiFrameworkUtilTest {
 		}
 		
 		public void action(@BindParams("helper") MockDomainObject helper) {
+			// intentionally blank
+		}
+		
+		public void integerList(@RequestParam("numbers") List<Integer> numbers) {
 			// intentionally blank
 		}
 	}
