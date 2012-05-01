@@ -127,6 +127,19 @@ public class UiFrameworkUtilTest {
 		Assert.assertNull(temp[1]);
 	}
 	
+	@Test
+	public void test_determineControllerMethodParameters_requestParamDefault() throws Exception {
+		MockHttpServletRequest req = new MockHttpServletRequest();
+
+		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
+		argumentsByType.put(HttpServletRequest.class, req);
+		
+		Method method = new MockController().getClass().getMethod("withDefault", int.class);
+		
+		UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+		// this should succeed
+	}
+	
 	public class MockController {
 		
 		public void controller(@RequestParam("properties") String[] properties, @RequestParam(value="number", required=false) Integer number) {
@@ -138,6 +151,10 @@ public class UiFrameworkUtilTest {
 		}
 		
 		public void integerList(@RequestParam("numbers") List<Integer> numbers) {
+			// intentionally blank
+		}
+		
+		public void withDefault(@RequestParam(value="something", defaultValue="5") int number) {
 			// intentionally blank
 		}
 	}

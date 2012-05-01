@@ -164,10 +164,10 @@ public class UiFrameworkUtil {
 				
 				if (ret == null) {
 					String[] values = request.getParameterValues(param);
-					if (rp.required() && empty(values))
-						throw new MissingRequiredParameterException(param);
 					if (!ValueConstants.DEFAULT_NONE.equals(rp.defaultValue()) && empty(values)) {
 						ret = rp.defaultValue();
+					} else if (rp.required() && empty(values)) {
+						throw new MissingRequiredParameterException(param);
 					} else {
 						ret = values;
 					}
