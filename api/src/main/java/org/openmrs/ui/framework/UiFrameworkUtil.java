@@ -162,13 +162,14 @@ public class UiFrameworkUtil {
 				}
 				
 				if (ret == null) {
-					String value = request.getParameter(param);
-					if (StringUtils.isEmpty(value) && !ValueConstants.DEFAULT_NONE.equals(rp.defaultValue()))
-						value = rp.defaultValue();
-					if (StringUtils.isEmpty(value) && rp.required())
+					String[] values = request.getParameterValues(param);
+					if (rp.required() && empty(values))
 						throw new MissingRequiredParameterException(param);
-					
-					ret = value;
+					if (!ValueConstants.DEFAULT_NONE.equals(rp.defaultValue()) && empty(values)) {
+						ret = rp.defaultValue();
+					} else {
+						ret = values;
+					}
 				}
 				
 				try {
@@ -292,6 +293,21 @@ public class UiFrameworkUtil {
 		return ret;
 	}
 	
+	/**
+     * @param values
+     * @return true if the array is null, empty, or only contains empty strings
+     */
+    private static boolean empty(String[] values) {
+	    if (values == null || values.length == 0)
+	    	return true;
+	    for (String s : values) {
+	    	if (StringUtils.isNotEmpty(s)) {
+	    		return false;
+	    	}
+	    }
+	    return true;
+    }
+
 	private static boolean bindFileRequestParameter(BeanPropertyBindingResult bindingResult,
 	        MultipartHttpServletRequest request, String requestParamName, String beanPropertyName) {
 		PropertyAccessor accessor = bindingResult.getPropertyAccessor();
