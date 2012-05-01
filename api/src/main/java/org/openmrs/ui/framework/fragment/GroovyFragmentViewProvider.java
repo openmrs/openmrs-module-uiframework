@@ -25,7 +25,7 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 	private File developmentFolder;
 	
 	// internal data
-	TemplateEngine engine = new SimpleTemplateEngine();
+	TemplateEngine engine = new SimpleTemplateEngine(getClass().getClassLoader());
 	
 	// cache these
 	Map<String, GroovyFragmentView> cache = new HashMap<String, GroovyFragmentView>();
