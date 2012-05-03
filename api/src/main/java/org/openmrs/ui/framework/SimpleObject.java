@@ -120,7 +120,7 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 			for (String property : propertiesByLevel.get(currentLevel)) {
 				Object propertyValue = accessor.getFieldValue(property);
 				String nextLevel = "".equals(currentLevel) ? property : currentLevel + "." + property;
-				if (propertiesByLevel.containsKey(nextLevel)) {
+				if (propertiesByLevel.containsKey(nextLevel) && propertyValue != null) {
 					// deep property: recurse into this
 					ret.put(property, fromObjectHelper(propertyValue, ui, nextLevel, propertiesByLevel));
 				} else {
