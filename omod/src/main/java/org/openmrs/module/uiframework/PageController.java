@@ -13,6 +13,9 @@
  */
 package org.openmrs.module.uiframework;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -93,9 +96,26 @@ public class PageController {
 				// most likely this is an uncaught exception due to the user not being logged in
 				// TODO consider whether this is a good idea
 				throw new APIAuthenticationException(ex);
-			} else {
-				throw ex;
+			}
+			else {
+
+				// The following should go in an @ExceptionHandler. I tried this, and it isn't getting invoked for some reason.
+				// And it's not worth debugging that.
+				
+				StringWriter sw = new StringWriter();
+				ex.printStackTrace(new PrintWriter(sw));
+				model.addAttribute("fullStacktrace", sw.toString());
+				
+				Throwable t = ex;
+				while (t.getCause() != null && !t.equals(t.getCause()))
+					t = t.getCause();
+				sw = new StringWriter();
+				t.printStackTrace(new PrintWriter(sw));
+				model.addAttribute("rootStacktrace", sw.toString());
+				
+				return "/module/uiframework/uiError";
 			}
 		}
 	}
+	
 }
