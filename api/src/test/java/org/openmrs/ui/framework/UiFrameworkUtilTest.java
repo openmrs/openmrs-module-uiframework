@@ -52,6 +52,27 @@ public class UiFrameworkUtilTest {
 	}
 	
 	@Test
+	public void test_determineControllerMethodParameters_bindMap() throws Exception {
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.addParameter("helper.map['foo']", "123");
+		req.addParameter("helper.map[bar]", "456");
+		
+		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
+		argumentsByType.put(HttpServletRequest.class, req);
+		
+		Method method = new MockController().getClass().getMethod("action", MockDomainObject.class);
+		
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+		MockDomainObject bound = (MockDomainObject) temp[0];
+		
+		Assert.assertNotNull(bound);
+		Assert.assertNotNull(bound.getMap());
+		Assert.assertEquals(2, bound.getMap().size());
+		Assert.assertEquals(Integer.valueOf(123), bound.getMap().get("foo"));
+		Assert.assertEquals(Integer.valueOf(456), bound.getMap().get("bar"));
+	}
+	
+	@Test
 	public void test_determineControllerMethodParameters_requestParamCollection() throws Exception {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.addParameter("properties", new String[] { "name", "description" });

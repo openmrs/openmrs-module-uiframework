@@ -14,11 +14,13 @@
 package org.openmrs.ui.framework;
 
 import java.util.List;
+import java.util.Map;
 
 public class MockDomainObject {
 
 	private String name;
 	private List<Integer> numbers;
+	private Map<String, Integer> map;
 	
 	public MockDomainObject() { }
 	
@@ -48,6 +50,20 @@ public class MockDomainObject {
      */
     public void setNumbers(List<Integer> numbers) {
     	this.numbers = numbers;
+    }
+
+    /**
+     * @return the map
+     */
+    public Map<String, Integer> getMap() {
+    	return map;
+    }
+	
+    /**
+     * @param map the map to set
+     */
+    public void setMap(Map<String, Integer> map) {
+    	this.map = map;
     }
 		
 }
