@@ -16,6 +16,6 @@ import org.springframework.validation.Validator;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Validate {
 	
-	Class<? extends Validator> value();
+	Class<? extends Validator> value() default Validator.class;
 	
 }

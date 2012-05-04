@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,8 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.annotation.Validate;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.page.PageAction;
+import org.openmrs.util.HandlerUtil;
+import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -275,16 +278,18 @@ public class UiFrameworkUtil {
 					} else {
 						result = new BeanPropertyBindingResult(ret, "");
 					}
-					if (val.value() != null) {
+					
+					// try all registered validators (that are instances of the annotation's value)
+					List<? extends Validator> validators = HandlerUtil.getHandlersForType(val.value(), result.getTarget().getClass());
+					for (Validator validator : validators) {
 						try {
-							((Validator) val.value().newInstance()).validate(result.getTarget(), result);
+							validator.validate(result.getTarget(), result);
 						}
 						catch (Exception ex) {
-							throw new UiFrameworkException("Error validating ", ex);
+								throw new UiFrameworkException("Error validating ", ex);
 						}
-					} else {
-						log.debug("No validation performed");
 					}
+					
 					if (result.hasErrors())
 						throw new BindParamsValidationException(bindingPrefix, result);
 				}
