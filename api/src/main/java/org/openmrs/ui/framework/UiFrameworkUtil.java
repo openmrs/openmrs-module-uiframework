@@ -279,15 +279,13 @@ public class UiFrameworkUtil {
 						result = new BeanPropertyBindingResult(ret, "");
 					}
 					
-					// try all registered validators (that are instances of the annotation's value)
-					List<? extends Validator> validators = HandlerUtil.getHandlersForType(val.value(), result.getTarget().getClass());
-					for (Validator validator : validators) {
-						try {
-							validator.validate(result.getTarget(), result);
-						}
-						catch (Exception ex) {
-								throw new UiFrameworkException("Error validating ", ex);
-						}
+					// use the preferred validator that is an instance of the @Validate annotation's value
+					Validator validator = HandlerUtil.getPreferredHandler(val.value(), result.getTarget().getClass());
+					try {
+						validator.validate(result.getTarget(), result);
+					}
+					catch (Exception ex) {
+						throw new UiFrameworkException("Validator threw exception ", ex);
 					}
 					
 					if (result.hasErrors())
