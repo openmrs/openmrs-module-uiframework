@@ -232,7 +232,7 @@ public class UiFrameworkUtil {
 			
 			Method method = null;
 			for (Method candidate : controller.getClass().getMethods()) {
-				if (candidate.getName().equals(mp.value()) && candidate.getReturnType().equals(methodParam.getParameterType())) {
+				if (candidate.getName().equals(mp.value()) && methodParam.getParameterType().isAssignableFrom(candidate.getReturnType())) {
 					method = candidate;
 					break;
 				}

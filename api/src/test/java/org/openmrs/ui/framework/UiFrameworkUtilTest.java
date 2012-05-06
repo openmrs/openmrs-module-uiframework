@@ -181,6 +181,24 @@ public class UiFrameworkUtilTest {
 		Assert.assertEquals("Testing", bound.getName());
 	}
 	
+	@Test
+	public void test_determineControllerMethodParameters_methodParamSubclass() throws Exception {
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.addParameter("name", "Testing");
+		
+		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
+		argumentsByType.put(HttpServletRequest.class, req);
+		
+		Method method = MockController.class.getMethod("fromMethodSubclass", MockDomainObject.class);
+		
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		MockDomainObject bound = (MockDomainObject) temp[0];
+		
+		Assert.assertNotNull(bound);
+		Assert.assertEquals("Testing", bound.getName());
+		Assert.assertEquals(MockDomainSubclass.class, bound.getClass());
+	}
+	
 	public class MockController {
 		
 		public void controller(@RequestParam("properties") String[] properties, @RequestParam(value="number", required=false) Integer number) {
@@ -203,11 +221,22 @@ public class UiFrameworkUtilTest {
 			// intentionally blank
 		}
 		
+		public void fromMethodSubclass(@MethodParam("createSubclass") MockDomainObject obj) {
+			// intentionally blank
+		}
+		
 		public MockDomainObject initializeMethodParameter(@RequestParam("name") String name) {
 			MockDomainObject ret = new MockDomainObject();
 			ret.setName(name);
 			return ret;
 		}
+		
+		public MockDomainSubclass createSubclass(@RequestParam("name") String name) {
+			MockDomainSubclass ret = new MockDomainSubclass();
+			ret.setName(name);
+			return ret;
+		}
+		
 	}
 	
 }
