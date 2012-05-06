@@ -1,11 +1,9 @@
 package org.openmrs.ui.framework;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,12 +14,12 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
+import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.annotation.Validate;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.util.HandlerUtil;
-import org.openmrs.validator.ValidateUtil;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -64,7 +62,7 @@ public class UiFrameworkUtil {
 			Class<?>[] types = method.getParameterTypes();
 			Object[] params = new Object[types.length];
 			for (int i = 0; i < types.length; ++i) {
-				params[i] = determineArgumentValue(possibleArguments, new MethodParameter(method, i), conversionService);
+				params[i] = determineArgumentValue(target, possibleArguments, new MethodParameter(method, i), conversionService);
 			}
 			return method.invoke(target, params);
 		}
@@ -84,18 +82,19 @@ public class UiFrameworkUtil {
 	/**
 	 * Determines what parameters to use when calling the given controller or action method
 	 * 
+	 * @param controller if any @MethodParam annotations are present, the method will be called on this
 	 * @param method the controller or action method whose parameters we need to determine
 	 * @param argumentsByType parameters to look up by type
 	 * @param conversionService
 	 * @return an array of the right number of objects to do controllerMethod.invoke
 	 */
-	public static Object[] determineControllerMethodParameters(Method method, Map<Class<?>, Object> argumentsByType,
+	public static Object[] determineControllerMethodParameters(Object controller, Method method, Map<Class<?>, Object> argumentsByType,
 	        ConversionService conversionService) throws RequestValidationException {
 		Class<?>[] types = method.getParameterTypes();
 		int numParams = types.length;
 		Object[] ret = new Object[numParams];
 		for (int i = 0; i < numParams; ++i) {
-			Object result = determineArgumentValue(argumentsByType, new MethodParameter(method, i), conversionService);
+			Object result = determineArgumentValue(controller, argumentsByType, new MethodParameter(method, i), conversionService);
 			if (result instanceof BindingResult) {
 				ret[i] = ((BindingResult) result).getTarget();
 				if ((i + 1 < numParams) && Errors.class.isAssignableFrom(types[i + 1])) {
@@ -112,13 +111,13 @@ public class UiFrameworkUtil {
 	/**
 	 * Determines the appropriate value to a method argument, for a given type and annotations
 	 * 
+	 * @param controller if any @MethodParam annotations are present, the method will be called on this object
 	 * @param valuesByType
-	 * @param argClass
-	 * @param annotations
+	 * @param methodParam
 	 * @param conversionService
 	 * @return
 	 */
-	public static Object determineArgumentValue(Map<Class<?>, Object> valuesByType, MethodParameter methodParam,
+	public static Object determineArgumentValue(Object controller, Map<Class<?>, Object> valuesByType, MethodParameter methodParam,
 	        ConversionService conversionService) {
 		
 		// first, try to handle by type
@@ -126,172 +125,204 @@ public class UiFrameworkUtil {
 		if (byType != null)
 			return byType;
 		
-		// next try to handle by annotation
-		Annotation[] annotations = methodParam.getParameterAnnotations();
+		// next try to handle by annotations, in their appropriate order
+		// * top priority are @FragmentParam, @RequestParam, and @SpringBean (which should be mutually exclusive)
+		// * next comes @MethodParam, assuming neither of the above annotations set a value
+		// * next comes @BindParam, which can be used alone or in conjunction with any of the above
+		// * next comes @Validate, which can be used with any of the above (but not alone)
+		
 		Object ret = null;
-		for (Annotation ann : annotations) {
-			if (ann instanceof FragmentParam) {
-				FragmentParam fp = (FragmentParam) ann;
-				String param = fp.value();
-				FragmentConfiguration fragConfig = (FragmentConfiguration) valuesByType.get(FragmentConfiguration.class);
-				if (fragConfig == null)
-					throw new IllegalArgumentException(
-					        "Tried to use a @FragmentParam annotation in a context that has no FragmentConfiguration");
-				Object value = fragConfig.getAttribute(param);
-				if (value == null && !ValueConstants.DEFAULT_NONE.equals(fp.defaultValue()))
-					value = fp.defaultValue();
-				if (value == null && fp.required())
-					throw new UiFrameworkException(param + " is required");
-				try {
-					ret = conversionService.convert(value, TypeDescriptor.forObject(value), new TypeDescriptor(methodParam));
+
+		// if @FragmentParam is specified, get the parameter value from the FragmentConfiguration
+		if (ret == null && methodParam.getParameterAnnotation(FragmentParam.class) != null) {
+
+			FragmentConfiguration fragConfig = (FragmentConfiguration) valuesByType.get(FragmentConfiguration.class);
+			if (fragConfig == null)
+				throw new IllegalArgumentException("Tried to use a @FragmentParam annotation in a context that has no FragmentConfiguration");
+
+			FragmentParam fp = methodParam.getParameterAnnotation(FragmentParam.class);
+			String param = fp.value();
+			Object value = fragConfig.getAttribute(param);
+			if (value == null && !ValueConstants.DEFAULT_NONE.equals(fp.defaultValue()))
+				value = fp.defaultValue();
+			if (value == null && fp.required())
+				throw new UiFrameworkException(param + " is required");
+			try {
+				ret = conversionService.convert(value, TypeDescriptor.forObject(value), new TypeDescriptor(methodParam));
+			}
+			catch (ConversionException ex) {
+				throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
+			}
+		}
+		
+		// if @RequestParam is specified, get the parameter value from the HttpServletRequest
+		if (ret == null && methodParam.getParameterAnnotation(RequestParam.class) != null) {
+			HttpServletRequest request = (HttpServletRequest) valuesByType.get(HttpServletRequest.class);
+			if (request == null)
+				throw new UiFrameworkException(
+				        "Cannot use @RequestParam when we don't have an underlying HttpServletRequest");
+			
+			RequestParam rp = methodParam.getParameterAnnotation(RequestParam.class);
+			String param = rp.value();
+			
+			if (request instanceof MultipartHttpServletRequest) {
+				MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+				MultipartFile file = multipartRequest.getFile(param);
+				if (!file.isEmpty()) {
+					ret = file;
 				}
-				catch (ConversionException ex) {
-					throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
-				}
-				
-			} else if (ann instanceof RequestParam) {
-				HttpServletRequest request = (HttpServletRequest) valuesByType.get(HttpServletRequest.class);
-				if (request == null)
-					throw new UiFrameworkException(
-					        "Cannot use @RequestParam when we don't have an underlying HttpServletRequest");
-				RequestParam rp = (RequestParam) ann;
-				String param = rp.value();
-				
-				if (request instanceof MultipartHttpServletRequest) {
-					MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-					MultipartFile file = multipartRequest.getFile(param);
-					if (!file.isEmpty()) {
-						ret = file;
-					}
-				}
-				
-				if (ret == null) {
-					String[] values = request.getParameterValues(param);
-					if (!ValueConstants.DEFAULT_NONE.equals(rp.defaultValue()) && empty(values)) {
-						ret = rp.defaultValue();
-					} else if (rp.required() && empty(values)) {
-						throw new MissingRequiredParameterException(param);
-					} else {
-						ret = values;
-					}
-				}
-				
-				try {
-					ret = conversionService.convert(ret, TypeDescriptor.forObject(ret), new TypeDescriptor(methodParam));
-				}
-				catch (ConversionException ex) {
-					APIAuthenticationException authEx = findCause(ex, APIAuthenticationException.class);
-					if (authEx != null)
-						throw authEx;
-					else
-						throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
-				}
-				
-			} else if (ann instanceof SpringBean) {
-				SpringBean sb = (SpringBean) ann;
-				ApplicationContext spring = (ApplicationContext) valuesByType.get(ApplicationContext.class);
-				if (spring == null)
-					throw new UiFrameworkException(
-					        "Cannot use @SpringBean when we don't have an underlying ApplicationContext");
-				if ("".equals(sb.value())) {
-					// autowire by type
-					try {
-						ret = spring.getBean(methodParam.getParameterType());
-					}
-					catch (NoSuchBeanDefinitionException ex) {
-						throw new UiFrameworkException("Tried to autowire a " + methodParam.getParameterType()
-						        + " by type, but did not find exactly one matching Spring bean", ex);
-					}
+			}
+			
+			if (ret == null) {
+				String[] values = request.getParameterValues(param);
+				if (!ValueConstants.DEFAULT_NONE.equals(rp.defaultValue()) && empty(values)) {
+					ret = rp.defaultValue();
+				} else if (rp.required() && empty(values)) {
+					throw new MissingRequiredParameterException(param);
 				} else {
-					// autowire by id
-					try {
-						ret = spring.getBean(sb.value());
-					}
-					catch (NoSuchBeanDefinitionException ex) {
-						throw new UiFrameworkException("Could not find Spring bean with id " + sb.value());
-					}
+					ret = values;
 				}
+			}
+			
+			try {
+				ret = conversionService.convert(ret, TypeDescriptor.forObject(ret), new TypeDescriptor(methodParam));
+			}
+			catch (ConversionException ex) {
+				APIAuthenticationException authEx = findCause(ex, APIAuthenticationException.class);
+				if (authEx != null)
+					throw authEx;
+				else
+					throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
 			}
 		}
 		
-		// see if there are any @BindParams annotations
+		// if @SpringBean is specified, get the parameter value from Spring's ApplicationContext
+		if (ret == null && methodParam.getParameterAnnotation(SpringBean.class) != null) {
+			ApplicationContext spring = (ApplicationContext) valuesByType.get(ApplicationContext.class);
+			if (spring == null)
+				throw new UiFrameworkException(
+					"Cannot use @SpringBean when we don't have an underlying ApplicationContext");
+			
+			SpringBean sb = methodParam.getParameterAnnotation(SpringBean.class);
+			if ("".equals(sb.value())) {
+				// autowire by type
+				try {
+					ret = spring.getBean(methodParam.getParameterType());
+				}
+				catch (NoSuchBeanDefinitionException ex) {
+					throw new UiFrameworkException("Tried to autowire a " + methodParam.getParameterType()
+						+ " by type, but did not find exactly one matching Spring bean", ex);
+				}
+			} else {
+				// autowire by id
+				try {
+					ret = spring.getBean(sb.value());
+				}
+				catch (NoSuchBeanDefinitionException ex) {
+					throw new UiFrameworkException("Could not find Spring bean with id " + sb.value());
+				}
+			}
+		}
+
+		// if no value has been set yet and @MethodParam is specified, call that to get the parameter value
+		if (ret == null && methodParam.getParameterAnnotation(MethodParam.class) != null) {
+			if (controller == null)
+				throw new UiFrameworkException("Cannot use @MethodParam if we do not have a controller to call the method on");
+			MethodParam mp = methodParam.getParameterAnnotation(MethodParam.class);
+			
+			Method method = null;
+			for (Method candidate : controller.getClass().getMethods()) {
+				if (candidate.getName().equals(mp.value()) && candidate.getReturnType().equals(methodParam.getParameterType())) {
+					method = candidate;
+					break;
+				}
+			}
+			if (method == null) {
+				throw new UiFrameworkException("Cannot find a method with name " + mp.value() + " and return type " + methodParam.getParameterType() + " as specified by @MethodParam");
+			}
+			
+			try {
+				ret = invokeMethodWithArguments(controller, method, valuesByType, conversionService);
+			} catch (Exception ex) {
+				throw new UiFrameworkException("Error evaluating " + mp.value() + " method specified by @MethodParam", ex);
+			}
+		}
+		
+		// If @BindParams is present, bind all relevent request parameters
 		String bindingPrefix = null;
-		for (Annotation ann : annotations) {
-			if (ann instanceof BindParams) {
-				if (ret == null) {
-					try {
-						ret = methodParam.getParameterType().newInstance();
-					}
-					catch (Exception ex) {
-						throw new UiFrameworkException("Failed to instantiate a new " + methodParam.getParameterType().getSimpleName()
-						        + " for @BindParams annotated parameter", ex);
-					}
+		if (methodParam.getParameterAnnotation(BindParams.class) != null) {
+			if (ret == null) {
+				try {
+					ret = methodParam.getParameterType().newInstance();
 				}
-				BindParams bp = (BindParams) ann;
-				BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(ret, bp.value());
-				bindingResult.getPropertyAccessor().setConversionService(conversionService);
-				if (StringUtils.isNotEmpty(bp.value())) {
-					bindingPrefix = bp.value();
+				catch (Exception ex) {
+					throw new UiFrameworkException("Failed to instantiate a new " + methodParam.getParameterType().getSimpleName()
+					        + " for @BindParams annotated parameter", ex);
 				}
-				
-				HttpServletRequest request = (HttpServletRequest) valuesByType.get(HttpServletRequest.class);
-				if (request == null)
-					throw new UiFrameworkException(
-					        "Cannot use @RequestParam when we don't have an underlying HttpServletRequest");
-				
-				if (request instanceof MultipartHttpServletRequest) {
-					MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-					for (Iterator<String> i = multipartRequest.getFileNames(); i.hasNext();) {
-						String paramName = i.next();
-						if (bindingPrefix == null) {
-							bindFileRequestParameter(bindingResult, multipartRequest, paramName, paramName);
-						} else if (paramName.startsWith(bindingPrefix + ".")) {
-							bindFileRequestParameter(bindingResult, multipartRequest, paramName, paramName
-							        .substring(bindingPrefix.length() + 1));
-						}
-					}
-				}
-				
-				for (@SuppressWarnings("unchecked")
-				Enumeration<String> i = request.getParameterNames(); i.hasMoreElements();) {
-					String paramName = i.nextElement();
-					if (bindingPrefix == null) {
-						bindRequestParameter(bindingResult, request, paramName, paramName);
-					} else if (paramName.startsWith(bindingPrefix + ".")) {
-						bindRequestParameter(bindingResult, request, paramName, paramName
-						        .substring(bindingPrefix.length() + 1));
-					}
-				}
-				
-				ret = bindingResult;
 			}
+
+			BindParams bp = methodParam.getParameterAnnotation(BindParams.class);
+			
+			BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(ret, bp.value());
+			bindingResult.getPropertyAccessor().setConversionService(conversionService);
+			if (StringUtils.isNotEmpty(bp.value())) {
+				bindingPrefix = bp.value();
+			}
+			
+			HttpServletRequest request = (HttpServletRequest) valuesByType.get(HttpServletRequest.class);
+			if (request == null)
+				throw new UiFrameworkException(
+					"Cannot use @RequestParam when we don't have an underlying HttpServletRequest");
+			
+			if (request instanceof MultipartHttpServletRequest) {
+				MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+				for (Iterator<String> i = multipartRequest.getFileNames(); i.hasNext();) {
+					String paramName = i.next();
+					if (bindingPrefix == null) {
+						bindFileRequestParameter(bindingResult, multipartRequest, paramName, paramName);
+					} else if (paramName.startsWith(bindingPrefix + ".")) {
+						bindFileRequestParameter(bindingResult, multipartRequest, paramName, paramName
+							.substring(bindingPrefix.length() + 1));
+					}
+				}
+			}
+			
+			for (@SuppressWarnings("unchecked")
+			Enumeration<String> i = request.getParameterNames(); i.hasMoreElements();) {
+				String paramName = i.nextElement();
+				if (bindingPrefix == null) {
+					bindRequestParameter(bindingResult, request, paramName, paramName);
+				} else if (paramName.startsWith(bindingPrefix + ".")) {
+					bindRequestParameter(bindingResult, request, paramName, paramName
+						.substring(bindingPrefix.length() + 1));
+				}
+			}
+			
+			ret = bindingResult;
 		}
 		
-		if (ret != null) {
-			// see if there are any @Validate annotations
-			for (Annotation ann : annotations) {
-				if (ann instanceof Validate) {
-					Validate val = (Validate) ann;
-					BindingResult result;
-					if (ret instanceof BindingResult) {
-						result = (BindingResult) ret;
-					} else {
-						result = new BeanPropertyBindingResult(ret, "");
-					}
-					
-					// use the preferred validator that is an instance of the @Validate annotation's value
-					Validator validator = HandlerUtil.getPreferredHandler(val.value(), result.getTarget().getClass());
-					try {
-						validator.validate(result.getTarget(), result);
-					}
-					catch (Exception ex) {
-						throw new UiFrameworkException("Validator threw exception ", ex);
-					}
-					
-					if (result.hasErrors())
-						throw new BindParamsValidationException(bindingPrefix, result);
-				}
+		// apply @Validate annotation if present
+		if (ret != null && methodParam.getParameterAnnotation(Validate.class) != null) {
+			Validate val = methodParam.getParameterAnnotation(Validate.class);
+			
+			BindingResult result;
+			if (ret instanceof BindingResult) {
+				result = (BindingResult) ret;
+			} else {
+				result = new BeanPropertyBindingResult(ret, "");
 			}
+			
+			// use the preferred validator that is an instance of the @Validate annotation's value
+			Validator validator = HandlerUtil.getPreferredHandler(val.value(), result.getTarget().getClass());
+			try {
+				validator.validate(result.getTarget(), result);
+			}
+			catch (Exception ex) {
+				throw new UiFrameworkException("Validator threw exception ", ex);
+			}
+			
+			if (result.hasErrors())
+				throw new BindParamsValidationException(bindingPrefix, result);
 		}
 		
 		return ret;

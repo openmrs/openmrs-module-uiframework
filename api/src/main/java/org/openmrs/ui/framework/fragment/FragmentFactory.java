@@ -397,7 +397,7 @@ public class FragmentFactory {
 		possibleArguments.put(ServletContext.class, servletContext);
 		Object[] params = null;
 		try {
-			params = UiFrameworkUtil.determineControllerMethodParameters(method, possibleArguments, conversionService);
+			params = UiFrameworkUtil.determineControllerMethodParameters(controller, method, possibleArguments, conversionService);
 		}
 		catch (RequestValidationException ex) {
 			for (String errorCode : ex.getGlobalErrorCodes())

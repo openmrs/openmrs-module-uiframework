@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.ui.framework.annotation.BindParams;
+import org.openmrs.ui.framework.annotation.MethodParam;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -20,12 +21,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UiFrameworkUtilTest {
 	
 	ConversionService conversionService;
+	MockController controller;
 	
     @Before
 	public void beforeEachTest() throws Exception {
 		ConversionServiceFactoryBean bean = new ConversionServiceFactoryBean();
 		bean.afterPropertiesSet();
 		conversionService = bean.getObject();
+		controller = new MockController();
 	}
 	
 	@Test
@@ -37,9 +40,9 @@ public class UiFrameworkUtilTest {
 		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
 		argumentsByType.put(HttpServletRequest.class, req);
 		
-		Method method = new MockController().getClass().getMethod("action", MockDomainObject.class);
+		Method method = MockController.class.getMethod("action", MockDomainObject.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
 		MockDomainObject bound = (MockDomainObject) temp[0];
 		
 		Assert.assertNotNull(bound);
@@ -60,9 +63,9 @@ public class UiFrameworkUtilTest {
 		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
 		argumentsByType.put(HttpServletRequest.class, req);
 		
-		Method method = new MockController().getClass().getMethod("action", MockDomainObject.class);
+		Method method = MockController.class.getMethod("action", MockDomainObject.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
 		MockDomainObject bound = (MockDomainObject) temp[0];
 		
 		Assert.assertNotNull(bound);
@@ -81,9 +84,9 @@ public class UiFrameworkUtilTest {
 		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
 		argumentsByType.put(HttpServletRequest.class, req);
 		
-		Method method = new MockController().getClass().getMethod("controller", String[].class, Integer.class);
+		Method method = MockController.class.getMethod("controller", String[].class, Integer.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
 
 		String[] props = (String[]) temp[0];
 		Assert.assertNotNull(props);
@@ -104,9 +107,9 @@ public class UiFrameworkUtilTest {
 		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
 		argumentsByType.put(HttpServletRequest.class, req);
 		
-		Method method = new MockController().getClass().getMethod("integerList", List.class);
+		Method method = MockController.class.getMethod("integerList", List.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
 
 		@SuppressWarnings("unchecked")
         List<Integer> list = (List<Integer>) temp[0];
@@ -123,10 +126,10 @@ public class UiFrameworkUtilTest {
 		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
 		argumentsByType.put(HttpServletRequest.class, req);
 		
-		Method method = new MockController().getClass().getMethod("controller", String[].class, Integer.class);
+		Method method = MockController.class.getMethod("controller", String[].class, Integer.class);
 		
 		try {
-			UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+			UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
 			Assert.fail("Should have caught that a required parameter was missing");
 		} catch (MissingRequiredParameterException ex) {
 			// pass
@@ -134,17 +137,17 @@ public class UiFrameworkUtilTest {
 		
 		req.setParameter("properties", "name");
 		try {
-			UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+			UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
 		} catch (MissingRequiredParameterException ex) {
 			Assert.fail("Should not have required the second parameter");
 		}
 		
 		req.setParameter("number", "");
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
 		Assert.assertNull(temp[1]);
 		
 		req.setParameter("number", new String[] { "", "" });
-		temp = UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+		temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
 		Assert.assertNull(temp[1]);
 	}
 	
@@ -155,10 +158,27 @@ public class UiFrameworkUtilTest {
 		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
 		argumentsByType.put(HttpServletRequest.class, req);
 		
-		Method method = new MockController().getClass().getMethod("withDefault", int.class);
+		Method method = MockController.class.getMethod("withDefault", int.class);
 		
-		UiFrameworkUtil.determineControllerMethodParameters(method, argumentsByType, conversionService);
+		UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
 		// this should succeed
+	}
+	
+	@Test
+	public void test_determineControllerMethodParameters_methodParam() throws Exception {
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.addParameter("name", "Testing");
+		
+		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
+		argumentsByType.put(HttpServletRequest.class, req);
+		
+		Method method = MockController.class.getMethod("fromMethod", MockDomainObject.class);
+		
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		MockDomainObject bound = (MockDomainObject) temp[0];
+		
+		Assert.assertNotNull(bound);
+		Assert.assertEquals("Testing", bound.getName());
 	}
 	
 	public class MockController {
@@ -177,6 +197,16 @@ public class UiFrameworkUtilTest {
 		
 		public void withDefault(@RequestParam(value="something", defaultValue="5") int number) {
 			// intentionally blank
+		}
+		
+		public void fromMethod(@MethodParam("initializeMethodParameter") MockDomainObject obj) {
+			// intentionally blank
+		}
+		
+		public MockDomainObject initializeMethodParameter(@RequestParam("name") String name) {
+			MockDomainObject ret = new MockDomainObject();
+			ret.setName(name);
+			return ret;
 		}
 	}
 	
