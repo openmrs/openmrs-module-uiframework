@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+import org.openmrs.ui.framework.WebConstants;
 
 public class GroovyPageView implements PageView {
 	
@@ -27,6 +28,8 @@ public class GroovyPageView implements PageView {
 		Map<String, Object> model = context.getModel();
 		model.put("ui", new PageUiUtils(context));
 		model.put("context", new Context()); // used for its static methods
+		model.put("contextPath", WebConstants.CONTEXT_PATH);
+		model.put("session", context.getRequest().getSession());
 		model.put("param", context.getRequest().getRequest().getParameterMap());
 		Writable boundTemplate = model == null ? template.make() : template.make(model);
 		if (log.isTraceEnabled())
