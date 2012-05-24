@@ -78,7 +78,10 @@ public class FailureResult implements FragmentActionResult {
 					forField = new ArrayList<String>();
 					ret.put(err.getField(), forField);
 				}
-				forField.add(Context.getMessageSourceService().getMessage(err, Context.getLocale()));
+				String errMsg = Context.getMessageSourceService().getMessage(err, Context.getLocale());
+				if (errMsg == null)
+					errMsg = err.getCode();
+				forField.add(errMsg);
 			}
 		}
 		return ret;
