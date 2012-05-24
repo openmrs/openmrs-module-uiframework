@@ -16,6 +16,9 @@ import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.resource.Resource;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 
 /**
  * Utility methods that should be available in view technologies for pages and fragments 
@@ -288,6 +291,22 @@ public abstract class UiUtils {
 		catch (Exception ex) {
 			throw new UiFrameworkException("Error generating JSON", ex);
 		}
+	}
+	
+	/**
+	 * Validates target with validator. If any errors are found, this throws an exception
+	 * which can be caught by the UI Framework  
+	 * 
+	 * @param target
+	 * @param validator
+	 * @param bindingPrefix
+	 * @throws BindParamsValidationException
+	 */
+	public void validate(Object target, Validator validator, String bindingPrefix) {
+		BindingResult result = new BeanPropertyBindingResult(target, "");
+		validator.validate(target, result);
+		if (result.hasErrors())
+			throw new BindParamsValidationException(bindingPrefix, result);
 	}
 	
 }

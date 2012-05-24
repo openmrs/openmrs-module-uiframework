@@ -400,6 +400,7 @@ public class FragmentFactory {
 			params = UiFrameworkUtil.determineControllerMethodParameters(controller, method, possibleArguments, conversionService);
 		}
 		catch (RequestValidationException ex) {
+			// this means we caught something via a @Validate annotation
 			for (String errorCode : ex.getGlobalErrorCodes())
 				request.getErrors().reject(errorCode);
 			for (Map.Entry<String, List<String>> e : ex.getFieldErrorCodes().entrySet()) {
@@ -407,7 +408,7 @@ public class FragmentFactory {
 					request.getErrors().rejectValue(e.getKey(), errorCode);
 			}
 		}
-		
+
 		if (request.hasErrors())
 			return new FailureResult(request.getErrors());
 		
@@ -415,6 +416,16 @@ public class FragmentFactory {
 		Object result;
 		try {
 			result = method.invoke(controller, params);
+		}
+		catch (RequestValidationException ex) {
+			// this means the action itself threw the exception (it wasn't caught by @Validate) 
+			for (String errorCode : ex.getGlobalErrorCodes())
+				request.getErrors().reject(errorCode);
+			for (Map.Entry<String, List<String>> e : ex.getFieldErrorCodes().entrySet()) {
+				for (String errorCode : e.getValue())
+					request.getErrors().rejectValue(e.getKey(), errorCode);
+			}
+			return new FailureResult(request.getErrors());
 		}
 		catch (Exception ex) {
 			// it's possible that the underlying exception is that the user was logged out or lacks privileges
