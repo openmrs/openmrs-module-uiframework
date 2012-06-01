@@ -49,8 +49,9 @@ public class FormatterImpl implements Formatter {
 	}
 	
 	private String format(Date d) {
-		//return Context.getDateFormat().format(d);
-		return new SimpleDateFormat("dd-MMM-yyyy", Context.getLocale()).format(d);
+		String datePart = new SimpleDateFormat("dd-MMM-yyyy", Context.getLocale()).format(d);
+		String timePart = new SimpleDateFormat("HH:mm:ss").format(d);
+		return "00:00:00".equals(timePart) ? datePart : (datePart + " (" + timePart + ")");
 	}
 	
 	private String format(Role role) {
