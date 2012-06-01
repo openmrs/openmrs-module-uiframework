@@ -28,6 +28,7 @@ import org.openmrs.ui.framework.page.PageRequest;
 import org.openmrs.ui.framework.page.Redirect;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
+import org.openmrs.ui.util.ExceptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -92,29 +93,27 @@ public class PageController {
 			throw new RuntimeException("Not Yet Implemented: " + action.getClass(), action);
 		}
 		catch (RuntimeException ex) {
-			if (!Context.isAuthenticated()) {
-				// most likely this is an uncaught exception due to the user not being logged in
-				// TODO consider whether this is a good idea
-				throw new APIAuthenticationException(ex);
+			// special-case if this is due to the user not being logged in
+			APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
+			if (authEx != null) {
+				throw authEx;
 			}
-			else {
 
-				// The following should go in an @ExceptionHandler. I tried this, and it isn't getting invoked for some reason.
-				// And it's not worth debugging that.
-				
-				StringWriter sw = new StringWriter();
-				ex.printStackTrace(new PrintWriter(sw));
-				model.addAttribute("fullStacktrace", sw.toString());
-				
-				Throwable t = ex;
-				while (t.getCause() != null && !t.equals(t.getCause()))
-					t = t.getCause();
-				sw = new StringWriter();
-				t.printStackTrace(new PrintWriter(sw));
-				model.addAttribute("rootStacktrace", sw.toString());
-				
-				return "/module/uiframework/uiError";
-			}
+			// The following should go in an @ExceptionHandler. I tried this, and it isn't getting invoked for some reason.
+			// And it's not worth debugging that.
+			
+			StringWriter sw = new StringWriter();
+			ex.printStackTrace(new PrintWriter(sw));
+			model.addAttribute("fullStacktrace", sw.toString());
+			
+			Throwable t = ex;
+			while (t.getCause() != null && !t.equals(t.getCause()))
+				t = t.getCause();
+			sw = new StringWriter();
+			t.printStackTrace(new PrintWriter(sw));
+			model.addAttribute("rootStacktrace", sw.toString());
+			
+			return "/module/uiframework/uiError";
 		}
 	}
 	

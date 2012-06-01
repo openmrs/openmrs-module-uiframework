@@ -7,8 +7,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.ui.framework.FragmentException;
 import org.openmrs.ui.framework.WebConstants;
+import org.openmrs.ui.util.ExceptionUtil;
 
 public class GroovyPageView implements PageView {
 	
@@ -34,7 +38,20 @@ public class GroovyPageView implements PageView {
 		Writable boundTemplate = model == null ? template.make() : template.make(model);
 		if (log.isTraceEnabled())
 			log.trace("rendering groovy fragment view with model: " + model);
-		return boundTemplate.toString();
+		try {
+			return boundTemplate.toString();
+		} catch (RuntimeException ex) {
+			APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
+			if (authEx != null)
+				throw authEx;
+			
+			ContextAuthenticationException cAuthEx = ExceptionUtil.findExceptionInChain(ex, ContextAuthenticationException.class);
+			if (cAuthEx != null)
+				throw cAuthEx;  
+
+			throw ex;
+		}
+
 	}
 	
 	@Override

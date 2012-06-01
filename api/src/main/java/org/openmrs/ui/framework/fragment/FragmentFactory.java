@@ -417,22 +417,26 @@ public class FragmentFactory {
 		try {
 			result = method.invoke(controller, params);
 		}
-		catch (RequestValidationException ex) {
-			// this means the action itself threw the exception (it wasn't caught by @Validate) 
-			for (String errorCode : ex.getGlobalErrorCodes())
-				request.getErrors().reject(errorCode);
-			for (Map.Entry<String, List<String>> e : ex.getFieldErrorCodes().entrySet()) {
-				for (String errorCode : e.getValue())
-					request.getErrors().rejectValue(e.getKey(), errorCode);
-			}
-			return new FailureResult(request.getErrors());
-		}
 		catch (Exception ex) {
+			// if this error is a RequestValidationException (likely wrapped in an InvocationTargetException), the action
+			// a validation exception (as opposed to this happen via a @Validate annotation, caught above)
+			RequestValidationException validationEx = ExceptionUtil.findExceptionInChain(ex, RequestValidationException.class);
+			if (validationEx != null) {
+				for (String errorCode : validationEx.getGlobalErrorCodes())
+					request.getErrors().reject(errorCode);
+				for (Map.Entry<String, List<String>> e : validationEx.getFieldErrorCodes().entrySet()) {
+					for (String errorCode : e.getValue())
+						request.getErrors().rejectValue(e.getKey(), errorCode);
+				}
+				return new FailureResult(request.getErrors());
+			}
+			
 			// it's possible that the underlying exception is that the user was logged out or lacks privileges
 			// and we want to special-case that
 			APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
-			if (authEx != null)
+			if (authEx != null) {
 				throw authEx;
+			}
 			
 			// we don't know how to handle other types of exceptions
 			log.error("error", ex);

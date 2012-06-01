@@ -58,16 +58,14 @@ public class GroovyFragmentView implements FragmentView {
 		catch (ViewException ex) {
 			throw new ViewException("(in '" + viewName + "')\n" + ex.getMessage());
 		}
-		catch (ContextAuthenticationException ex) {
-			throw ex;
-		}
-		catch (APIAuthenticationException ex) {
-			throw ex;
-		}
 		catch (Exception ex) {
 			APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
 			if (authEx != null)
 				throw authEx;
+			
+			ContextAuthenticationException cAuthEx = ExceptionUtil.findExceptionInChain(ex, ContextAuthenticationException.class);
+			if (cAuthEx != null)
+				throw cAuthEx;  
 
 			throw new FragmentException("Error evaluating view: " + viewName, ex);
 		}
