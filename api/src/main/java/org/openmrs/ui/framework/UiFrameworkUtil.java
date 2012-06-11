@@ -175,9 +175,13 @@ public class UiFrameworkUtil {
 			
 			if (ret == null) {
 				String[] values = request.getParameterValues(param);
-				if (!ValueConstants.DEFAULT_NONE.equals(rp.defaultValue()) && empty(values)) {
+				if (empty(values)) {
+					values = new String[0];
+				}
+				// check whether the developer has specified a default value
+				if (!ValueConstants.DEFAULT_NONE.equals(rp.defaultValue()) && values.length == 0) {
 					ret = rp.defaultValue();
-				} else if (rp.required() && empty(values)) {
+				} else if (rp.required() && values.length == 0) {
 					throw new MissingRequiredParameterException(param);
 				} else {
 					ret = values;
