@@ -168,7 +168,7 @@ public class UiFrameworkUtil {
 			if (request instanceof MultipartHttpServletRequest) {
 				MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 				MultipartFile file = multipartRequest.getFile(param);
-				if (!file.isEmpty()) {
+				if (file != null && !file.isEmpty()) {
 					ret = file;
 				}
 			}
