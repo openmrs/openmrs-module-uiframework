@@ -118,7 +118,17 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 			BindingResult accessor = new DataBinder(obj).getBindingResult();
 			SimpleObject ret = new SimpleObject();
 			for (String property : propertiesByLevel.get(currentLevel)) {
-				Object propertyValue = accessor.getFieldValue(property);
+
+                Object propertyValue;
+                if (obj instanceof Map) {
+                    // if this is a map, fetch the property using Map.get(property)
+                    propertyValue = ((Map) obj).get(property);
+                }
+                else {
+                    // otherwise use property accessor
+                    propertyValue = accessor.getFieldValue(property);
+                }
+
 				String nextLevel = "".equals(currentLevel) ? property : currentLevel + "." + property;
 				if (propertiesByLevel.containsKey(nextLevel) && propertyValue != null) {
 					// deep property: recurse into this
