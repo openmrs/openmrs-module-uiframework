@@ -9,6 +9,7 @@ import org.openmrs.OpenmrsMetadata;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
@@ -37,6 +38,8 @@ public class FormatterImpl implements Formatter {
 			return format((User) o);
 		} else if (o instanceof PatientIdentifierType) {
 			return format((PatientIdentifierType) o);
+        } else if (o instanceof PersonAttribute) {
+            return format((PersonAttribute) o);
 		} else if (o instanceof OpenmrsMetadata) { // this should be after branches for specific metadata
 			return format((OpenmrsMetadata) o);
 		} else if (o instanceof Obs) {
@@ -76,7 +79,11 @@ public class FormatterImpl implements Formatter {
 	private String format(User u) {
 		return format(u.getPerson()) + " (" + u.getUsername() + ")";
 	}
-	
+
+    private String format(PersonAttribute pa) {
+        return format(pa.getHydratedObject());
+    }
+
 	private String format(Obs o) {
 		return o.getValueAsString(Context.getLocale());
 	}
