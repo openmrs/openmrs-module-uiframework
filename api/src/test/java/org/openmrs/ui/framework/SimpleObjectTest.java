@@ -4,6 +4,8 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
 import org.openmrs.ui.framework.fragment.FragmentActionUiUtils;
 
@@ -65,5 +67,21 @@ public class SimpleObjectTest {
         SimpleObject simplePerson = SimpleObject.fromObject(person, ui, properties);
 
         Assert.assertEquals("M", simplePerson.get("gender"));
+    }
+
+    @Test
+    public void fromObject_shouldFetchMapProperties()  {
+        PersonAttributeType healthCenterType = new PersonAttributeType();
+        healthCenterType.setName("Health Center");
+
+        Person person = new Person();
+        person.setGender("M");
+        person.addAttribute(new PersonAttribute(healthCenterType,"Beth Israel"));
+
+        String [] properties = {"gender", "personName.givenName","attributeMap.Health Center"};
+        SimpleObject simplePerson = SimpleObject.fromObject(person, ui, properties);
+
+        Assert.assertEquals("M", simplePerson.get("gender"));
+        Assert.assertEquals("Beth Israel", ((Map<String,Object>) simplePerson.get("attributeMap")).get("Health Center"));
     }
 }
