@@ -22,6 +22,7 @@ import javax.servlet.http.HttpSession;
 
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
+import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageFactory;
 import org.openmrs.ui.framework.page.PageRequest;
@@ -82,12 +83,14 @@ public class PageController {
 			return SHOW_HTML_VIEW;
 		}
 		catch (Redirect redirect) {
-			String ret = "redirect:";
+			String ret = "";
 			if (!redirect.getUrl().startsWith("/"))
-				;
-			ret += "/";
+				ret += "/";
 			ret += redirect.getUrl();
-			return ret;
+			if (ret.startsWith("/" + WebConstants.CONTEXT_PATH)) {
+				ret = ret.substring(WebConstants.CONTEXT_PATH.length() + 1);
+			}
+			return "redirect:" + ret;
 		}
 		catch (PageAction action) {
 			throw new RuntimeException("Not Yet Implemented: " + action.getClass(), action);
