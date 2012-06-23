@@ -78,6 +78,7 @@
 	<bean class="org.openmrs.ui.framework.converter.StringToDateConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToRelationshipConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToProgramConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToPatientProgramConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToConceptConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToPatientProblemConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToGlobalPropertyConverter"/>
