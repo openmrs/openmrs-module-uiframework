@@ -26,6 +26,22 @@ public class FragmentConfiguration extends HashMap<String, Object> implements At
 	}
 	
 	/**
+	 * Copy all attributes in the supplied <code>Map</code> into this <code>Map</code>,
+	 * with existing objects of the same name taking precedence (i.e. not getting
+	 * replaced).
+	 */
+	public FragmentConfiguration mergeAttributes(Map<String, ?> attributes) {
+		if (attributes != null) {
+			for (String key : attributes.keySet()) {
+				if (!containsKey(key)) {
+					put(key, attributes.get(key));
+				}
+			}
+		}
+		return this;
+	}
+	
+	/**
 	 * Adds an attribute to this configuration
 	 * 
 	 * @param name
