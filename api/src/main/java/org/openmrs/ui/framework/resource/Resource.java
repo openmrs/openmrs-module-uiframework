@@ -13,6 +13,8 @@
  */
 package org.openmrs.ui.framework.resource;
 
+import org.openmrs.util.OpenmrsUtil;
+
 
 /**
  * A resource that a page or fragment wants to include
@@ -63,5 +65,24 @@ public class Resource {
     public void setResourcePath(String resourcePath) {
     	this.resourcePath = resourcePath;
     }
-	
+
+    /**
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+    	if (obj == null || !(obj instanceof Resource)) {
+    		return false;
+    	}
+    	Resource other = (Resource) obj;
+    	return OpenmrsUtil.nullSafeEquals(providerName, other.providerName) && OpenmrsUtil.nullSafeEquals(resourcePath, other.resourcePath); 
+    }
+    
+    /**
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return (providerName + ":" + resourcePath).hashCode();
+    }
 }
