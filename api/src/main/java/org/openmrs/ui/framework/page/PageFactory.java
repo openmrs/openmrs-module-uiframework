@@ -133,7 +133,13 @@ public class PageFactory {
 		
 		// let the controller handle the request
 		// TODO: refactor because fragment controllers can now also return a FragmentRequest
-		String result = (String) handleRequestWithController(context);
+		Object resultObject = handleRequestWithController(context);
+		
+		if (resultObject instanceof PageAction) {
+			throw (PageAction) resultObject;
+		}
+		
+		String result = (String) resultObject;
 		
 		// check if there was redirect (other than via a thrown PageAction)
 		if (result != null && result.startsWith("redirect:")) {

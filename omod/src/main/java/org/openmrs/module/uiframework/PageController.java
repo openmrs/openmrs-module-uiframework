@@ -13,6 +13,8 @@
  */
 package org.openmrs.module.uiframework;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -20,9 +22,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.context.Context;
+import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.WebConstants;
+import org.openmrs.ui.framework.page.FileDownload;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageFactory;
 import org.openmrs.ui.framework.page.PageRequest;
@@ -92,6 +96,17 @@ public class PageController {
 			}
 			return "redirect:" + ret;
 		}
+		catch (FileDownload download) {
+			response.setContentType(download.getContentType());
+			response.setHeader("Content-Disposition", "attachment; filename=" + download.getFilename());
+			try {
+				IOUtils.copy(new ByteArrayInputStream(download.getFileContent()), response.getOutputStream());
+				response.flushBuffer();
+			} catch (IOException ex) {
+				throw new UiFrameworkException("Error trying to write file content to response", ex);
+			}
+			return null;
+		}
 		catch (PageAction action) {
 			throw new RuntimeException("Not Yet Implemented: " + action.getClass(), action);
 		}
@@ -119,5 +134,19 @@ public class PageController {
 			return "/module/uiframework/uiError";
 		}
 	}
-	
+
+    /**
+     * @param pageFactory the pageFactory to set
+     */
+    public void setPageFactory(PageFactory pageFactory) {
+	    this.pageFactory = pageFactory;
+    }
+    
+    /**
+     * @param sessionFactory the sessionFactory to set
+     */
+    public void setSessionFactory(SessionFactory sessionFactory) {
+	    this.sessionFactory = sessionFactory;
+    }
+    
 }
