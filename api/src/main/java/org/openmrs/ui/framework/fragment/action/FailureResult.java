@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.openmrs.api.context.Context;
+import org.openmrs.ui.framework.UiFrameworkUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -63,7 +63,7 @@ public class FailureResult implements FragmentActionResult {
 		List<String> ret = new ArrayList<String>();
 		if (errors != null) {
 			for (ObjectError err : errors.getGlobalErrors()) {
-				ret.add(Context.getMessageSourceService().getMessage(err, Context.getLocale()));
+				ret.add(UiFrameworkUtil.getMessage(err));
 			}
 		}
 		return ret;
@@ -78,7 +78,7 @@ public class FailureResult implements FragmentActionResult {
 					forField = new ArrayList<String>();
 					ret.put(err.getField(), forField);
 				}
-				String errMsg = Context.getMessageSourceService().getMessage(err, Context.getLocale());
+				String errMsg = UiFrameworkUtil.getMessage(err);
 				if (errMsg == null)
 					errMsg = err.getCode();
 				forField.add(errMsg);

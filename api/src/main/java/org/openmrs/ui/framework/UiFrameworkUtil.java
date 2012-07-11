@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.annotation.MethodParam;
@@ -23,6 +24,7 @@ import org.openmrs.util.HandlerUtil;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
@@ -375,7 +377,8 @@ public class UiFrameworkUtil {
 	 * @param lookFor
 	 * @return
 	 */
-	public static <T> T findCause(Throwable t, Class<T> lookFor) {
+	@SuppressWarnings("unchecked")
+    public static <T> T findCause(Throwable t, Class<T> lookFor) {
 		while (t.getCause() != null && t.getCause() != t) {
 			t = t.getCause();
 			if (lookFor.isAssignableFrom(t.getClass()))
@@ -383,5 +386,20 @@ public class UiFrameworkUtil {
 		}
 		return null;
 	}
+
+	/**
+     * Convenience method that provides a workaround for TRUNK-3580
+     * 
+     * @param msg
+     * @return localized message, or the default (last) code if there is no mapped code
+     */
+    public static String getMessage(MessageSourceResolvable msg) {
+    	String ret = Context.getMessageSourceService().getMessage(msg, Context.getLocale());
+    	String[] codes = msg.getCodes();
+		if (codes.length > 1 && ret.equals(codes[0])) {
+    		ret = codes[codes.length - 1];
+    	}
+    	return ret;
+    }
 	
 }

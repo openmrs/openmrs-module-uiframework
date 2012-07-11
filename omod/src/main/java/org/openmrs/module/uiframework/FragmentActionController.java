@@ -25,11 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.ui.framework.FormatterImpl;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiFrameworkException;
+import org.openmrs.ui.framework.UiFrameworkUtil;
 import org.openmrs.ui.framework.ViewException;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
@@ -51,13 +51,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * Lets clients access pages via:
- * (in 2.x) .../openmrs/(fragmentName)/(action).action
- * (in 1.x) .../openmrs/action/(fragmentName)/(action).form
+ * Lets clients access pages via: (in 2.x) .../openmrs/(fragmentName)/(action).action (in 1.x)
+ * .../openmrs/action/(fragmentName)/(action).form
  */
 @Controller
 public class FragmentActionController {
-
+	
 	private final Logger log = LoggerFactory.getLogger(FragmentActionController.class);
 	
 	public final static String SHOW_HTML_VIEW = "/module/uiframework/showHtml";
@@ -77,15 +76,15 @@ public class FragmentActionController {
 	
 	@RequestMapping("/action/{directoryName}/{fragmentName}/{action}")
 	public String helper1x(@PathVariable("directoryName") String directoryName,
-	                       @PathVariable("fragmentName") String fragmentName,
-	                       @PathVariable("action") String action,
+	                       @PathVariable("fragmentName") String fragmentName, @PathVariable("action") String action,
 	                       @RequestParam(value = "returnFormat", required = false) String returnFormat,
 	                       @RequestParam(value = "successUrl", required = false) String successUrl,
-	                       @RequestParam(value = "failureUrl", required = false) String failureUrl, HttpServletRequest request,
-	                       Model model, HttpServletResponse response) throws Exception {
-		return handleAction(directoryName + "/" + fragmentName, action, returnFormat, successUrl, failureUrl, request, model, response);
+	                       @RequestParam(value = "failureUrl", required = false) String failureUrl,
+	                       HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
+		return handleAction(directoryName + "/" + fragmentName, action, returnFormat, successUrl, failureUrl, request,
+		    model, response);
 	}
-
+	
 	@RequestMapping("/{directoryName}/{fragmentName}/{action}.action")
 	public String handleAction(@PathVariable("directoryName") String directoryName,
 	                           @PathVariable("fragmentName") String fragmentName, @PathVariable("action") String action,
@@ -191,11 +190,10 @@ public class FragmentActionController {
 					StringBuilder sb = new StringBuilder();
 					sb.append("<ul>");
 					for (ObjectError err : errors.getGlobalErrors()) {
-						sb.append("<li>" + Context.getMessageSourceService().getMessage(err, Context.getLocale()) + "</li>");
+						sb.append("<li>" + UiFrameworkUtil.getMessage(err) + "</li>");
 					}
 					for (FieldError err : errors.getFieldErrors()) {
-						sb.append("<li>" + err.getField() + ": " + Context.getMessageSourceService().getMessage(err, Context.getLocale())
-						        + "</li>");
+						sb.append("<li>" + err.getField() + ": " + UiFrameworkUtil.getMessage(err) + "</li>");
 					}
 					sb.append("</ul>");
 					errorMessage = sb.toString();
