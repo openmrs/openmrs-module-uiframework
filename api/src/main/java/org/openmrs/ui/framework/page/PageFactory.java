@@ -175,10 +175,17 @@ public class PageFactory {
 	
 	private String toHtml(String body, PageContext context) {
 		StringBuilder ret = new StringBuilder();
-		ret.append("<html>\n");
+		ret.append("<?xml version=\"1.0\"?>\n");
+		ret.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
+		ret.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
 		ret.append("<head>\n");
-		if (context.getPageTitle() != null)
+		if (context.getPageTitle() != null) {
 			ret.append("<title>" + context.getPageTitle() + "</title>\n");
+		} else {
+			ret.append("<title>OpenMRS</title>\n");
+		}
+		ret.append("<link rel=\"shortcut icon\" type=\"image/ico\" href=\"/" + WebConstants.CONTEXT_PATH + "/images/openmrs-favicon.ico\">\n");
+		ret.append("<link rel=\"icon\" type=\"image/png\" href=\"/" + WebConstants.CONTEXT_PATH + "/images/openmrs-favicon.png\">\n");
 		for (Resource resource : context.getJavascriptToInclude()) {
 			ret.append("<script type=\"text/javascript\" src=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\"></script>\n");
 		}
