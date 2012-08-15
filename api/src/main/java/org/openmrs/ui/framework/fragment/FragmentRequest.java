@@ -1,45 +1,79 @@
 package org.openmrs.ui.framework.fragment;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class FragmentRequest {
 	
-	private String id;
+	private String providerName;
+	
+	private String fragmentId;
 	
 	private FragmentConfiguration configuration;
 	
-	public FragmentRequest(String id) {
-		this(id, null);
+	/*
+	public FragmentRequest(String providerNameAndFragmentId) {
+		this(providerNameAndFragmentId, (FragmentConfiguration) null);
 	}
 	
-	public FragmentRequest(String id, Map<String, Object> configuration) {
-		this(id, new FragmentConfiguration(configuration));
+	public FragmentRequest(String providerNameAndFragmentId, Map<String, Object> configuration) {
+		this(providerNameAndFragmentId, new FragmentConfiguration(configuration));
 	}
 	
-	public FragmentRequest(String id, FragmentConfiguration configuration) {
-		this.id = id;
-		if (configuration == null)
-			configuration = new FragmentConfiguration();
-		this.configuration = configuration;
+	public FragmentRequest(String providerNameAndFragmentId, FragmentConfiguration configuration) {
+		int ind = providerNameAndFragmentId.indexOf(':');
+		if (ind <= 0) {
+			throw new IllegalArgumentException("First argument must be of the form \"fragmentProviderName:fragmentName\"");
+		}
+		this.providerName = providerNameAndFragmentId.substring(0, ind);
+		this.fragmentId = providerNameAndFragmentId.substring(ind + 1);
+		this.configuration = configuration == null ? new FragmentConfiguration() : configuration;
+	}
+	*/
+	
+	public FragmentRequest(String providerName, String fragmentId) {
+		this(providerName, fragmentId, (FragmentConfiguration) null);
+	}
+	
+	public FragmentRequest(String providerName, String fragmentId, Map<String, Object> configuration) {
+		this(providerName, fragmentId, new FragmentConfiguration(configuration));
+	}
+	
+	public FragmentRequest(String providerName, String fragmentId, FragmentConfiguration configuration) {
+		this.providerName = providerName == null ? "*" : providerName;
+		this.fragmentId = fragmentId;
+		this.configuration = configuration == null ? new FragmentConfiguration() : configuration;
 	}
 	
 	public String toString() {
-		return "Fragment Request for " + id;
+		return "Fragment Request for " + providerName + " : " + fragmentId;
 	}
 	
 	/**
-	 * @return the id
+	 * @return the providerName
 	 */
-	public String getId() {
-		return id;
+	public String getProviderName() {
+		return providerName;
 	}
 	
 	/**
-	 * @param id the id to set
+	 * @param providerName the providerName to set
 	 */
-	public void setId(String id) {
-		this.id = id;
+	public void setProviderName(String providerName) {
+		this.providerName = providerName;
+	}
+	
+	/**
+	 * @return the fragmentId
+	 */
+	public String getFragmentId() {
+		return fragmentId;
+	}
+	
+	/**
+	 * @param fragmentId the fragmentId to set
+	 */
+	public void setFragmentId(String fragmentId) {
+		this.fragmentId = fragmentId;
 	}
 	
 	/**

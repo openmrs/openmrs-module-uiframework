@@ -77,16 +77,22 @@ public class FragmentFactory {
 		if (context.getRequestDepth() > 100)
 			throw new UiFrameworkException("Fragment inclusion > 100 levels deep. Check your code for infinite loops.");
 		long startTime = System.currentTimeMillis();
-		log.info("processing " + context.getRequest().getId());
+		if (log.isDebugEnabled()) {
+			log.debug("processing " + context.getRequest());
+		}
 		applyDefaultConfiguration(context);
 		// it's possible someone has pre-requested that this fragment be decorated
 		if (context.getRequest().getConfiguration().containsKey("decorator")) {
+			String decoratorProvider = (String) context.getRequest().getConfiguration().get("decoratorProvider");
+			if (decoratorProvider == null) {
+				decoratorProvider = "*";
+			}
 			String decoratorName = "decorator/" + context.getRequest().getConfiguration().get("decorator");
 			@SuppressWarnings("unchecked")
 			Map<String, Object> decoratorConfigurationMap = (Map<String, Object>) context.getRequest().getConfiguration()
 			        .get("decoratorConfig");
 			FragmentConfiguration decoratorConfiguration = new FragmentConfiguration(decoratorConfigurationMap);
-			FragmentRequest decorator = new FragmentRequest(decoratorName, decoratorConfiguration);
+			FragmentRequest decorator = new FragmentRequest(decoratorProvider, decoratorName, decoratorConfiguration);
 			context.setDecorateWith(decorator);
 		}
 		String result = processThisFragment(context);
@@ -97,7 +103,9 @@ public class FragmentFactory {
 		decoratorRequest.getConfiguration().put("contentFragmentId", context.getRequest().getConfiguration().get("id"));
 		FragmentContext decoratorContext = new FragmentContext(decoratorRequest, context);
 		String ret = process(decoratorContext);
-		log.info("\thandled " + context.getRequest().getId() + " in " + (System.currentTimeMillis() - startTime) + " ms");
+		if (log.isDebugEnabled()) {
+			log.debug("\thandled " + context.getRequest() + " in " + (System.currentTimeMillis() - startTime) + " ms");
+		}
 		return ret;
 	}
 	
@@ -140,7 +148,7 @@ public class FragmentFactory {
 		context.setView(view);
 		
 		if (context.getController().equals(emptyController) && context.getView() == null) {
-			throw new RuntimeException("Cannot find controller or view for fragment: " + context.getRequest().getId());
+			throw new RuntimeException("Cannot find controller or view for fragment: " + context.getRequest().getFragmentId());
 		}
 		
 		// Fragments are allowed to have no view (their controller can still affect the shared
@@ -192,29 +200,42 @@ public class FragmentFactory {
 	
 	/**
 	 * @param request
-	 * @param viewName
+	 * @param viewName if not null, overrides what is specified in request
 	 * @return
+	 * @should get a view from the requested provider
+	 * @should get a view from any provider if none is specified
+	 * @should fail if an invalid provider name is specified
 	 */
-	private FragmentView getView(FragmentRequest request, String viewName) {
+	FragmentView getView(FragmentRequest request, String viewName) {
 		if (viewName == null)
-			viewName = request.getId();
+			viewName = request.getFragmentId();
+		String providerAndFragmentId = request.getProviderName() + ":" + viewName;
 		if (!isDevelopmentMode()) {
-			if (viewCache.containsKey(viewName))
-				return viewCache.get(viewName);
-		}
-		for (FragmentViewProvider p : viewProviders.values()) {
-			FragmentView ret = p.getView(viewName);
-			if (ret != null) {
-				if (!isDevelopmentMode())
-					viewCache.put(viewName, ret);
-				return ret;
+			if (viewCache.containsKey(providerAndFragmentId)) {
+				return viewCache.get(providerAndFragmentId);
 			}
+		}
+		if ("*".equals(request.getProviderName())) {
+			for (FragmentViewProvider p : viewProviders.values()) {
+				FragmentView ret = p.getView(viewName);
+				if (ret != null) {
+					if (!isDevelopmentMode())
+						viewCache.put(providerAndFragmentId, ret);
+					return ret;
+				}
+			}
+		} else {
+			FragmentViewProvider provider = viewProviders.get(request.getProviderName());
+			if (provider == null) {
+				throw new UiFrameworkException("No view provider: " + request.getProviderName());
+			}
+			return provider.getView(viewName);
 		}
 		return null;
 	}
 	
-	public Object getController(String fragmentName) {
-		FragmentRequest request = new FragmentRequest(fragmentName);
+	public Object getController(String providerName, String fragmentName) {
+		FragmentRequest request = new FragmentRequest(providerName, fragmentName);
 		return getController(request);
 	}
 	
@@ -223,13 +244,24 @@ public class FragmentFactory {
 	 * 
 	 * @param request
 	 * @return
+	 * @should get a controller from the specified provider
+	 * @should get a controller from any provider if none specified
+	 * @should fail if an invalid provider is specified
 	 */
-	private Object getController(FragmentRequest request) {
+	Object getController(FragmentRequest request) {
 		if (controllerProviders != null) {
-			for (FragmentControllerProvider p : controllerProviders.values()) {
-				Object ret = p.getController(request.getId());
-				if (ret != null)
-					return ret;
+			if ("*".equals(request.getProviderName())) {
+				for (FragmentControllerProvider p : controllerProviders.values()) {
+					Object ret = p.getController(request.getFragmentId());
+					if (ret != null)
+						return ret;
+				}
+			} else {
+				FragmentControllerProvider provider = controllerProviders.get(request.getProviderName());
+				if (provider == null) {
+					throw new UiFrameworkException("No controller provider: " + request.getProviderName());
+				}
+				return provider.getController(request.getFragmentId());
 			}
 		}
 		return null;
@@ -365,14 +397,14 @@ public class FragmentFactory {
 		viewProviders.put(key, provider);
 	}
 	
-	public Object invokeFragmentAction(String fragmentName, String action, HttpServletRequest httpRequest) {
-		log.info("Invoking " + fragmentName + " . " + action);
+	public Object invokeFragmentAction(String providerName, String fragmentName, String action, HttpServletRequest httpRequest) {
+		log.info("Invoking " + providerName + ":" + fragmentName + " . " + action);
 		FragmentActionRequest request = new FragmentActionRequest(this, httpRequest);
 		
 		// try to find the requested fragment controller
-		Object controller = getController(fragmentName);
+		Object controller = getController(providerName, fragmentName);
 		if (controller == null) {
-			throw new UiFrameworkException("Cannot find fragment controller for " + fragmentName);
+			throw new UiFrameworkException("Cannot find fragment controller for " + providerName + ":" + fragmentName);
 		}
 		
 		// find the correct action method
@@ -446,13 +478,13 @@ public class FragmentFactory {
 		return result;
 	}
 	
-	public boolean fragmentExists(String fragmentName) {
-		Object controller = getController(fragmentName);
+	public boolean fragmentExists(String providerName, String fragmentName) {
+		Object controller = getController(providerName, fragmentName);
 		if (controller != null) {
 			return true;
 		}
 		
-		FragmentView view = getView(new FragmentRequest(fragmentName), fragmentName);
+		FragmentView view = getView(new FragmentRequest(providerName, fragmentName), fragmentName);
 		return (view != null);
 	}
 	

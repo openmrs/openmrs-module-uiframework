@@ -74,13 +74,13 @@ public abstract class UiUtils {
 		return pageContext.getUrl(true);
 	}
 	
-	public String startForm(String fragment, String action) {
-		return startForm(fragment, action, null);
+	public String startForm(String providerName, String fragment, String action) {
+		return startForm(providerName, fragment, action, null);
 	}
 	
-	public String startForm(String fragment, String action, Map<String, CharSequence> parameters) {
+	public String startForm(String providerName, String fragment, String action, Map<String, CharSequence> parameters) {
 		StringBuilder ret = new StringBuilder();
-		String url = actionLink(fragment, action, parameters);
+		String url = actionLink(providerName, fragment, action, parameters);
 		ret.append("<form method='post' action='" + url + "'>");
 		return ret.toString();
 	}
@@ -93,31 +93,41 @@ public abstract class UiUtils {
 		return messager.message(code, args);
 	}
 	
-	public String includeFragment(String fragmentName) throws PageAction {
-		return fragmentIncluder.includeFragment(new FragmentRequest(fragmentName, null));
+	/*
+	public String includeFragment(String fragmentProviderAndId) throws PageAction {
+		return fragmentIncluder.includeFragment(new FragmentRequest(fragmentProviderAndId));
 	}
 	
-	public String includeFragment(String fragmentName, Map<String, Object> config) throws PageAction {
-		return fragmentIncluder.includeFragment(new FragmentRequest(fragmentName, config));
+	public String includeFragment(String fragmentProviderAndId, Map<String, Object> config) throws PageAction {
+		return fragmentIncluder.includeFragment(new FragmentRequest(fragmentProviderAndId, config));
+	}
+	*/
+	
+	public String includeFragment(String providerName, String fragmentId) throws PageAction {
+		return fragmentIncluder.includeFragment(new FragmentRequest(providerName, fragmentId));
 	}
 	
-	public void decorateWith(String fragmentName) {
-		decorateWith(fragmentName, null);
+	public String includeFragment(String providerName, String fragmentId, Map<String, Object> config) throws PageAction {
+		return fragmentIncluder.includeFragment(new FragmentRequest(providerName, fragmentId, config));
 	}
 	
-	public void decorateWith(String fragmentName, Map<String, Object> config) {
-		decoratable.setDecorateWith(new FragmentRequest("decorator/" + fragmentName, config));
+	public void decorateWith(String providerName, String fragmentId) {
+		decorateWith(providerName, fragmentId, null);
 	}
 	
-	public String decorate(String decoratorName, String contents) throws PageAction {
-		return decorate(decoratorName, null, contents);
+	public void decorateWith(String providerName, String fragmentId, Map<String, Object> config) {
+		decoratable.setDecorateWith(new FragmentRequest(providerName, "decorator/" + fragmentId, config));
 	}
 	
-	public String decorate(String decoratorName, Map<String, Object> decoratorConfig, String contents) throws PageAction {
+	public String decorate(String providerName, String decoratorName, String contents) throws PageAction {
+		return decorate(providerName, decoratorName, null, contents);
+	}
+	
+	public String decorate(String providerName, String decoratorName, Map<String, Object> decoratorConfig, String contents) throws PageAction {
 		if (decoratorConfig == null)
 			decoratorConfig = new HashMap<String, Object>();
 		decoratorConfig.put("content", contents);
-		return includeFragment("decorator/" + decoratorName, decoratorConfig);
+		return includeFragment(providerName, "decorator/" + decoratorName, decoratorConfig);
 	}
 	
 	public String contextPath() {
@@ -189,12 +199,15 @@ public abstract class UiUtils {
 		return ret;
 	}
 	
-	public String actionLink(String controllerName, String action) {
-		return actionLink(controllerName, action, null);
+	public String actionLink(String providerName, String controllerName, String action) {
+		return actionLink(providerName, controllerName, action, null);
 	}
 	
-	public String actionLink(String controllerName, String action, Map<String, ?> args) {
-		StringBuilder sb = new StringBuilder("/" + contextPath() + "/action/" + controllerName + "/" + action + ".action?");
+	public String actionLink(String providerName, String controllerName, String action, Map<String, ?> args) {
+		if (providerName == null) {
+			providerName = "*";
+		}
+		StringBuilder sb = new StringBuilder("/" + contextPath() + "/action/" + providerName + "/" + controllerName + "/" + action + ".action?");
 		String successUrl = null;
 		if (args != null) {
 			for (Map.Entry<String, ?> e : args.entrySet()) {
