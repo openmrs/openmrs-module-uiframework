@@ -10,26 +10,6 @@ public class FragmentRequest {
 	
 	private FragmentConfiguration configuration;
 	
-	/*
-	public FragmentRequest(String providerNameAndFragmentId) {
-		this(providerNameAndFragmentId, (FragmentConfiguration) null);
-	}
-	
-	public FragmentRequest(String providerNameAndFragmentId, Map<String, Object> configuration) {
-		this(providerNameAndFragmentId, new FragmentConfiguration(configuration));
-	}
-	
-	public FragmentRequest(String providerNameAndFragmentId, FragmentConfiguration configuration) {
-		int ind = providerNameAndFragmentId.indexOf(':');
-		if (ind <= 0) {
-			throw new IllegalArgumentException("First argument must be of the form \"fragmentProviderName:fragmentName\"");
-		}
-		this.providerName = providerNameAndFragmentId.substring(0, ind);
-		this.fragmentId = providerNameAndFragmentId.substring(ind + 1);
-		this.configuration = configuration == null ? new FragmentConfiguration() : configuration;
-	}
-	*/
-	
 	public FragmentRequest(String providerName, String fragmentId) {
 		this(providerName, fragmentId, (FragmentConfiguration) null);
 	}
