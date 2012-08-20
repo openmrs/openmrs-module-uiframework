@@ -21,9 +21,9 @@
 	</organization>
 
 	<scm>
-		<connection>scm:git:git@github.com:djazayeri/openmrs-module-uiframework.git</connection> 
-		<developerConnection>scm:git:git@github.com:djazayeri/openmrs-module-uiframework.git</developerConnection> 
-		<url>scm:git:git@github.com:djazayeri/openmrs-module-uiframework.git</url>
+		<connection>scm:git:git@github.com:OpenMRS/openmrs-module-uiframework.git</connection> 
+		<developerConnection>scm:git:git@github.com:OpenMRS/openmrs-module-uiframework.git</developerConnection> 
+		<url>scm:git:git@github.com:OpenMRS/openmrs-module-uiframework.git</url>
 	</scm>
 
 	<modules>
