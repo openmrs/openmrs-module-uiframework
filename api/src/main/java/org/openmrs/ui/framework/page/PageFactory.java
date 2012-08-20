@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.ui.framework.Model;
+import org.openmrs.ui.framework.ProviderAndName;
+import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.UiFrameworkUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.WebConstants;
@@ -68,31 +70,24 @@ public class PageFactory {
 		context.setExtensionManager(extensionManager);
 		mapInternalPageName(request);
 		String result = process(context);
-		log.info(">>> Page >>> handled " + request.getPageName() + " (as " + request.getInternalPageName() + ") in "
-		        + (System.currentTimeMillis() - startTime) + " ms");
+		log.info(">>> Page >>> handled " + request + " in " + (System.currentTimeMillis() - startTime) + " ms");
 		return result;
 	}
 	
 	/**
-	 * Determines what internal page name should be used for a given external request,
-	 * by delegating to the registered requestMappers.
-	 * Sets this internal page name on request
+	 * Allow modules to override page handling via {@link PageRequestMapper}s.
+	 * Sets this internal page provider and name on request
 	 * @param request
 	 */
 	private void mapInternalPageName(PageRequest request) {
-		String internal = null;
 		if (requestMappers != null) {
 			for (PageRequestMapper mapper : requestMappers) {
-				String mapped = mapper.mapRequest(request);
-				if (mapped != null) {
-					internal = mapped;
+				boolean mapped = mapper.mapRequest(request);
+				if (mapped) {
 					break;
 				}
 			}
 		}
-		if (internal == null)
-			internal = request.getPageName();
-		request.setInternalPageName(internal);
 	}
 	
 	public String process(PageContext context) throws PageAction {
@@ -115,9 +110,9 @@ public class PageFactory {
 			// some views can specify their controller
 			try {
 				view = getView(null, context.getRequest());
-				String controllerName = view.getControllerName();
-				if (controllerName != null) {
-					controller = getController(controllerName);
+				ProviderAndName controllerProviderAndName = view.getController();
+				if (controllerProviderAndName != null) {
+					controller = getController(controllerProviderAndName.getProvider(), controllerProviderAndName.getName());
 				}
 			}
 			catch (Exception ex) {
@@ -145,6 +140,12 @@ public class PageFactory {
 		if (result != null && result.startsWith("redirect:")) {
 			String toApplicationUrl = result.substring("redirect:".length());
 			throw new Redirect(toApplicationUrl);
+		}
+		
+		// If the controller returns a simple string, we interpret that as a view in the requested provider.
+		// The controller should return "*:viewName" to search all providers.
+		if (result != null && result.indexOf(':') <= 0) {
+			result = context.getRequest().getMappedProviderName() + ":" + result;
 		}
 		
 		// determine what view to use
@@ -201,32 +202,83 @@ public class PageFactory {
 		return ret.toString();
 	}
 	
-	private Object getController(String controllerName) {
-		// TODO BW: could be slow in prod. possibly use a cached version should be used for non debug modes?
-		if (controllerProviders != null) {
+	/**
+	 * @param request
+	 * @return controller class, or null if none is available
+	 * @should get a controller from the specified provider
+	 * @should get a controller from any provider if none specified
+	 */
+	Object getController(PageRequest request) {
+		return getController(request.getMappedProviderName(), request.getMappedPageName());
+	}
+	
+	private Object getController(String providerName, String pageName) {
+		if (controllerProviders == null) {
+			return null;
+		}
+		if ("*".equals(providerName)) {
 			for (PageControllerProvider p : controllerProviders.values()) {
-				Object ret = p.getController(controllerName);
+				Object ret = p.getController(pageName);
 				if (ret != null)
 					return ret;
 			}
+			return null;
+		} else {
+			PageControllerProvider provider = controllerProviders.get(providerName);
+			if (provider == null) {
+				return null;
+			}
+			return provider.getController(pageName);
 		}
-		return null;
 	}
 	
-	private Object getController(PageRequest request) {
-		return getController(request.getInternalPageName());
-	}
-	
-	private PageView getView(String viewName, PageRequest request) {
-		if (viewName == null)
-			viewName = request.getInternalPageName();
-		for (PageViewProvider p : viewProviders.values()) {
-			PageView ret = p.getView(viewName);
-			if (ret != null)
-				return ret;
+	/**
+	 * @param viewProviderAndName null indicates we should use the default view for request,
+	 *            otherwise this should be "providerName:viewName"
+	 * @param request
+	 * @return
+	 * @should get a view from the requested provider
+	 * @should get a view from any provider if none is specified
+	 * @should fail if an invalid provider name is specified
+	 */
+	PageView getView(String viewProviderAndName, PageRequest request) {
+		String providerName;
+		String viewName;
+		if (viewProviderAndName == null) {
+			providerName = request.getMappedProviderName();
+			viewName = request.getMappedPageName();
+		} else {
+			String[] temp = viewProviderAndName.split(":");
+			if (temp.length != 2) {
+				throw new UiFrameworkException("Expected \"providerName:viewName\" but was \"" + viewProviderAndName + "\"");
+			}
+			providerName = temp[0];
+			viewName = temp[1];
 		}
-		// pages are required to have views, so we throw an exception if we couldn't find one
-		throw new RuntimeException("Could not find page view '" + viewName + "' in any of the view providers (" + OpenmrsUtil.join(viewProviders.keySet(), ", ") + ")");
+
+		if ("*".equals(providerName)) {
+			for (PageViewProvider p : viewProviders.values()) {
+				PageView ret = p.getView(viewName);
+				if (ret != null) {
+					return ret;
+				}
+			}
+			// pages are required to have views, so we throw an exception if we couldn't find one
+			throw new UiFrameworkException("Could not find page view '" + viewName + "' in any of the view providers ("
+			        + OpenmrsUtil.join(viewProviders.keySet(), ", ") + ")");
+		}
+		else {
+			PageViewProvider provider = viewProviders.get(providerName);
+			if (provider == null) {
+				throw new UiFrameworkException("No viewProvider named " + providerName);
+			}
+			PageView ret = provider.getView(viewName);
+			if (ret == null) {
+				// pages are required to have views, so we throw an exception if we couldn't find one
+				throw new UiFrameworkException("viewProvider " + providerName + " does not have a view named " + viewName);
+			}
+			return ret;
+		}
 	}
 	
 	/**

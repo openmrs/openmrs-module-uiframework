@@ -52,7 +52,7 @@ public class PageControllerTest {
 		controller.setPageFactory(pageFactory);
 		controller.setSessionFactory(sessionFactory);
 		
-		controller.handlePage("download", request, response, new ExtendedModelMap(), session);
+		controller.handlePage("somemodule", "download", request, response, new ExtendedModelMap(), session);
 		
 		Assert.assertEquals("text/plain", response.getContentType());
 		Assert.assertEquals("File contents", response.getContentAsString());

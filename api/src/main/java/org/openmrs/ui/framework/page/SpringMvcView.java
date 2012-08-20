@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentView;
@@ -53,12 +54,12 @@ public class SpringMvcView implements PageView, FragmentView {
 	}
 	
 	/**
-	 * @see org.openmrs.ui.framework.page.PageView#getControllerName()
+	 * @see org.openmrs.ui.framework.page.PageView#getController()
 	 */
 	@Override
-	public String getControllerName() {
-		// TODO force this to be controller-less 
-		return null;
+	public ProviderAndName getController() {
+		// TODO force this to be controller-less
+	    return null;
 	}
 	
 	/**

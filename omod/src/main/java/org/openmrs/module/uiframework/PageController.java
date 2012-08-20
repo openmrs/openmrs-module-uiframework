@@ -63,15 +63,18 @@ public class PageController {
 	 * Since the 1.x web application only lets spring handle certain file extensions (not including .page) we
 	 * need to let people access pages like: ".../openmrs/pages/home.form"
 	 */
-	@RequestMapping("/pages/{pageName}")
-	public String helper1x(@PathVariable("pageName") String pageName, HttpServletRequest request,
+	@RequestMapping("/pages/{controllerName}/{pageName}")
+	public String helper1x(@PathVariable("controllerName") String controllerName,
+	                       @PathVariable("pageName") String pageName, HttpServletRequest request,
 	                       HttpServletResponse response, Model model, HttpSession httpSession) {
-		return handlePage(pageName, request, response, model, httpSession);
+		return handlePage(controllerName, pageName, request, response, model, httpSession);
 	}
 	
-	@RequestMapping("/{pageName}.page")
-	public String handlePage(@PathVariable("pageName") String pageName, HttpServletRequest request,
-	        HttpServletResponse response, Model model, HttpSession httpSession) {
+	@RequestMapping("/{controllerName}/{pageName}.page")
+	public String handlePage(@PathVariable("controllerName") String controllerName,
+	                         @PathVariable("pageName") String pageName,
+	                         HttpServletRequest request,
+	                         HttpServletResponse response, Model model, HttpSession httpSession) {
 		Session session;
 		try {
 			session = sessionFactory.getSession(httpSession);
@@ -80,7 +83,7 @@ public class PageController {
 			sessionFactory.destroySession(httpSession);
 			session = sessionFactory.getSession(httpSession);
 		}
-		PageRequest pageRequest = new PageRequest(pageName, request, response, session);
+		PageRequest pageRequest = new PageRequest(controllerName, pageName, request, response, session);
 		try {
 			String html = pageFactory.handle(pageRequest);
 			model.addAttribute("html", html);

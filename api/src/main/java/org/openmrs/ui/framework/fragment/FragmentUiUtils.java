@@ -26,28 +26,33 @@ public class FragmentUiUtils extends UiUtils {
 	}
 	
 	public String startForm(String action) {
-		return super.startForm(getControllerName(), action);
+		return super.startForm(getProviderName(), getControllerName(), action);
 	}
 	
 	public String startForm(String action, Map<String, CharSequence> args) {
-		return super.startForm(getControllerName(), action, args);
+		return super.startForm(getProviderName(), getControllerName(), action, args);
 	}
 	
 	public String actionLink(String action) {
-		return actionLink(getControllerName(), action);
+		return actionLink(getProviderName(), getControllerName(), action);
 	}
 	
 	public String actionLink(String action, Map<String, ?> args) {
-		return actionLink(getControllerName(), action, args);
+		return actionLink(getProviderName(), getControllerName(), action, args);
 	}
 	
 	public String thisFragmentId() {
-		return context.getRequest().getId();
+		return context.getRequest().getFragmentId();
+	}
+	
+	private String getProviderName() {
+		// TODO find a way to get the actual provider
+		return context.getRequest().getProviderName();
 	}
 	
 	private String getControllerName() {
-		// TODO fix this
-		return context.getRequest().getId();
+		// TODO find a way to get the actual controller name
+		return context.getRequest().getFragmentId();
 	}
 	
 }
