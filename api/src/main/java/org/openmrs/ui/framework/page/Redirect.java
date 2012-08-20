@@ -9,7 +9,7 @@ public class Redirect extends PageAction {
 	private String url;
 	
 	/**
-	 * @param applicationUrl an URL starting after the server-plus-context-path part. (e.g. "home.page") 
+	 * @param applicationUrl an URL starting after the server-plus-context-path part. (e.g. "yourmodule/home.page") 
 	 */
 	public Redirect(String applicationUrl) {
 		this.url = applicationUrl;
@@ -20,8 +20,8 @@ public class Redirect extends PageAction {
 	 * @param pageName
 	 * @param queryString
 	 */
-	public Redirect(String pageName, String queryString) {
-		this.url = pageName + ".page";
+	public Redirect(String providerName, String pageName, String queryString) {
+		this.url = providerName + "/" + pageName + ".page";
 		if (queryString != null)
 			this.url += "?" + queryString;
 	}

@@ -39,16 +39,16 @@ public class GroovyPageViewProvider implements PageViewProvider {
 			if (gsp == null)
 				return null;
 			
-			String controllerName = null;
+			String controllerProviderAndName = null;
 			// <!--CONTROLLER:{non-whitespace, not greedy}--> allowing for whitespaces between elements
 			Pattern p = Pattern.compile("<!--\\s*CONTROLLER\\s*:\\s*(\\S*?)\\s*-->"); // TODO BW: Can be moved to static attr or constructor
 			Matcher m = p.matcher(gsp);
 			if (m.find())
-				controllerName = m.group(1);
+				controllerProviderAndName = m.group(1);
 
 			Template template = engine.createTemplate(gsp);
 			// TODO maybe configure this template with the request, session, etc. See groovy.servlet.TemplateServlet for guidance
-			return new GroovyPageView(template, controllerName);
+			return new GroovyPageView(template, controllerProviderAndName);
 		}
 		catch (Exception ex) {
 			log.error("Error creating GroovyPageView", ex);
