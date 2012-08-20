@@ -3,7 +3,7 @@
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>uiframework</artifactId>
-	<version>1.8-SNAPSHOT</version>
+	<version>1.8</version>
 	<packaging>pom</packaging>
 	<name>OpenMRS UI Framework</name>
 	<description>OpenMRS's new custom UI Framework, built on top of Spring MVC, and leveraging Groovy templates for views.</description>
