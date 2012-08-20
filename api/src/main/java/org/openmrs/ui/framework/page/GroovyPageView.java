@@ -11,6 +11,7 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.ui.framework.FragmentException;
+import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.util.ExceptionUtil;
 
@@ -18,13 +19,13 @@ public class GroovyPageView implements PageView {
 	
 	Log log = LogFactory.getLog(getClass());
 	
-	private String controllerName;
+	private String controllerProviderAndName;
 	
 	private Template template;
 	
-	public GroovyPageView(Template template, String controllerName) {
+	public GroovyPageView(Template template, String controllerProviderAndName) {
 		this.template = template;
-		this.controllerName = controllerName;
+		this.controllerProviderAndName = controllerProviderAndName;
 	}
 	
 	@Override
@@ -54,9 +55,26 @@ public class GroovyPageView implements PageView {
 
 	}
 	
+	/**
+	 * @see org.openmrs.ui.framework.page.PageView#getController()
+	 */
 	@Override
-	public String getControllerName() {
-		return controllerName;
+	public ProviderAndName getController() {
+		if (controllerProviderAndName != null) {
+			String provider;
+			String controller;
+			String[] temp = controllerProviderAndName.split(":");
+			if (temp.length == 1) {
+				provider = "*";
+				controller = temp[0];
+			} else {
+				provider = temp[0];
+				controller = temp[1];
+			}
+			return new ProviderAndName(provider, controller);
+		} else {
+			return null;
+		}
 	}
 	
 }
