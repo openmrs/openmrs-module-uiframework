@@ -20,6 +20,7 @@
 	
 	<!-- Maps hibernate files, if present -->
 	<mappingFiles>
+		UserDefinedPageView.hbm.xml
 	</mappingFiles>
 
 	<!-- Internationalization -->
