@@ -18,6 +18,86 @@
   		    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 	<!-- Add here beans related to the API context -->
+<bean id="corePageFactory" class="org.openmrs.ui.framework.page.PageFactory">
+		<property name="additionalControllerProviders">
+			<!-- I tried moving this to a StandardModuleUiConfiguration, but that broke IntregrationTest -->
+			<map>
+                <entry key="uiframework">
+                    <bean class="org.openmrs.ui.framework.page.ConventionBasedClasspathPageControllerProvider">
+                        <property name="basePackage" value="org.openmrs.module.uiframework.page.controller"/>
+                    </bean>
+                </entry>
+			</map>
+		</property>
+		<property name="additionalViewProviders">
+			<map>
+				<entry key="userdefined">
+        			<bean class="org.openmrs.ui.framework.page.UserDefinedPageViewProvider"/>
+    			</entry>
+				<entry key="uiframework">
+					<bean class="org.openmrs.ui.framework.page.GroovyPageViewProvider"/>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="coreFragmentFactory" class="org.openmrs.ui.framework.fragment.FragmentFactory">
+		<property name="developmentMode" value="true"/>
+		<property name="additionalControllerProviders">
+			<map>
+				<entry key="uiframework">				
+					<bean class="org.openmrs.ui.framework.fragment.ConventionBasedClasspathFragmentControllerProvider">
+						<property name="basePackage" value="org.openmrs.module.uiframework.fragment.controller"/>
+					</bean>
+				</entry>
+			</map>
+		</property>
+		<property name="additionalViewProviders">
+			<map>
+                <entry key="uiframework">
+                    <bean class="org.openmrs.ui.framework.fragment.GroovyFragmentViewProvider"/>
+                </entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="coreResourceFactory" class="org.openmrs.ui.framework.resource.ResourceFactory"/>
+	
+	<!-- Converters will be automatically picked up by the conversionService bean -->
+	<bean class="org.openmrs.ui.framework.converter.StringToFormConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToLocationConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToPatientIdentifierConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToPatientIdentifierTypeConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToPersonAttributeConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToPersonAttributeTypeConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToEncounterConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToEncounterTypeConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToRelationshipTypeConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToUserConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToPatientConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToPersonConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToDateConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToRelationshipConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToProgramConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToPatientProgramConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToConceptConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToPatientProblemConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToGlobalPropertyConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.OpenmrsObjectToStringConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.MultipartFileToInputStreamConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.PatientToSimpleObjectConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.PatientIdentifierToSimpleObjectConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.OpenmrsMetadataToSimpleObjectConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.OpenmrsObjectToSimpleObjectConverter"/>
+	
+	<!-- Conversion Service, will autowire converters -->
+	<bean id="conversionService" class="org.openmrs.module.uiframework.UiFrameworkConversionServiceFactoryBean"/>
+	
+	<!-- A basic implementation of UiUtils that can be autowired into other beans -->
+	<bean id="uiUtils" class="org.openmrs.ui.framework.BasicUiUtils" init-method="init"/>
+	
+	<bean id="uiSessionFactory" class="org.openmrs.ui.framework.session.SessionFactory"/>
 
+	<bean id="notificationManager" class="org.openmrs.ui.framework.notification.NotificationManagerImpl"/>
 	
 </beans>
