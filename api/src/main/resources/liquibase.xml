@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
  
-   <changeSet id="uiframework-20120907-2051" author="wyclif">
+   <changeSet id="uiframework-20120907-2052" author="wyclif">
  		<preConditions onFail="MARK_RAN">
 			<not><tableExists tableName="uiframework_page_view" /></not>
 		</preConditions>
@@ -15,7 +15,7 @@
 				<constraints nullable="false" primaryKey="true"/>
 			</column>			
 			<column name="name" type="varchar(100)"><constraints nullable="false" unique="true"/></column>
-			<column name="tempate_type" type="varchar(50)"><constraints nullable="false"/></column>
+			<column name="template_type" type="varchar(50)"><constraints nullable="false"/></column>
 			<column name="template_text" type="mediumtext"><constraints nullable="false"/></column>
 			<column name="uuid" type="varchar(38)"><constraints nullable="false" unique="true"/></column>
 		</createTable>
