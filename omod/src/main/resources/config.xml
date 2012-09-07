@@ -14,6 +14,11 @@
 	<updateURL>https://modules.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
 	<require_version>${openMRSVersion}</require_version>
 	<!-- / Module Properties -->
+
+    <extension>
+        <point>org.openmrs.patientDashboardTab</point>
+        <class>${project.parent.groupId}.${project.parent.artifactId}.extension.html.PatientSummaryTab</class>
+    </extension>
 		
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.UiFrameworkActivator</activator>
