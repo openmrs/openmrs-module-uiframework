@@ -11,7 +11,7 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
-package org.openmrs.ui2;
+package org.openmrs.ui.framework;
 
 import org.junit.Test;
 import org.openmrs.ui.framework.page.PageFactory;
