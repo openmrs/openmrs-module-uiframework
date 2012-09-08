@@ -19,7 +19,7 @@ public class UiUtilsTest {
 	}
 	
 	/**
-	 * @see UiUtils#pageLink(String,Map)
+	 * @see UiUtils#pageLink(String, String, Map)
 	 * @verifies handle page name
 	 */
 	@Test
@@ -27,12 +27,12 @@ public class UiUtilsTest {
 		Map<String, Object> params = new LinkedHashMap<String, Object>();
 		params.put("one", "1");
 		params.put("two", "2");
-		String link = ui.pageLink("myPage", params);
-		Assert.assertTrue(link.endsWith("/myPage.page?one=1&two=2&"));
+		String link = ui.pageLink("mymoduleid", "myPage", params);
+		Assert.assertTrue(link.endsWith("/mymoduleid/myPage.page?one=1&two=2&"));
 	}
 	
 	/**
-	 * @see UiUtils#pageLink(String,Map)
+	 * @see UiUtils#pageLink(String, String, Map)
 	 * @verifies handle page name with question mark and query string
 	 */
 	@Test
@@ -40,27 +40,27 @@ public class UiUtilsTest {
 		Map<String, Object> params = new LinkedHashMap<String, Object>();
 		params.put("one", "1");
 		params.put("two", "2");
-		String link = ui.pageLink("myPage?three=3&four=4", params);
-		Assert.assertTrue(link.endsWith("/myPage.page?one=1&two=2&three=3&four=4"));
+		String link = ui.pageLink("mymoduleid", "myPage?three=3&four=4", params);
+		Assert.assertTrue(link.endsWith("/mymoduleid/myPage.page?one=1&two=2&three=3&four=4"));
 	}
 	
 	/**
-	 * @see UiUtils#pageLink(String,Map)
+	 * @see UiUtils#pageLink(String, String, Map)
 	 * @verifies handle page name with anchor
 	 */
 	@Test
 	public void pageLink_shouldHandlePageNameWithAnchor() throws Exception {
-		String link = ui.pageLink("myPage#mySection", null);
-		Assert.assertTrue(link.endsWith("/myPage.page#mySection"));
+		String link = ui.pageLink("mymoduleid", "myPage#mySection", null);
+		Assert.assertTrue(link.endsWith("/mymoduleid/myPage.page#mySection"));
 	}
 	
 	/**
-	 * @see UiUtils#pageLink(String,Map)
+	 * @see UiUtils#pageLink(String, String, Map)
 	 * @verifies handle page name with anchor and query string
 	 */
 	@Test
 	public void pageLink_shouldHandlePageNameWithAnchorAndQueryString() throws Exception {
-		String link = ui.pageLink("myPage?param=val#mySection", null);
-		Assert.assertTrue(link.endsWith("/myPage.page?param=val#mySection"));
+		String link = ui.pageLink("mymoduleid", "myPage?param=val#mySection", null);
+		Assert.assertTrue(link.endsWith("/mymoduleid/myPage.page?param=val#mySection"));
 	}
 }

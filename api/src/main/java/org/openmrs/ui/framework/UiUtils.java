@@ -149,12 +149,13 @@ public abstract class UiUtils {
 		return sb.toString();
 	}
 	
-	public String pageLink(String pageName) {
-		return pageLink(pageName, null);
+	public String pageLink(String providerName, String pageName) {
+		return pageLink(providerName, pageName, null);
 	}
 	
 	/**
 	 * Supports query parameters and anchors in the pageName, e.g. "myPage?one=1&two=2#mySection"
+	 * @param providerName
 	 * @param pageName
 	 * @param params
 	 * @return
@@ -163,7 +164,10 @@ public abstract class UiUtils {
 	 * @should handle page name with anchor
 	 * @should handle page name with anchor and query string
 	 */
-	public String pageLink(String pageName, Map<String, Object> params) {
+	public String pageLink(String providerName, String pageName, Map<String, Object> params) {
+		if (providerName == null) {
+			throw new UiFrameworkException("pageLink requires you specify a provider");
+		}
 		String extraQuery = null;
 		String extraAnchor = null;
 		if (pageName.indexOf('?') > 0) {
@@ -175,7 +179,7 @@ public abstract class UiUtils {
 			pageName = pageAndAnchor[0];
 			extraAnchor = pageAndAnchor[1];
 		}
-		String ret = "/" + contextPath() + "/pages/" + pageName + ".page";
+		String ret = "/" + contextPath() + "/pages/" + providerName + "/" + pageName + ".page";
 		if (params != null || extraQuery != null) {
 			ret += "?";
 			if (params != null) {
