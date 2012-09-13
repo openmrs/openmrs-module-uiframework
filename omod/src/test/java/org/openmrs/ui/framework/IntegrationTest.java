@@ -13,17 +13,20 @@
  */
 package org.openmrs.ui.framework;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
+import org.openmrs.ui.framework.db.UserDefinedPageViewDAO;
 import org.openmrs.ui.framework.page.PageFactory;
 import org.openmrs.ui.framework.page.PageRequest;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
-
 
 /**
  *
@@ -36,13 +39,29 @@ public class IntegrationTest extends BaseModuleWebContextSensitiveTest {
 	@Autowired
 	SessionFactory sessionFactory;
 	
+	@Autowired
+	@Qualifier("userDefinedPageviewDAO")
+	UserDefinedPageViewDAO dao;
+	
 	@Test
 	public void integrationTest() throws Exception {
 		MockHttpSession httpSession = new MockHttpSession();
 		Session session = sessionFactory.getSession(httpSession);
-		PageRequest req = new PageRequest("uiframework", "home", new MockHttpServletRequest(), new MockHttpServletResponse(), session);
+		PageRequest req = new PageRequest("uiframework", "home", new MockHttpServletRequest(),
+		        new MockHttpServletResponse(), session);
 		String html = pageFactory.handle(req);
 		System.out.println("Result = " + html);
+	}
+	
+	@Test
+	public void shouldDisplayAUserDefinedPage() throws Exception {
+		executeDataSet("moduleTestData.xml");
+		MockHttpSession httpSession = new MockHttpSession();
+		Session session = sessionFactory.getSession(httpSession);
+		PageRequest req = new PageRequest("userdefined", "welcome", new MockHttpServletRequest(),
+		        new MockHttpServletResponse(), session);
+		String html = pageFactory.handle(req);
+		Assert.assertTrue(html.indexOf("Welcome admin!") > -1);
 	}
 	
 }
