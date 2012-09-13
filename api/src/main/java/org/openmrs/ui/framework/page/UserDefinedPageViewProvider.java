@@ -21,7 +21,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openmrs.api.APIException;
 import org.openmrs.ui.framework.UserDefinedPageView;
+import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.db.UserDefinedPageViewDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -53,6 +55,10 @@ public class UserDefinedPageViewProvider implements PageViewProvider {
 			if (userDefined == null)
 				return null;
 			
+			//TODO Add support for other templates e.g velocity
+			if (!WebConstants.DEFAULT_USER_DEFINED_TEMPLATE_TYPE.equalsIgnoreCase(userDefined.getTemplateType()))
+				throw new APIException("Only groovy templates are supported");
+			
 			String definition = userDefined.getTemplateText();
 			// <!--CONTROLLER:{non-whitespace, not greedy}--> allowing for whitespaces between elements
 			Pattern p = Pattern.compile("<!--\\s*CONTROLLER\\s*:\\s*(\\S*?)\\s*-->");
@@ -60,8 +66,7 @@ public class UserDefinedPageViewProvider implements PageViewProvider {
 			if (m.find())
 				controllerName = m.group(1);
 			Template template = engine.createTemplate(definition);
-			//TODO, Typically we should be checking for the template type
-			//and return the appropriate PageView implementation
+			
 			return new GroovyPageView(template, controllerName);
 		}
 		catch (Exception ex) {

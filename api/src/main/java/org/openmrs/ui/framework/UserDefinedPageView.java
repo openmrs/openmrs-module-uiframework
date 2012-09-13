@@ -25,7 +25,7 @@ public class UserDefinedPageView extends BaseOpenmrsObject {
 	private String name;
 	
 	//Only groovy templates are supported currently
-	private String templateType = "groovy";
+	private String templateType = WebConstants.DEFAULT_USER_DEFINED_TEMPLATE_TYPE;
 	
 	private String templateText;
 	
