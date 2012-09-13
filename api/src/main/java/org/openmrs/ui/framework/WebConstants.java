@@ -45,4 +45,6 @@ public class WebConstants {
 	//should be replaced with the contextPath by the org.openmrs.ui2.webapp.Listener at start up 
 	public static String WEBAPP_NAME = "openmrs2";
 	
+	public static String DEFAULT_USER_DEFINED_TEMPLATE_TYPE = "groovy";
+	
 }

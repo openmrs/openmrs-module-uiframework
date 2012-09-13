@@ -20,6 +20,7 @@
   		    http://www.springframework.org/schema/util
   		    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
+		<!-- Add here beans related to the API context -->
 	<bean id="corePageFactory" class="org.openmrs.ui.framework.page.PageFactory">
 		<property name="additionalControllerProviders">
 			<!-- I tried moving this to a StandardModuleUiConfiguration, but that broke IntregrationTest -->
@@ -33,6 +34,9 @@
 		</property>
 		<property name="additionalViewProviders">
 			<map>
+				<entry key="userdefined">
+        			<bean class="org.openmrs.ui.framework.page.UserDefinedPageViewProvider"/>
+    			</entry>
 				<entry key="uiframework">
 					<bean class="org.openmrs.ui.framework.page.GroovyPageViewProvider"/>
 				</entry>

@@ -14,12 +14,13 @@
 	<updateURL>https://modules.openmrs.org/modules/download/${project.parent.artifactId}/update.rdf</updateURL>
 	<require_version>${openMRSVersion}</require_version>
 	<!-- / Module Properties -->
-		
-	<!-- Module Activator -->
+
+    <!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.UiFrameworkActivator</activator>
 	
 	<!-- Maps hibernate files, if present -->
 	<mappingFiles>
+		UserDefinedPageView.hbm.xml
 	</mappingFiles>
 
 	<!-- Internationalization -->
