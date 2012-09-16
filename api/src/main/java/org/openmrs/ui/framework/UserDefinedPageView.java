@@ -19,7 +19,7 @@ import org.openmrs.BaseOpenmrsObject;
 import org.openmrs.User;
 
 /**
- * An {@link UserDefinedPageView} object encapsulates data a custom user template that is stored in
+ * An {@link UserDefinedPageView} object encapsulates data for a custom user template that is stored in
  * the database, the template scripts are executed on the fly when the page is requested. Only
  * groovy templates are currently supported
  */
