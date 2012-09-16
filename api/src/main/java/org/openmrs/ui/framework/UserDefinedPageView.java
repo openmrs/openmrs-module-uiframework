@@ -13,10 +13,15 @@
  */
 package org.openmrs.ui.framework;
 
+import java.util.Date;
+
 import org.openmrs.BaseOpenmrsObject;
+import org.openmrs.User;
 
 /**
- * An {@link UserDefinedPageView} object represents a user defined page view
+ * An {@link UserDefinedPageView} object encapsulates data a custom user template that is stored in
+ * the database, the template scripts are executed on the fly when the page is requested. Only
+ * groovy templates are currently supported
  */
 public class UserDefinedPageView extends BaseOpenmrsObject {
 	
@@ -29,6 +34,10 @@ public class UserDefinedPageView extends BaseOpenmrsObject {
 	
 	private String templateText;
 	
+	private User creator;
+	
+	private Date dateCreated;
+	
 	/**
 	 * Default constructor
 	 */
@@ -36,8 +45,6 @@ public class UserDefinedPageView extends BaseOpenmrsObject {
 	}
 	
 	/**
-	 * Convenience constructor that takes in a name and definition
-	 * 
 	 * @param name
 	 * @param definition
 	 */
@@ -100,6 +107,34 @@ public class UserDefinedPageView extends BaseOpenmrsObject {
 	 */
 	public void setTemplateText(String templateText) {
 		this.templateText = templateText;
+	}
+	
+	/**
+	 * @return the creator
+	 */
+	public User getCreator() {
+		return creator;
+	}
+	
+	/**
+	 * @param creator the creator to set
+	 */
+	public void setCreator(User creator) {
+		this.creator = creator;
+	}
+	
+	/**
+	 * @return the dateCreated
+	 */
+	public Date getDateCreated() {
+		return dateCreated;
+	}
+	
+	/**
+	 * @param dateCreated the dateCreated to set
+	 */
+	public void setDateCreated(Date dateCreated) {
+		this.dateCreated = dateCreated;
 	}
 	
 	/**

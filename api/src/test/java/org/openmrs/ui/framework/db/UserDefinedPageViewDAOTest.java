@@ -33,7 +33,7 @@ public class UserDefinedPageViewDAOTest extends BaseModuleContextSensitiveTest {
 	@Test
 	@Verifies(value = "should get a user defined page by name", method = "getPageViewByName(String)")
 	public void getPageViewByName_shouldGetAUserDefinedPageByName() throws Exception {
-		executeDataSet("moduleTestData.xml");
+		executeDataSet("ModuleTestData-userDefinedPageViews.xml");
 		UserDefinedPageView userPage = dao.getPageViewByName("welcome");
 		Assert.assertNotNull(userPage);
 		Assert.assertEquals("bbc05786-9019-11e1-aaa4-00248140a5eb", userPage.getUuid());

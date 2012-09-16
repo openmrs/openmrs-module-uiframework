@@ -70,7 +70,6 @@ public class UserDefinedPageViewProvider implements PageViewProvider {
 			return new GroovyPageView(template, controllerName);
 		}
 		catch (Exception ex) {
-			log.error("Error creating GroovyPageView", ex);
 			throw new RuntimeException("Error creating GroovyPageView", ex);
 		}
 	}

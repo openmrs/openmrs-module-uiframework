@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<uiframework_user_defined_page_view page_view_id="1" name="welcome" template_type="groovy" template_text="Welcome ${context.authenticatedUser}!" creator="1" date_created="2004-02-02 00:00:00.0" uuid="bbc05786-9019-11e1-aaa4-00248140a5eb" />
+</dataset>
