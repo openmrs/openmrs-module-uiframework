@@ -1,5 +1,7 @@
 package org.openmrs.ui.framework;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.util.OpenmrsUtil;
 import org.springframework.validation.BindingResult;
@@ -139,6 +144,17 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 				}
 			}
 			return ret;
+		}
+	}
+	
+	public String toJson() {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			StringWriter sw = new StringWriter();
+	        mapper.writeValue(sw, this);
+	        return sw.toString();
+		} catch (Exception ex) {
+			throw new UiFrameworkException("Error converting to JSON", ex);
 		}
 	}
 	
