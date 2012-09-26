@@ -3,13 +3,13 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
 
-<hibernate-mapping package="org.openmrs.ui.framework">
+<hibernate-mapping>
 
-	<class name="UserDefinedPageView" table="uiframework_page_view">
+	<class name="org.openmrs.ui.framework.UserDefinedPageView" table="uiframework_user_defined_page_view">
 	
 		<id name="pageViewId" type="java.lang.Integer" column="page_view_id">
 			<generator class="native">
-				<param name="sequence">uiframework_page_view_page_view_id_seq</param>
+				<param name="sequence">uiframework_user_defined_page_view_page_view_id_seq</param>
 			</generator>
 		</id>
 		
@@ -22,6 +22,10 @@
 		<property name="templateText" type="string" column="template_text" not-null="true" length="16777215" />
 		
 		<property name="uuid" type="string" length="38" unique="true" not-null="true" />
+		
+		<many-to-one name="creator" class="org.openmrs.User" column="creator" not-null="true" />
+		
+		<property name="dateCreated" type="java.util.Date" column="date_created" length="19" not-null="true"/>
 		
 	</class>
 	
