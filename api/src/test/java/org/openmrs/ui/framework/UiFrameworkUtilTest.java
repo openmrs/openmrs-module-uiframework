@@ -198,6 +198,39 @@ public class UiFrameworkUtilTest {
 		Assert.assertEquals("Testing", bound.getName());
 		Assert.assertEquals(MockDomainSubclass.class, bound.getClass());
 	}
+
+    @Test
+    public void test_executeControllerMethodShouldDependOnHttpRequestMethod() throws Exception {
+        Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
+
+        Object result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), "GET", argumentsByType, conversionService);
+        Assert.assertEquals("Got it", result);
+
+        result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), "POST", argumentsByType, conversionService);
+        Assert.assertEquals("Posted it", result);
+
+        result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), "HEAD", argumentsByType, conversionService);
+        Assert.assertEquals("Fallback", result);
+
+        result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), null, argumentsByType, conversionService);
+        Assert.assertEquals("Fallback", result);
+    }
+
+    public class MockFormController {
+
+        public String controller() {
+            return "Fallback";
+        }
+
+        public String get() {
+            return "Got it";
+        }
+
+        public String post() {
+            return "Posted it";
+        }
+
+    }
 	
 	public class MockController {
 		

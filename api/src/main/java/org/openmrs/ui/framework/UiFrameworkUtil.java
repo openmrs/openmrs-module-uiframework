@@ -42,23 +42,41 @@ public class UiFrameworkUtil {
 	
 	private static Log log = LogFactory.getLog(UiFrameworkUtil.class);
 	
-	public static Object executeControllerMethod(Object controller, Map<Class<?>, Object> possibleArguments,
-	        ConversionService conversionService) throws PageAction {
+	public static Object executeControllerMethod(Object controller, String httpRequestMethod, Map<Class<?>, Object> possibleArguments,
+                                                 ConversionService conversionService) throws PageAction {
 		Method controllerMethod = null;
-		for (Method candidate : controller.getClass().getMethods()) {
-			if (candidate.getName().equals("controller")) {
-				controllerMethod = candidate;
-				break;
-			}
-		}
+        controllerMethod = findControllerMethodForHttpRequestMethod(controller, httpRequestMethod);
+        if (controllerMethod == null) {
+            controllerMethod = findGenericControllerMethod(controller);
+        }
 		if (controllerMethod == null)
-			throw new UiFrameworkException("Cannot find controller method in " + controller.getClass()
-			        + " that returns void or String");
+			throw new UiFrameworkException("Cannot find controller method for request method " + httpRequestMethod + " in " + controller.getClass());
 		
 		return invokeMethodWithArguments(controller, controllerMethod, possibleArguments, conversionService);
 	}
-	
-	public static Object invokeMethodWithArguments(Object target, Method method, Map<Class<?>, Object> possibleArguments,
+
+    private static Method findGenericControllerMethod(Object controller) {
+        for (Method candidate : controller.getClass().getMethods()) {
+            if (candidate.getName().equals("controller")) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    private static Method findControllerMethodForHttpRequestMethod(Object controller, String httpRequestMethod) {
+        if (httpRequestMethod != null) {
+            String lookForMethodName = httpRequestMethod.toLowerCase();
+            for (Method candidate : controller.getClass().getMethods()) {
+                if (candidate.getName().equals(lookForMethodName)) {
+                    return candidate;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Object invokeMethodWithArguments(Object target, Method method, Map<Class<?>, Object> possibleArguments,
 	        ConversionService conversionService) throws PageAction {
 		try {
 			Class<?>[] types = method.getParameterTypes();

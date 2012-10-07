@@ -52,6 +52,9 @@ public class PageFactory {
 	
 	@Autowired
 	ConversionService conversionService;
+
+    @Autowired(required = false)
+    List<PageModelConfigurator> modelConfigurators;
 	
 	private static Map<String, PageControllerProvider> controllerProviders;
 	
@@ -65,11 +68,17 @@ public class PageFactory {
 		// create a context for processing this page
 		PageContext context = new PageContext(request);
 		context.setMessageSource(messageSource);
-		context.setPageFactory(this);
-		context.setFragmentFactory(fragmentFactory);
-		context.setExtensionManager(extensionManager);
-		mapInternalPageName(request);
-		String result = process(context);
+        context.setPageFactory(this);
+        context.setFragmentFactory(fragmentFactory);
+        context.setExtensionManager(extensionManager);
+        mapInternalPageName(request);
+        if (modelConfigurators != null) {
+            for (PageModelConfigurator pageModelConfigurator : modelConfigurators) {
+                pageModelConfigurator.configureModel(context);
+            }
+
+        }
+        String result = process(context);
 		log.info(">>> Page >>> handled " + request + " in " + (System.currentTimeMillis() - startTime) + " ms");
 		return result;
 	}
@@ -171,7 +180,8 @@ public class PageFactory {
 		possibleArguments.put(Session.class, context.getRequest().getSession());
 		possibleArguments.put(ApplicationContext.class, applicationContext);
 		possibleArguments.put(UiUtils.class, new PageUiUtils(context));
-		return UiFrameworkUtil.executeControllerMethod(context.getController(), possibleArguments, conversionService);
+        String httpRequestMethod = context.getRequest().getRequest().getMethod();
+		return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService);
 	}
 	
 	private String toHtml(String body, PageContext context) {
@@ -410,5 +420,12 @@ public class PageFactory {
 	public ConversionService getConversionService() {
 		return conversionService;
 	}
-	
+
+    public List<PageModelConfigurator> getModelConfigurators() {
+        return modelConfigurators;
+    }
+
+    public void setModelConfigurators(List<PageModelConfigurator> modelConfigurators) {
+        this.modelConfigurators = modelConfigurators;
+    }
 }

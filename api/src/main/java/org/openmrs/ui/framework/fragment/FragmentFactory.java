@@ -57,6 +57,9 @@ public class FragmentFactory {
 	
 	@Autowired(required = false)
 	ServletContext servletContext;
+
+    @Autowired(required = false)
+    List<FragmentModelConfigurator> modelConfigurators;
 	
 	private boolean developmentMode = false;
 	
@@ -81,6 +84,7 @@ public class FragmentFactory {
 			log.debug("processing " + context.getRequest());
 		}
 		applyDefaultConfiguration(context);
+        configureModel(context);
 		// it's possible someone has pre-requested that this fragment be decorated
 		if (context.getRequest().getConfiguration().containsKey("decorator")) {
 			String decoratorProvider = (String) context.getRequest().getConfiguration().get("decoratorProvider");
@@ -102,14 +106,22 @@ public class FragmentFactory {
 		decoratorRequest.getConfiguration().put("content", result);
 		decoratorRequest.getConfiguration().put("contentFragmentId", context.getRequest().getConfiguration().get("id"));
 		FragmentContext decoratorContext = new FragmentContext(decoratorRequest, context);
-		String ret = process(decoratorContext);
+        String ret = process(decoratorContext);
 		if (log.isDebugEnabled()) {
 			log.debug("\thandled " + context.getRequest() + " in " + (System.currentTimeMillis() - startTime) + " ms");
 		}
 		return ret;
 	}
-	
-	private void applyDefaultConfiguration(FragmentContext context) {
+
+    private void configureModel(FragmentContext fragmentContext) {
+        if (modelConfigurators != null) {
+            for (FragmentModelConfigurator configurator : modelConfigurators) {
+                configurator.configureModel(fragmentContext);
+            }
+        }
+    }
+
+    private void applyDefaultConfiguration(FragmentContext context) {
 		FragmentConfiguration config = context.getRequest().getConfiguration();
 		if (!config.containsKey("id"))
 			config.put("id", UiUtils.randomId("fr"));
@@ -195,7 +207,8 @@ public class FragmentFactory {
 		possibleArguments.put(Session.class, context.getPageContext().getRequest().getSession());
 		possibleArguments.put(ApplicationContext.class, applicationContext);
 		possibleArguments.put(ServletContext.class, servletContext);
-		return UiFrameworkUtil.executeControllerMethod(context.getController(), possibleArguments, conversionService);
+        String httpRequestMethod = context.getPageContext().getRequest().getRequest().getMethod();
+        return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService);
 	}
 	
 	/**
@@ -289,7 +302,7 @@ public class FragmentFactory {
 	}
 	
 	/**
-	 * @param controllerProviders the controllerProviders to set
+	 * @param newControllerProviders the controllerProviders to set
 	 */
 	public void setControllerProviders(Map<String, FragmentControllerProvider> newControllerProviders) {
 		controllerProviders = newControllerProviders;
@@ -347,7 +360,7 @@ public class FragmentFactory {
 	}
 	
 	/**
-	 * @param viewProviders the viewProviders to set
+	 * @param newViewProviders the viewProviders to set
 	 */
 	public void setViewProviders(Map<String, FragmentViewProvider> newViewProviders) {
 		viewProviders = newViewProviders;
@@ -511,5 +524,12 @@ public class FragmentFactory {
 	public ServletContext getServletContext() {
 		return servletContext;
 	}
-	
+
+    public void setModelConfigurators(List<FragmentModelConfigurator> modelConfigurators) {
+        this.modelConfigurators = modelConfigurators;
+    }
+
+    public List<FragmentModelConfigurator> getModelConfigurators() {
+        return modelConfigurators;
+    }
 }

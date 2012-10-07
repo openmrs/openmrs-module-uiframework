@@ -1,14 +1,29 @@
 package org.openmrs.ui.framework.fragment;
 
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import groovy.text.SimpleTemplateEngine;
+import groovy.text.Template;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+import org.mockito.internal.matchers.Contains;
 import org.openmrs.ui.framework.UiFrameworkException;
+import org.openmrs.ui.framework.page.GroovyPageView;
 import org.openmrs.ui.framework.page.PageAction;
+import org.openmrs.ui.framework.page.PageContext;
+import org.openmrs.ui.framework.page.PageFactory;
+import org.openmrs.ui.framework.page.PageModelConfigurator;
+import org.openmrs.ui.framework.page.PageRequest;
+import org.openmrs.ui.framework.session.Session;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
 
 public class FragmentFactoryTest {
 	
@@ -17,7 +32,7 @@ public class FragmentFactoryTest {
 	@Before
 	public void beforeEachTest() throws Exception {
 		factory = new FragmentFactory();
-		
+
 		Map<String, FragmentControllerProvider> cps = new HashMap<String, FragmentControllerProvider>();
 		cps.put("somemodule", new MockControllerProvider("somefragment"));
 		cps.put("othermodule", new MockControllerProvider("otherfragment"));
@@ -27,6 +42,14 @@ public class FragmentFactoryTest {
 		vps.put("somemodule", new MockViewProvider("somefragment"));
 		vps.put("othermodule", new MockViewProvider("otherfragment"));
 		factory.setViewProviders(vps);
+
+        FragmentModelConfigurator configurator = new FragmentModelConfigurator() {
+            @Override
+            public void configureModel(FragmentContext pageContext) {
+                pageContext.getModel().put("someCustomVariable", "Success!!!");
+            }
+        };
+        factory.setModelConfigurators(Collections.singletonList(configurator));
 	}
 	
 	/**
@@ -91,6 +114,20 @@ public class FragmentFactoryTest {
 		factory.getView(new FragmentRequest("unknownmodule", "somefragment"), null);
     }
 
+    @Test
+    public void process_shouldSetCustomModelProperties() throws Exception {
+        MockHttpSession httpSession = new MockHttpSession();
+        Session session = new Session(httpSession);
+        PageRequest pageRequest = new PageRequest("somemodule", "groovy", new MockHttpServletRequest(), new MockHttpServletResponse(), session);
+        PageContext pageContext = new PageContext(pageRequest);
+        pageContext.setPageFactory(new PageFactory());
+
+        FragmentRequest fragmentRequest = new FragmentRequest("somemodule", "groovy");
+        FragmentContext fragmentContext = new FragmentContext(fragmentRequest, pageContext);
+
+        String result = factory.process(fragmentContext);
+        Assert.assertThat(result, new Contains("Testing Success!!!"));
+    }
 	
 	class MockControllerProvider implements FragmentControllerProvider {
 
@@ -134,6 +171,13 @@ public class FragmentFactoryTest {
 						return "Contents of Some Fragment";
 					}
 				};
+            } else if ("groovy".equals(name)) {
+                try {
+                    Template template = new SimpleTemplateEngine(getClass().getClassLoader()).createTemplate("Testing ${ someCustomVariable }");
+                    return new GroovyFragmentView("somemodule:groovy", template);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
 	        } else {
 	        	return null;
 	        }

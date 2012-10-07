@@ -29,7 +29,7 @@ public class HibernateUserDefinedPageViewDAO extends SingleClassHibernateDAO<Use
 	}
 	
 	/**
-	 * @see org.openmrs.ui2.reference.page.db.UserDefinedPageViewDAO#getPageViewByName(java.lang.String)
+	 * @see org.openmrs.ui.framework.db.UserDefinedPageViewDAO#getPageViewByName(java.lang.String)
 	 */
 	@Override
 	@Transactional(readOnly = true)

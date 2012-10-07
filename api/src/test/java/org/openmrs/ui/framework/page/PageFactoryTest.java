@@ -1,12 +1,18 @@
 package org.openmrs.ui.framework.page;
 
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import groovy.text.SimpleTemplateEngine;
+import groovy.text.Template;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.internal.matchers.Contains;
 import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
@@ -14,6 +20,8 @@ import org.openmrs.ui.framework.session.Session;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+
+import static org.mockito.Matchers.contains;
 
 public class PageFactoryTest {
 	
@@ -32,7 +40,15 @@ public class PageFactoryTest {
 		vps.put("somemodule", new MockViewProvider("somepage"));
 		vps.put("othermodule", new MockViewProvider("otherpage"));
 		factory.setViewProviders(vps);
-	}
+
+        PageModelConfigurator configurator = new PageModelConfigurator() {
+            @Override
+            public void configureModel(PageContext pageContext) {
+                pageContext.getModel().put("someCustomVariable", "Success!!!");
+            }
+        };
+        factory.setModelConfigurators(Collections.singletonList(configurator));
+    }
 	
 	/**
 	 * @see PageFactory#getController(PageRequest)
@@ -101,6 +117,14 @@ public class PageFactoryTest {
 	public void getView_shouldFailIfAnInvalidProviderNameIsSpecified() throws Exception {
 		factory.getView(null, pageRequest("unknownmodule", "somepage"));
 	}
+
+    @Test
+    public void process_shouldSetCustomModelProperties() throws Exception {
+        MockHttpSession httpSession = new MockHttpSession();
+        Session session = new Session(httpSession);
+        String result = factory.handle(new PageRequest("somemodule", "groovy", new MockHttpServletRequest(), new MockHttpServletResponse(), session));
+        Assert.assertThat(result, new Contains("Testing Success!!!"));
+    }
 	
 	/**
      * @param provider
@@ -129,7 +153,7 @@ public class PageFactoryTest {
 		@Override
         public Object getController(String id) {
 	        if (pageName.equals(id)) {
-	        	return new Object();
+	        	return new MockPageController();
 	        } else {
 	        	return null;
 	        }
@@ -161,11 +185,22 @@ public class PageFactoryTest {
 	                    return null;
                     }
 				};
+            } else if ("groovy".equals(name)) {
+                try {
+                    Template template = new SimpleTemplateEngine(getClass().getClassLoader()).createTemplate("Testing ${ someCustomVariable }");
+                    return new GroovyPageView(template, "somemodule:groovy");
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
 	        } else {
 	        	return null;
 	        }
         }
 		
 	}
+
+    public class MockPageController {
+        public void controller() { }
+    }
 	
 }
