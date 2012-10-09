@@ -55,6 +55,9 @@ public class PageFactory {
 
     @Autowired(required = false)
     List<PageModelConfigurator> modelConfigurators;
+
+    @Autowired(required = false)
+    List<PossiblePageControllerArgumentProvider> possiblePageControllerArgumentProviders;
 	
 	private static Map<String, PageControllerProvider> controllerProviders;
 	
@@ -180,11 +183,17 @@ public class PageFactory {
 		possibleArguments.put(Session.class, context.getRequest().getSession());
 		possibleArguments.put(ApplicationContext.class, applicationContext);
 		possibleArguments.put(UiUtils.class, new PageUiUtils(context));
+        if (possiblePageControllerArgumentProviders != null) {
+            for (PossiblePageControllerArgumentProvider provider : possiblePageControllerArgumentProviders) {
+                provider.addPossiblePageControllerArguments(possibleArguments);
+            }
+        }
+
         String httpRequestMethod = context.getRequest().getRequest().getMethod();
 		return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService);
 	}
-	
-	private String toHtml(String body, PageContext context) {
+
+    private String toHtml(String body, PageContext context) {
 		StringBuilder ret = new StringBuilder();
 		ret.append("<?xml version=\"1.0\"?>\n");
 		ret.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
@@ -299,7 +308,7 @@ public class PageFactory {
 	}
 	
 	/**
-	 * @param controllerProviders the controllerProviders to set
+	 * @param newControllerProviders the controllerProviders to set
 	 */
 	public void setControllerProviders(Map<String, PageControllerProvider> newControllerProviders) {
 		controllerProviders = newControllerProviders;
@@ -355,7 +364,7 @@ public class PageFactory {
 	}
 	
 	/**
-	 * @param viewProviders the viewProviders to set
+	 * @param newViewProviders the viewProviders to set
 	 */
 	public void setViewProviders(Map<String, PageViewProvider> newViewProviders) {
 		viewProviders = newViewProviders;
@@ -428,4 +437,9 @@ public class PageFactory {
     public void setModelConfigurators(List<PageModelConfigurator> modelConfigurators) {
         this.modelConfigurators = modelConfigurators;
     }
+
+    public void setPossiblePageControllerArgumentProviders(List<PossiblePageControllerArgumentProvider> possiblePageControllerArgumentProviders) {
+        this.possiblePageControllerArgumentProviders = possiblePageControllerArgumentProviders;
+    }
+
 }

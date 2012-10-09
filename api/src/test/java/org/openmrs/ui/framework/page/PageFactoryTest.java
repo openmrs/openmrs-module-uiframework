@@ -1,27 +1,22 @@
 package org.openmrs.ui.framework.page;
 
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.internal.matchers.Contains;
 import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.UiFrameworkException;
-import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.session.Session;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
-import static org.mockito.Matchers.contains;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PageFactoryTest {
 	
@@ -125,6 +120,39 @@ public class PageFactoryTest {
         String result = factory.handle(new PageRequest("somemodule", "groovy", new MockHttpServletRequest(), new MockHttpServletResponse(), session));
         Assert.assertThat(result, new Contains("Testing Success!!!"));
     }
+
+    @Test
+    public void shouldHandleCustomPageControllerArgumentsByType() throws Exception {
+        PossiblePageControllerArgumentProvider argumentProvider = new PossiblePageControllerArgumentProvider() {
+            @Override
+            public void addPossiblePageControllerArguments(Map<Class<?>, Object> possibleArguments) {
+                possibleArguments.put(Integer.class, new Integer(12345));
+            }
+        };
+        factory.setPossiblePageControllerArgumentProviders(Collections.singletonList(argumentProvider));
+        factory.addControllerProvider("test", new PageControllerProvider() {
+            @Override
+            public Object getController(String id) {
+                return new ControllerThatTakesIntegerType();
+            }
+        });
+        factory.addViewProvider("test", new PageViewProvider() {
+            @Override
+            public PageView getView(String name) {
+                return new PageView() {
+                    @Override
+                    public String render(PageContext context) throws PageAction {
+                        return "Contents of Some Page";
+                    }
+                    @Override
+                    public ProviderAndName getController() {
+                        return null;
+                    }
+                };
+            }
+        });
+        factory.handle(pageRequest("test", "takesInteger"));
+    }
 	
 	/**
      * @param provider
@@ -202,5 +230,11 @@ public class PageFactoryTest {
     public class MockPageController {
         public void controller() { }
     }
-	
+
+    public class ControllerThatTakesIntegerType {
+        public void controller(Integer injected, Long notInjected) {
+            Assert.assertNotNull("Integer argument was not injected", injected);
+            Assert.assertNull("Long argument should not have been injected", notInjected);
+        }
+    }
 }

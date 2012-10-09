@@ -1,29 +1,28 @@
 package org.openmrs.ui.framework.fragment;
 
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 import org.mockito.internal.matchers.Contains;
 import org.openmrs.ui.framework.UiFrameworkException;
-import org.openmrs.ui.framework.page.GroovyPageView;
+import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
+import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.page.PageFactory;
-import org.openmrs.ui.framework.page.PageModelConfigurator;
 import org.openmrs.ui.framework.page.PageRequest;
 import org.openmrs.ui.framework.session.Session;
+import org.openmrs.ui.framework.session.SessionFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FragmentFactoryTest {
 	
@@ -32,6 +31,7 @@ public class FragmentFactoryTest {
 	@Before
 	public void beforeEachTest() throws Exception {
 		factory = new FragmentFactory();
+        factory.setSessionFactory(new SessionFactory());
 
 		Map<String, FragmentControllerProvider> cps = new HashMap<String, FragmentControllerProvider>();
 		cps.put("somemodule", new MockControllerProvider("somefragment"));
@@ -116,17 +116,87 @@ public class FragmentFactoryTest {
 
     @Test
     public void process_shouldSetCustomModelProperties() throws Exception {
-        MockHttpSession httpSession = new MockHttpSession();
-        Session session = new Session(httpSession);
-        PageRequest pageRequest = new PageRequest("somemodule", "groovy", new MockHttpServletRequest(), new MockHttpServletResponse(), session);
-        PageContext pageContext = new PageContext(pageRequest);
-        pageContext.setPageFactory(new PageFactory());
+        PageContext pageContext = buildPageContext();
 
         FragmentRequest fragmentRequest = new FragmentRequest("somemodule", "groovy");
         FragmentContext fragmentContext = new FragmentContext(fragmentRequest, pageContext);
 
         String result = factory.process(fragmentContext);
         Assert.assertThat(result, new Contains("Testing Success!!!"));
+    }
+
+    private PageContext buildPageContext() {
+        MockHttpSession httpSession = new MockHttpSession();
+        Session session = new Session(httpSession);
+        PageRequest pageRequest = new PageRequest("somemodule", "groovy", new MockHttpServletRequest(), new MockHttpServletResponse(), session);
+        PageContext pageContext = new PageContext(pageRequest);
+        pageContext.setPageFactory(new PageFactory());
+        return pageContext;
+    }
+
+    @Test
+    public void shouldHandleCustomFragmentControllerArgumentsByType() throws Exception {
+        PossibleFragmentControllerArgumentProvider argumentProvider = new PossibleFragmentControllerArgumentProvider() {
+            @Override
+            public void addPossibleFragmentControllerArguments(Map<Class<?>, Object> possibleArguments) {
+                possibleArguments.put(Integer.class, new Integer(12345));
+            }
+        };
+        factory.setPossibleFragmentControllerArgumentProviders(Collections.singletonList(argumentProvider));
+        factory.addControllerProvider("test", new FragmentControllerProvider() {
+            @Override
+            public Object getController(String id) {
+                return new ControllerAndActionThatTakeIntegerType();
+            }
+        });
+        factory.addViewProvider("test", new FragmentViewProvider() {
+            @Override
+            public FragmentView getView(String name) {
+                return new FragmentView() {
+                    @Override
+                    public String render(FragmentContext context) throws PageAction {
+                        return "View";
+                    }
+                };
+            }
+        });
+
+        PageContext pageContext = buildPageContext();
+        FragmentRequest fragmentRequest = new FragmentRequest("test", "test");
+        FragmentContext fragmentContext = new FragmentContext(fragmentRequest, pageContext);
+        factory.process(fragmentContext);
+    }
+
+    @Test
+    public void shouldHandleCustomFragmentActionArgumentsByType() throws Exception {
+        PossibleFragmentActionArgumentProvider argumentProvider = new PossibleFragmentActionArgumentProvider() {
+            @Override
+            public void addPossibleFragmentActionArguments(Map<Class<?>, Object> possibleArguments) {
+                possibleArguments.put(Integer.class, new Integer(12345));
+            }
+        };
+        factory.setPossibleFragmentActionArgumentProviders(Collections.singletonList(argumentProvider));
+        factory.addControllerProvider("test", new FragmentControllerProvider() {
+            @Override
+            public Object getController(String id) {
+                return new ControllerAndActionThatTakeIntegerType();
+            }
+        });
+        factory.addViewProvider("test", new FragmentViewProvider() {
+            @Override
+            public FragmentView getView(String name) {
+                return new FragmentView() {
+                    @Override
+                    public String render(FragmentContext context) throws PageAction {
+                        return "View";
+                    }
+                };
+            }
+        });
+
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        httpRequest.setSession(new MockHttpSession());
+        factory.invokeFragmentAction("test", "test", "action", httpRequest);
     }
 	
 	class MockControllerProvider implements FragmentControllerProvider {
@@ -184,5 +254,17 @@ public class FragmentFactoryTest {
         }
 		
 	}
+
+    public class ControllerAndActionThatTakeIntegerType {
+        public void controller(Integer injected, Long notInjected) {
+            Assert.assertNotNull("Integer argument was not injected", injected);
+            Assert.assertNull("Long argument should not have been injected", notInjected);
+        }
+        public FragmentActionResult action(Integer injected, Long notInjected) {
+            Assert.assertNotNull("Integer argument was not injected", injected);
+            Assert.assertNull("Long argument should not have been injected", notInjected);
+            return new SuccessResult();
+        }
+    }
 
 }

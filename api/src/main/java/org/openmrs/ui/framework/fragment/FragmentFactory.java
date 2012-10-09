@@ -22,6 +22,7 @@ import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.page.PageRequest;
+import org.openmrs.ui.framework.page.PossiblePageControllerArgumentProvider;
 import org.openmrs.ui.framework.page.Redirect;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
@@ -60,7 +61,13 @@ public class FragmentFactory {
 
     @Autowired(required = false)
     List<FragmentModelConfigurator> modelConfigurators;
-	
+
+    @Autowired(required = false)
+    List<PossibleFragmentControllerArgumentProvider> possibleFragmentControllerArgumentProviders;
+
+    @Autowired(required = false)
+    List<PossibleFragmentActionArgumentProvider> possibleFragmentActionArgumentProviders;
+
 	private boolean developmentMode = false;
 	
 	private static Map<String, FragmentControllerProvider> controllerProviders;
@@ -207,11 +214,17 @@ public class FragmentFactory {
 		possibleArguments.put(Session.class, context.getPageContext().getRequest().getSession());
 		possibleArguments.put(ApplicationContext.class, applicationContext);
 		possibleArguments.put(ServletContext.class, servletContext);
+        if (possibleFragmentControllerArgumentProviders != null) {
+            for (PossibleFragmentControllerArgumentProvider provider : possibleFragmentControllerArgumentProviders) {
+                provider.addPossibleFragmentControllerArguments(possibleArguments);
+            }
+        }
+
         String httpRequestMethod = context.getPageContext().getRequest().getRequest().getMethod();
         return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService);
 	}
-	
-	/**
+
+    /**
 	 * @param request
 	 * @param viewName if not null, overrides what is specified in request
 	 * @return
@@ -440,7 +453,13 @@ public class FragmentFactory {
 		possibleArguments.put(Session.class, sessionFactory.getSession(httpRequest.getSession()));
 		possibleArguments.put(ApplicationContext.class, applicationContext);
 		possibleArguments.put(ServletContext.class, servletContext);
-		Object[] params = null;
+        if (possibleFragmentActionArgumentProviders != null) {
+            for (PossibleFragmentActionArgumentProvider provider : possibleFragmentActionArgumentProviders) {
+                provider.addPossibleFragmentActionArguments(possibleArguments);
+            }
+        }
+
+        Object[] params = null;
 		try {
 			params = UiFrameworkUtil.determineControllerMethodParameters(controller, method, possibleArguments, conversionService);
 		}
@@ -531,5 +550,17 @@ public class FragmentFactory {
 
     public List<FragmentModelConfigurator> getModelConfigurators() {
         return modelConfigurators;
+    }
+
+    public void setPossibleFragmentControllerArgumentProviders(List<PossibleFragmentControllerArgumentProvider> possibleFragmentControllerArgumentProviders) {
+        this.possibleFragmentControllerArgumentProviders = possibleFragmentControllerArgumentProviders;
+    }
+
+    public void setPossibleFragmentActionArgumentProviders(List<PossibleFragmentActionArgumentProvider> possibleFragmentActionArgumentProviders) {
+        this.possibleFragmentActionArgumentProviders = possibleFragmentActionArgumentProviders;
+    }
+
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 }
