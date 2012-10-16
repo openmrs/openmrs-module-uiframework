@@ -253,7 +253,12 @@ public class FragmentActionController {
 	
 	private String getSuccessUrl(HttpServletRequest request) {
 		String referrer = request.getHeader("referer");
-		if (referrer != null) {
+        if (referrer != null) {
+            try {
+                referrer = new URL(referrer).getFile();
+            } catch (Exception ex) {
+                throw new RuntimeException("Couldn't get file part of referer", ex);
+            }
 			return referrer;
 		} else {
 			throw new RuntimeException("Don't know what to use as success url");
@@ -262,10 +267,16 @@ public class FragmentActionController {
 	
 	private String getFailureUrl(HttpServletRequest request, String successUrl) {
 		String referrer = request.getHeader("referer");
-		if (referrer != null)
+		if (referrer != null) {
+            try {
+                referrer = new URL(referrer).getFile();
+            } catch (Exception ex) {
+                throw new RuntimeException("Couldn't get file part of referer", ex);
+            }
 			return referrer;
-		else
+        } else {
 			return successUrl;
+        }
 	}
 	
 	private String toJson(Object object) {
