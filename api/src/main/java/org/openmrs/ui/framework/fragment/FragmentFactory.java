@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.api.APIAuthenticationException;
@@ -449,6 +450,7 @@ public class FragmentFactory {
 		Map<Class<?>, Object> possibleArguments = new LinkedHashMap<Class<?>, Object>();
 		possibleArguments.put(FragmentActionRequest.class, request);
 		possibleArguments.put(HttpServletRequest.class, httpRequest);
+		possibleArguments.put(HttpSession.class, httpRequest.getSession());
 		possibleArguments.put(UiUtils.class, request.getUiUtils());
 		possibleArguments.put(Session.class, sessionFactory.getSession(httpRequest.getSession()));
 		possibleArguments.put(ApplicationContext.class, applicationContext);
