@@ -1,13 +1,5 @@
 package org.openmrs.ui.framework;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +29,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Map;
 
 public class UiFrameworkUtil {
 	
@@ -82,7 +81,16 @@ public class UiFrameworkUtil {
 			Class<?>[] types = method.getParameterTypes();
 			Object[] params = new Object[types.length];
 			for (int i = 0; i < types.length; ++i) {
-				params[i] = determineArgumentValue(target, possibleArguments, new MethodParameter(method, i), conversionService);
+				Object result = determineArgumentValue(target, possibleArguments, new MethodParameter(method, i), conversionService);
+                if (result instanceof BindingResult) {
+                    params[i] = ((BindingResult) result).getTarget();
+                    if ((i + 1 < types.length) && Errors.class.isAssignableFrom(types[i + 1])) {
+                        params[i + 1] = result;
+                        i += 1; // skip the next one
+                    }
+                } else {
+                    params[i] = result;
+                }
 			}
 			return method.invoke(target, params);
 		}

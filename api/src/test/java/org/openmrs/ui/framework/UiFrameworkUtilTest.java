@@ -1,13 +1,6 @@
 package org.openmrs.ui.framework;
 
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,9 +11,18 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 public class UiFrameworkUtilTest {
-	
-	ConversionService conversionService;
+
+    ConversionService conversionService;
 	MockController controller;
 	
     @Before
@@ -214,6 +216,25 @@ public class UiFrameworkUtilTest {
 
         result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), null, argumentsByType, conversionService);
         Assert.assertEquals("Fallback", result);
+    }
+
+    @Test
+    public void test_invokeMethodWithArgumentsShouldHandleBindParamsAnnotation() throws Exception {
+        final String expectedName = "expectedName";
+        Object controller = new Object() {
+            public void post(@BindParams MockDomainObject command) {
+                assertThat(command.getName(), is(expectedName));
+            }
+        };
+        Method postMethod = controller.getClass().getMethod("post", MockDomainObject.class);
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addParameter("name", expectedName);
+
+        HashMap<Class<?>, Object> possibleArguments = new HashMap<Class<?>, Object>();
+        possibleArguments.put(HttpServletRequest.class, request);
+
+        UiFrameworkUtil.invokeMethodWithArguments(controller, postMethod, possibleArguments, conversionService);
     }
 
     public class MockFormController {
