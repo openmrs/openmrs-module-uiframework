@@ -9,6 +9,7 @@ import org.openmrs.ui.framework.annotation.MethodParam;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -221,20 +223,32 @@ public class UiFrameworkUtilTest {
     @Test
     public void test_invokeMethodWithArgumentsShouldHandleBindParamsAnnotation() throws Exception {
         final String expectedName = "expectedName";
+        final Integer one = new Integer(1);
+
         Object controller = new Object() {
-            public void post(@BindParams MockDomainObject command) {
+            public void post(@BindParams MockDomainObject command, Integer nextArg) {
                 assertThat(command.getName(), is(expectedName));
+                assertThat(nextArg, is(one));
+            }
+            public void postAndValidate(@BindParams MockDomainObject command, Errors errors, Integer nextArg) {
+                assertThat(command.getName(), is(expectedName));
+                assertThat(errors, is(notNullValue()));
+                assertThat(errors.hasErrors(), is(false));
+                assertThat(nextArg, is(one));
             }
         };
-        Method postMethod = controller.getClass().getMethod("post", MockDomainObject.class);
+        Method postMethod1 = controller.getClass().getMethod("post", MockDomainObject.class, Integer.class);
+        Method postMethod2 = controller.getClass().getMethod("postAndValidate", MockDomainObject.class, Errors.class, Integer.class);
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addParameter("name", expectedName);
 
         HashMap<Class<?>, Object> possibleArguments = new HashMap<Class<?>, Object>();
         possibleArguments.put(HttpServletRequest.class, request);
+        possibleArguments.put(Integer.class, one);
 
-        UiFrameworkUtil.invokeMethodWithArguments(controller, postMethod, possibleArguments, conversionService);
+        UiFrameworkUtil.invokeMethodWithArguments(controller, postMethod1, possibleArguments, conversionService);
+        UiFrameworkUtil.invokeMethodWithArguments(controller, postMethod2, possibleArguments, conversionService);
     }
 
     public class MockFormController {
