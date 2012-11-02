@@ -179,7 +179,7 @@ public abstract class UiUtils {
 			pageName = pageAndAnchor[0];
 			extraAnchor = pageAndAnchor[1];
 		}
-		String ret = "/" + contextPath() + "/pages/" + providerName + "/" + pageName + ".page";
+		String ret = "/" + contextPath() + "/" + providerName + "/" + pageName + ".page";
 		if (params != null || extraQuery != null) {
 			ret += "?";
 			if (params != null) {

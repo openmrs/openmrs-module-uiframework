@@ -80,7 +80,7 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 		StringBuilder ret = new StringBuilder();
 		if (includeContextPath)
 			ret.append("/" + WebConstants.CONTEXT_PATH + "/");
-		ret.append("pages/" + request.getPageName() + ".page?");
+		ret.append(request.getProviderName() + "/" + request.getPageName() + ".page?");
 		Map<String, String[]> params = request.getRequest().getParameterMap();
 		for (Map.Entry<String, String[]> e : params.entrySet()) {
 			for (String val : e.getValue()) {
