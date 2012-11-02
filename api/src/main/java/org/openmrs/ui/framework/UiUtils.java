@@ -211,7 +211,7 @@ public abstract class UiUtils {
 		if (providerName == null) {
 			providerName = "*";
 		}
-		StringBuilder sb = new StringBuilder("/" + contextPath() + "/action/" + providerName + "/" + controllerName + "/" + action + ".action?");
+		StringBuilder sb = new StringBuilder("/" + contextPath() + "/" + providerName + "/" + controllerName + "/" + action + ".action?");
 		String successUrl = null;
 		if (args != null) {
 			for (Map.Entry<String, ?> e : args.entrySet()) {
