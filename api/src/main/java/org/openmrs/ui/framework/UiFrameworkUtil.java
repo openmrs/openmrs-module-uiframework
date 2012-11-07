@@ -99,6 +99,9 @@ public class UiFrameworkUtil {
 			        && ((InvocationTargetException) ex).getTargetException() instanceof Exception) {
 				ex = (Exception) ((InvocationTargetException) ex).getTargetException();
 			}
+			if (ex instanceof RuntimeException) {
+				throw (RuntimeException) ex;
+			}
 			if (ex.getCause() != null && ex.getCause() instanceof RuntimeException)
 				throw (RuntimeException) ex.getCause();
 			if (ex instanceof PageAction)
