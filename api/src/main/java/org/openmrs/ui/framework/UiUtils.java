@@ -179,7 +179,7 @@ public abstract class UiUtils {
 			pageName = pageAndAnchor[0];
 			extraAnchor = pageAndAnchor[1];
 		}
-		String ret = "/" + contextPath() + "/pages/" + providerName + "/" + pageName + ".page";
+		String ret = "/" + contextPath() + "/" + providerName + "/" + pageName + ".page";
 		if (params != null || extraQuery != null) {
 			ret += "?";
 			if (params != null) {
@@ -211,7 +211,7 @@ public abstract class UiUtils {
 		if (providerName == null) {
 			providerName = "*";
 		}
-		StringBuilder sb = new StringBuilder("/" + contextPath() + "/action/" + providerName + "/" + controllerName + "/" + action + ".action?");
+		StringBuilder sb = new StringBuilder("/" + contextPath() + "/" + providerName + "/" + controllerName + "/" + action + ".action?");
 		String successUrl = null;
 		if (args != null) {
 			for (Map.Entry<String, ?> e : args.entrySet()) {
