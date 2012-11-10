@@ -14,9 +14,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PageFactoryTest {
 	
@@ -42,7 +46,10 @@ public class PageFactoryTest {
                 pageContext.getModel().put("someCustomVariable", "Success!!!");
             }
         };
-        factory.setModelConfigurators(Collections.singletonList(configurator));
+
+        List<PageModelConfigurator> pageModelConfigurators = new ArrayList<PageModelConfigurator>();
+        pageModelConfigurators.add(configurator);
+        factory.setModelConfigurators(pageModelConfigurators);
     }
 	
 	/**
@@ -153,8 +160,25 @@ public class PageFactoryTest {
         });
         factory.handle(pageRequest("test", "takesInteger"));
     }
-	
-	/**
+
+    @Test
+    public void shouldHandleGlobalResourceIncluder() throws Exception {
+        GlobalResourceIncluder globalResourceIncluder = new GlobalResourceIncluder();
+        globalResourceIncluder.addCssResource("mirebalais", "mirebalais.css");
+        globalResourceIncluder.addJsResource("mirebalais", "mirebalais-utils.js");
+
+        factory.getModelConfigurators().add(globalResourceIncluder);
+
+        String output = factory.handle(pageRequest("somemodule", "somepage"));
+
+        Matcher cssMatcher = Pattern.compile("<link rel=\"stylesheet\" href=\".*/mirebalais\\.css\" type=\"text/css\"/>").matcher(output);
+        Assert.assertTrue(cssMatcher.find());
+
+        Matcher jsMatcher = Pattern.compile("<script type=\"text/javascript\" src=\".*/mirebalais/mirebalais-utils\\.js\"").matcher(output);
+        Assert.assertTrue(jsMatcher.find());
+    }
+
+    /**
      * @param provider
      * @param page
      * @return a page request, with appropriate MockHttp*

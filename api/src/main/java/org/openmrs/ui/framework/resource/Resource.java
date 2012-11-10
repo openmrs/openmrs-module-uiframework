@@ -24,7 +24,11 @@ public class Resource {
 	
 	private String providerName;
 	private String resourcePath;
-	
+
+    public Resource() {
+        this(null, null);
+    }
+
 	/**
 	 * Indicates you want the framework to search across all {@link ResourceProvider}s for one with the given path
 	 * @param resourcePath
