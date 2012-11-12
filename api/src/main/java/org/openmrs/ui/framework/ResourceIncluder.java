@@ -1,17 +1,16 @@
 package org.openmrs.ui.framework;
 
-import java.util.Set;
-
 import org.openmrs.ui.framework.resource.Resource;
 
+import java.util.List;
+
+/**
+ * Methods for including resources (which are grouped by category, e.g. CSS, JAVASCRIPT)
+ */
 public interface ResourceIncluder {
-	
-	public void includeJavascript(Resource resource);
-	
-	public void includeCss(Resource resource);
-	
-	public Set<Resource> getJavascriptToInclude();
-	
-	public Set<Resource> getCssToInclude();
+
+    public void includeResource(Resource resource);
+
+    public List<Resource> getResourcesToInclude(String resourceCategory);
 	
 }

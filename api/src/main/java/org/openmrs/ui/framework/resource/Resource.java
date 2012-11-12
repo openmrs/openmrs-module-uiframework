@@ -17,16 +17,22 @@ import org.openmrs.util.OpenmrsUtil;
 
 
 /**
- * A resource that a page or fragment wants to include
+ * A resource that a page or fragment wants to include.
+ * Each resource has an optional priority. (A higher number means it should be included first, and the default is 0.)
  * @see ResourceFactory
  */
-public class Resource {
-	
+public class Resource implements Comparable<Resource> {
+
+    public final static String CATEGORY_CSS = "css";
+    public final static String CATEGORY_JS = "js";
+
+    private String category;
 	private String providerName;
 	private String resourcePath;
+    private Integer priority = 0;
 
     public Resource() {
-        this(null, null);
+        this(null, null, null, null);
     }
 
 	/**
@@ -34,13 +40,19 @@ public class Resource {
 	 * @param resourcePath
 	 */
 	public Resource(String resourcePath) {
-		this(null, resourcePath);
+		this(null, null, resourcePath, null);
 	}
 	
 	public Resource(String providerName, String resourcePath) {
-		this.providerName = providerName == null ? "*" : providerName;
-		this.resourcePath = resourcePath;
+        this(null, providerName, resourcePath, null);
 	}
+
+    public Resource(String category, String providerName, String resourcePath, Integer priority) {
+        this.category = category;
+        this.providerName = providerName == null ? "*" : providerName;
+        this.resourcePath = resourcePath;
+        this.priority = priority != null ? priority : 0;
+    }
 
     /**
      * @return the providerName
@@ -70,18 +82,48 @@ public class Resource {
     	this.resourcePath = resourcePath;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj) {
-    	if (obj == null || !(obj instanceof Resource)) {
+    public boolean equals(Object other) {
+    	if (other == null || !(other instanceof Resource)) {
     		return false;
     	}
-    	Resource other = (Resource) obj;
-    	return OpenmrsUtil.nullSafeEquals(providerName, other.providerName) && OpenmrsUtil.nullSafeEquals(resourcePath, other.resourcePath); 
+        return compareTo((Resource) other) == 0;
     }
-    
+
+    @Override
+    public int compareTo(Resource other) {
+        int temp = OpenmrsUtil.compareWithNullAsLowest(other.priority, priority);
+        if (temp == 0) {
+            temp = OpenmrsUtil.compareWithNullAsLowest(resourcePath, other.resourcePath);
+        }
+        if (temp == 0) {
+            temp = OpenmrsUtil.compareWithNullAsLowest(providerName, other.providerName);
+        }
+        if (temp == 0) {
+            temp = OpenmrsUtil.compareWithNullAsLowest(category, other.category);
+        }
+        return temp;
+    }
+
     /**
      * @see java.lang.Object#hashCode()
      */

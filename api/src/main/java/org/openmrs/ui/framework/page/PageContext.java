@@ -1,12 +1,5 @@
 package org.openmrs.ui.framework.page;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.Decoratable;
 import org.openmrs.ui.framework.FragmentIncluder;
@@ -21,6 +14,16 @@ import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.resource.Resource;
 import org.springframework.context.MessageSource;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class PageContext implements ResourceIncluder, Messager, Decoratable, FragmentIncluder, ExtensionAware {
 	
@@ -45,11 +48,9 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	private FragmentRequest decorateWith;
 	
 	private String pageTitle;
-	
-	private Set<Resource> javascriptToInclude = new LinkedHashSet<Resource>();
-	
-	private Set<Resource> cssToInclude = new LinkedHashSet<Resource>();
-		
+
+    private SortedSet<Resource> resourcesToInclude = new TreeSet<Resource>();
+
 	public PageContext(PageRequest request) {
 		this.request = request;
 		this.model = new PageModel();
@@ -168,34 +169,40 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-	
-	/**
+
+    @Override
+    public void includeResource(Resource resource) {
+        resourcesToInclude.add(resource);
+    }
+
+    @Override
+    public List<Resource> getResourcesToInclude(String resourceCategory) {
+        List<Resource> ret = new ArrayList<Resource>();
+        for (Resource candidate : resourcesToInclude) {
+            if (resourceCategory.equals(candidate.getCategory())) {
+                ret.add(candidate);
+            }
+        }
+        return ret;
+    }
+
+    /**
 	 * Requests that this page include the given javascript file.
-	 * @param file
+	 * @param resource
 	 */
-	@Override
 	public void includeJavascript(Resource resource) {
-		javascriptToInclude.add(resource);
+        resource.setCategory(Resource.CATEGORY_JS);
+        includeResource(resource);
 	}
 	
 	/**
 	 * Requests that this page include the given css file.
-	 * @param file
+	 * @param resource
 	 */
-	@Override
 	public void includeCss(Resource resource) {
-		cssToInclude.add(resource);
-	}
-	
-	@Override
-	public Set<Resource> getJavascriptToInclude() {
-		return javascriptToInclude;
-	}
-	
-	@Override
-	public Set<Resource> getCssToInclude() {
-		return cssToInclude;
-	}
+        resource.setCategory(Resource.CATEGORY_CSS);
+        includeResource(resource);
+    }
 	
 	/**
 	 * @param messageSource the messageSource to set

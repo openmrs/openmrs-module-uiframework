@@ -14,6 +14,8 @@
 
 package org.openmrs.ui.framework.page;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.ui.framework.resource.Resource;
 
 import java.util.ArrayList;
@@ -23,9 +25,10 @@ import java.util.List;
  * To use this class, instantiate a bean in your module's application context, for example:
  * <pre>
  * <bean class="org.openmrs.ui.framework.page.GlobalResourceIncluder>
- *     <property name="cssResources">
+ *     <property name="resources">
  *         <list>
  *             <bean class="org.openmrs.ui.framework.resource.Resource">
+ *                 <property name="category" value="css"/>
  *                 <property name="providerName" value="mirebalais"/>
  *                 <property name="resourcePath" value="mirebalais.css"/>
  *             </bean>
@@ -37,52 +40,34 @@ import java.util.List;
  */
 public class GlobalResourceIncluder implements PageModelConfigurator {
 
-    private List<Resource> jsResources;
+    private final Log log = LogFactory.getLog(getClass());
 
-    private List<Resource> cssResources;
+    private List<Resource> resources;
 
-    public List<Resource> getJsResources() {
-        return jsResources;
+    public List<Resource> getResources() {
+        return resources;
     }
 
-    public void setJsResources(List<Resource> jsResources) {
-        this.jsResources = jsResources;
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
     }
-
-    public List<Resource> getCssResources() {
-        return cssResources;
+    
+    public void addResource(Resource resource) {
+        if (resources == null) {
+            resources = new ArrayList<Resource>();
+        }
+        resources.add(resource);
     }
-
-    public void setCssResources(List<Resource> cssResources) {
-        this.cssResources = cssResources;
-    }
-
+    
     @Override
     public void configureModel(PageContext pageContext) {
-        if (jsResources != null) {
-            for (Resource jsResource : jsResources) {
-                pageContext.includeJavascript(jsResource);
+        for (Resource resource : resources) {
+            if (resource.getCategory() != null) {
+                pageContext.includeResource(resource);
+            } else {
+                log.warn(GlobalResourceIncluder.class.getName() + " is trying to include a resource with no category: " + resource.getProviderName() + ":" + resource.getResourcePath());
             }
         }
-        if (cssResources != null) {
-            for (Resource cssResource : cssResources) {
-                pageContext.includeCss(cssResource);
-            }
-        }
-    }
-
-    public void addCssResource(String providerName, String resourcePath) {
-        if (cssResources == null) {
-            cssResources = new ArrayList<Resource>();
-        }
-        cssResources.add(new Resource(providerName, resourcePath));
-    }
-
-    public void addJsResource(String providerName, String resourcePath) {
-        if (jsResources == null) {
-            jsResources = new ArrayList<Resource>();
-        }
-        jsResources.add(new Resource(providerName, resourcePath));
     }
 
 }

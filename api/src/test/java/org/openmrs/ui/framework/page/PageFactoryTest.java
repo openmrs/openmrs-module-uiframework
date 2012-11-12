@@ -3,24 +3,29 @@ package org.openmrs.ui.framework.page;
 
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
+import org.apache.commons.collections.Transformer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.matchers.Contains;
 import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.UiFrameworkException;
+import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
+import static org.junit.Assert.assertThat;
 
 public class PageFactoryTest {
 	
@@ -125,7 +130,7 @@ public class PageFactoryTest {
         MockHttpSession httpSession = new MockHttpSession();
         Session session = new Session(httpSession);
         String result = factory.handle(new PageRequest("somemodule", "groovy", new MockHttpServletRequest(), new MockHttpServletResponse(), session));
-        Assert.assertThat(result, new Contains("Testing Success!!!"));
+        assertThat(result, new Contains("Testing Success!!!"));
     }
 
     @Test
@@ -164,18 +169,35 @@ public class PageFactoryTest {
     @Test
     public void shouldHandleGlobalResourceIncluder() throws Exception {
         GlobalResourceIncluder globalResourceIncluder = new GlobalResourceIncluder();
-        globalResourceIncluder.addCssResource("mirebalais", "mirebalais.css");
-        globalResourceIncluder.addJsResource("mirebalais", "mirebalais-utils.js");
+        globalResourceIncluder.addResource(new Resource(Resource.CATEGORY_CSS, "mirebalais", "mirebalais.css", -100));
+        globalResourceIncluder.addResource(new Resource(Resource.CATEGORY_CSS, "emr", "emr.css", null));
+        globalResourceIncluder.addResource(new Resource(Resource.CATEGORY_JS, "mirebalais", "mirebalais-utils.js", null));
 
         factory.getModelConfigurators().add(globalResourceIncluder);
 
         String output = factory.handle(pageRequest("somemodule", "somepage"));
 
-        Matcher cssMatcher = Pattern.compile("<link rel=\"stylesheet\" href=\".*/mirebalais\\.css\" type=\"text/css\"/>").matcher(output);
-        Assert.assertTrue(cssMatcher.find());
+        Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/mirebalais\\.css\" type=\"text/css\"/>").matcher(output).find());
+        Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/emr\\.css\" type=\"text/css\"/>").matcher(output).find());
+        Assert.assertTrue(output.indexOf("emr.css") < output.indexOf("mirebalais.css"));
 
-        Matcher jsMatcher = Pattern.compile("<script type=\"text/javascript\" src=\".*/mirebalais/mirebalais-utils\\.js\"").matcher(output);
-        Assert.assertTrue(jsMatcher.find());
+        Assert.assertTrue(Pattern.compile("<script type=\"text/javascript\" src=\".*/mirebalais/mirebalais-utils\\.js\"").matcher(output).find());
+    }
+
+    @Test
+    public void shouldGetCorrectOrder() throws Exception {
+        PageContext pageContext = new PageContext(null);
+        pageContext.includeResource(new Resource(Resource.CATEGORY_JS, "normal", "normal.js", null));
+        pageContext.includeResource(new Resource(Resource.CATEGORY_JS, "low", "low.js", -100));
+        pageContext.includeResource(new Resource(Resource.CATEGORY_JS, "high", "high.js", 100));
+
+        Collection<String> includes = factory.uniqueSortedIncludesByCategory(pageContext, Resource.CATEGORY_JS, new Transformer() {
+            @Override
+            public Object transform(Object input) {
+                return ((Resource) input).getResourcePath();
+            }
+        });
+        assertThat(includes, contains("high.js", "normal.js", "low.js"));
     }
 
     /**

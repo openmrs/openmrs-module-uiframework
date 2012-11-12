@@ -1,16 +1,10 @@
 package org.openmrs.ui.framework.page;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections.Transformer;
 import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.ProviderAndName;
+import org.openmrs.ui.framework.ResourceIncluder;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.UiFrameworkUtil;
 import org.openmrs.ui.framework.UiUtils;
@@ -29,6 +23,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
 public class PageFactory {
 	
@@ -206,12 +209,26 @@ public class PageFactory {
 		}
 		ret.append("<link rel=\"shortcut icon\" type=\"image/ico\" href=\"/" + WebConstants.CONTEXT_PATH + "/images/openmrs-favicon.ico\">\n");
 		ret.append("<link rel=\"icon\" type=\"image/png\" href=\"/" + WebConstants.CONTEXT_PATH + "/images/openmrs-favicon.png\">\n");
-		for (Resource resource : context.getJavascriptToInclude()) {
-			ret.append("<script type=\"text/javascript\" src=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\"></script>\n");
-		}
-		for (Resource resource : context.getCssToInclude()) {
-			ret.append("<link rel=\"stylesheet\" href=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\" type=\"text/css\"/>\n");
-		}
+        for (String include : uniqueSortedIncludesByCategory(context, Resource.CATEGORY_JS, new Transformer() {
+            @Override
+            public Object transform(Object input) {
+                Resource resource = (Resource) input;
+                return "<script type=\"text/javascript\" src=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\"></script>";
+            }
+        })) {
+            ret.append(include).append("\n");
+        }
+
+        for (String include : uniqueSortedIncludesByCategory(context, Resource.CATEGORY_CSS, new Transformer() {
+            @Override
+            public Object transform(Object input) {
+                Resource resource = (Resource) input;
+                return "<link rel=\"stylesheet\" href=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\" type=\"text/css\"/>";
+            }
+        })) {
+            ret.append(include).append("\n");
+        }
+
 		ret.append("</head>\n");
 		ret.append("<body>\n");
 		ret.append("<script>var OPENMRS_CONTEXT_PATH = '" + WebConstants.CONTEXT_PATH + "';</script>");
@@ -220,8 +237,24 @@ public class PageFactory {
 		ret.append("</html>");
 		return ret.toString();
 	}
-	
-	/**
+
+    /**
+     * (This method is only non-private so it can be tested.)
+     * @param pageContext
+     * @param resourceCategory
+     * @param resourceToStringTransformer needs to transform a Resource to a String
+     * @return
+     */
+     Collection<String> uniqueSortedIncludesByCategory(ResourceIncluder pageContext, String resourceCategory, Transformer resourceToStringTransformer) {
+        List<Resource> mayHaveDuplicates = pageContext.getResourcesToInclude(resourceCategory);
+        LinkedHashSet<String> noDuplicates = new LinkedHashSet<String>();
+        for (Resource resource : mayHaveDuplicates) {
+            noDuplicates.add((String) resourceToStringTransformer.transform(resource));
+        }
+        return noDuplicates;
+    }
+
+    /**
 	 * @param request
 	 * @return controller class, or null if none is available
 	 * @should get a controller from the specified provider

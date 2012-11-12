@@ -1,13 +1,5 @@
 package org.openmrs.ui.framework;
 
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
@@ -19,6 +11,14 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
+
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Utility methods that should be available in view technologies for pages and fragments 
@@ -54,7 +54,7 @@ public abstract class UiUtils {
 	}
 	
 	public void includeCss(String providerName, String file) {
-		resourceIncluder.includeCss(new Resource(providerName, "styles/" + file));
+		resourceIncluder.includeResource(new Resource(Resource.CATEGORY_CSS, providerName, "styles/" + file, null));
 	}
 	
 	public void includeJavascript(String file) {
@@ -62,7 +62,7 @@ public abstract class UiUtils {
 	}
 	
 	public void includeJavascript(String providerName, String file) {
-		resourceIncluder.includeJavascript(new Resource(providerName, "scripts/" + file));
+		resourceIncluder.includeResource(new Resource(Resource.CATEGORY_JS, providerName, "scripts/" + file, null));
 	}
 	
 	public String thisUrl() {
