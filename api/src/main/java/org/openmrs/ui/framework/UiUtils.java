@@ -50,20 +50,28 @@ public abstract class UiUtils {
 	}
 	
 	public void includeCss(String file) {
-		includeCss(null, file);
+		includeCss(null, file, null);
 	}
 	
 	public void includeCss(String providerName, String file) {
-		resourceIncluder.includeResource(new Resource(Resource.CATEGORY_CSS, providerName, "styles/" + file, null));
+		includeCss(providerName, file, null);
 	}
+
+    public void includeCss(String providerName, String file, Integer priority) {
+        resourceIncluder.includeResource(new Resource(Resource.CATEGORY_CSS, providerName, "styles/" + file, priority));
+    }
 	
 	public void includeJavascript(String file) {
-		includeJavascript(null, file);
+		includeJavascript(null, file, null);
 	}
 	
 	public void includeJavascript(String providerName, String file) {
-		resourceIncluder.includeResource(new Resource(Resource.CATEGORY_JS, providerName, "scripts/" + file, null));
+		includeJavascript(providerName, file, null);
 	}
+
+    public void includeJavascript(String providerName, String file, Integer priority) {
+        resourceIncluder.includeResource(new Resource(Resource.CATEGORY_JS, providerName, "scripts/" + file, priority));
+    }
 	
 	public String thisUrl() {
 		// TODO determine whether we still need both this method and thisUrlWithContextPath()

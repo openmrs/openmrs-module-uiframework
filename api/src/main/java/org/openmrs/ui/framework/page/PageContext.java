@@ -17,6 +17,8 @@ import org.springframework.context.MessageSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -49,7 +51,7 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	
 	private String pageTitle;
 
-    private SortedSet<Resource> resourcesToInclude = new TreeSet<Resource>();
+    private List<Resource> resourcesToInclude = new ArrayList<Resource>();
 
 	public PageContext(PageRequest request) {
 		this.request = request;
@@ -183,6 +185,13 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
                 ret.add(candidate);
             }
         }
+        // we count on Java providing a stable sort algorithm, so insertion order is maintained where priority is equal
+        Collections.sort(ret, new Comparator<Resource>() {
+            @Override
+            public int compare(Resource left, Resource right) {
+                return right.getPriority().compareTo(left.getPriority());
+            }
+        });
         return ret;
     }
 
