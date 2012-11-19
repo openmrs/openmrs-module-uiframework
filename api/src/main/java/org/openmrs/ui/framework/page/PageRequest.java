@@ -186,9 +186,11 @@ public class PageRequest implements AttributeHolder {
      * @since 2.2
      */
     public String getCookieValue(String name) {
-        for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals(name)) {
-                return cookie.getValue();
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (cookie.getName().equals(name)) {
+                    return cookie.getValue();
+                }
             }
         }
         return null;
