@@ -1,14 +1,14 @@
 package org.openmrs.ui.framework.page;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.openmrs.ui.framework.AttributeExpressionException;
 import org.openmrs.ui.framework.AttributeHolder;
 import org.openmrs.ui.framework.AttributeHolderUtil;
 import org.openmrs.ui.framework.session.Session;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * A request for a provider and page (which may be mapped by a {@link PageRequestMapper} to a
@@ -169,6 +169,30 @@ public class PageRequest implements AttributeHolder {
 	public String getMappedPageName() {
 		return pageNameOverride != null ? pageNameOverride : pageName;		
 	}
+
+    /**
+     * Adds a cookie value to the HttpServletResponse
+     * @param name
+     * @param value
+     * @since 2.2
+     */
+    public void setCookieValue(String name, String value) {
+        response.addCookie(new Cookie(name, value));
+    }
+
+    /**
+     * @param name
+     * @return the value of a cookie in the HttpServletRequest with the given name (or null if none has that name)
+     * @since 2.2
+     */
+    public String getCookieValue(String name) {
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals(name)) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
 
 	/**
 	 * @see java.lang.Object#toString()

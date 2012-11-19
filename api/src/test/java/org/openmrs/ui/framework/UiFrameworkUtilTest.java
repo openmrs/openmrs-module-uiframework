@@ -6,13 +6,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
+import org.openmrs.ui.framework.page.PageRequest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -171,6 +174,21 @@ public class UiFrameworkUtilTest {
 		UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 		// this should succeed
 	}
+
+	@Test
+    public void test_determineControllerMethodParameters_fromCookie() throws Exception {
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.setCookies(new Cookie("number", "3"));
+        PageRequest pr = new PageRequest(null, null, req, null, null);
+
+        Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
+        argumentsByType.put(HttpServletRequest.class, req);
+        argumentsByType.put(PageRequest.class, pr);
+
+        Method method = MockController.class.getMethod("fromCookie", Integer.class);
+        Object[] vals = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
+        assertThat(vals[0], is((Object) 3));
+    }
 	
 	@Test
 	public void test_determineControllerMethodParameters_methodParam() throws Exception {
@@ -288,6 +306,10 @@ public class UiFrameworkUtilTest {
 		public void withDefault(@RequestParam(value="something", defaultValue="5") int number) {
 			// intentionally blank
 		}
+
+        public void fromCookie(@CookieValue("number") Integer number) {
+            // intentionally blank
+        }
 		
 		public void fromMethod(@MethodParam("initializeMethodParameter") MockDomainObject obj) {
 			// intentionally blank

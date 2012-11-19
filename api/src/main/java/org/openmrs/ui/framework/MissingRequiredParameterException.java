@@ -1,6 +1,5 @@
 package org.openmrs.ui.framework;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -13,12 +12,7 @@ public class MissingRequiredParameterException extends RequestValidationExceptio
 	public MissingRequiredParameterException(String requiredParameter) {
 		this.requiredParameter = requiredParameter;
 	}
-	
-	@Override
-	public List<String> getGlobalErrorCodes() {
-		return Collections.emptyList();
-	}
-	
+
 	@Override
 	public Map<String, List<String>> getFieldErrorCodes() {
 		return singleFieldError(requiredParameter, "error.required");

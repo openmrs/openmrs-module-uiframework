@@ -13,6 +13,7 @@ import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.annotation.Validate;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
 import org.openmrs.ui.framework.page.PageAction;
+import org.openmrs.ui.framework.page.PageRequest;
 import org.openmrs.util.HandlerUtil;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -26,6 +27,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.multipart.MultipartFile;
@@ -160,8 +162,9 @@ public class UiFrameworkUtil {
 			return byType;
 		
 		// next try to handle by annotations, in their appropriate order
-		// * top priority are @FragmentParam, @RequestParam, and @SpringBean (which should be mutually exclusive)
+		// * top priority are @FragmentParam, @RequestParam, @CookieValue, and @SpringBean (which should be mutually exclusive)
 		// * next comes @MethodParam, assuming neither of the above annotations set a value
+        // * next comes @InjectBeans, which can be used alone or in conjunction with any of the above
 		// * next comes @BindParam, which can be used alone or in conjunction with any of the above
 		// * next comes @Validate, which can be used with any of the above (but not alone)
 		
@@ -231,6 +234,33 @@ public class UiFrameworkUtil {
 					throw authEx;
 				else
 					throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
+			}
+		}
+
+        // if @CookieValue is specified, look in a cookie in the request
+        if (ret == null && methodParam.getParameterAnnotation(CookieValue.class) != null) {
+            CookieValue cv = methodParam.getParameterAnnotation(CookieValue.class);
+            String cookieName = cv.value();
+            PageRequest pageRequest = (PageRequest) valuesByType.get(PageRequest.class);
+            if (pageRequest == null) {
+                throw new UiFrameworkException("Cannot use @CookieValue when we don't have an underlying PageRequest");
+            }
+            String cookieValue = pageRequest.getCookieValue(cookieName);
+            if (cookieValue == null && !ValueConstants.DEFAULT_NONE.equals(cv.defaultValue())) {
+                cookieValue = cv.defaultValue();
+            }
+            if (cookieValue == null && cv.required()) {
+                throw new MissingRequiredCookieException(cookieName);
+            }
+            try {
+                ret = conversionService.convert(cookieValue, TypeDescriptor.forObject(cookieValue), new TypeDescriptor(methodParam));
+            }
+            catch (ConversionException ex) {
+                APIAuthenticationException authEx = findCause(ex, APIAuthenticationException.class);
+                if (authEx != null)
+                    throw authEx;
+                else
+                    throw new UiFrameworkException("Cookie " + cookieName + " (value " + cookieValue + ") couldn't be converted to " + methodParam.getParameterType(), ex);
 			}
 		}
 		
