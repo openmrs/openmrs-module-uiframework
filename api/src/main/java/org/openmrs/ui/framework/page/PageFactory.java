@@ -25,6 +25,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
@@ -183,6 +184,7 @@ public class PageFactory {
 		possibleArguments.put(Map.class, context.getModel());
 		possibleArguments.put(PageRequest.class, context.getRequest());
 		possibleArguments.put(HttpServletRequest.class, context.getRequest().getRequest());
+        possibleArguments.put(HttpSession.class, context.getRequest().getRequest().getSession());
 		possibleArguments.put(Session.class, context.getRequest().getSession());
 		possibleArguments.put(ApplicationContext.class, applicationContext);
 		possibleArguments.put(UiUtils.class, new PageUiUtils(context));

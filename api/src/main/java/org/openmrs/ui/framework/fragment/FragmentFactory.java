@@ -208,6 +208,7 @@ public class FragmentFactory {
 		possibleArguments.put(FragmentRequest.class, context.getRequest());
 		possibleArguments.put(PageRequest.class, context.getPageContext().getRequest());
 		possibleArguments.put(HttpServletRequest.class, context.getPageContext().getRequest().getRequest());
+        possibleArguments.put(HttpSession.class, context.getPageContext().getRequest().getRequest().getSession());
 		possibleArguments.put(FragmentFactory.class, this);
 		possibleArguments.put(UiUtils.class, new FragmentUiUtils(context));
 		possibleArguments.put(Session.class, context.getPageContext().getRequest().getSession());
