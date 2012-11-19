@@ -14,15 +14,25 @@
 package org.openmrs.ui.framework;
 
 import org.junit.Test;
+import org.openmrs.ui.framework.annotation.InjectBeans;
+import org.openmrs.ui.framework.page.PageAction;
+import org.openmrs.ui.framework.page.PageContext;
+import org.openmrs.ui.framework.page.PageControllerProvider;
 import org.openmrs.ui.framework.page.PageFactory;
 import org.openmrs.ui.framework.page.PageRequest;
+import org.openmrs.ui.framework.page.PageView;
+import org.openmrs.ui.framework.page.PageViewProvider;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
+import org.openmrs.ui.framework.test.ClassWithAutowiredAnnotations;
 import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  *
@@ -69,5 +79,47 @@ public class IntegrationTest extends BaseModuleWebContextSensitiveTest {
 		Assert.assertTrue(html.indexOf("Welcome admin!") > -1);
 	}
     */
-	
+
+    @Test
+    public void test_InjectBeansAnnotation() throws Exception {
+        pageFactory.addControllerProvider("test", new PageControllerProvider() {
+            @Override
+            public Object getController(String id) {
+                return new ControllerWithInjectBeansAnnotation();
+            }
+        });
+        pageFactory.addViewProvider("test", new PageViewProvider() {
+            @Override
+            public PageView getView(String name) {
+                return new PageView() {
+                    @Override
+                    public String render(PageContext context) throws PageAction {
+                        return "Contents of Some Page";
+                    }
+                    @Override
+                    public ProviderAndName getController() {
+                        return null;
+                    }
+                };
+            }
+        });
+        pageFactory.handle(pageRequest("test", "injectBeansAnnotation"));
+    }
+
+    public class ControllerWithInjectBeansAnnotation {
+        public void controller(@InjectBeans ClassWithAutowiredAnnotations autowired) {
+            assertNull(autowired.shouldBeNull1);
+            assertNull(autowired.shouldBeNull2);
+            assertNotNull(autowired.shouldBeSet1);
+            assertNotNull(autowired.shouldBeSet2);
+        }
+    }
+
+    private PageRequest pageRequest(String provider, String page) {
+        MockHttpSession httpSession = new MockHttpSession();
+        Session uiSession = new Session(httpSession);
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        req.setSession(httpSession);
+        return new PageRequest(provider, page, req, new MockHttpServletResponse(), uiSession);
+    }
 }

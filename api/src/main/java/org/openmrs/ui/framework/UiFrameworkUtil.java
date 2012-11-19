@@ -7,6 +7,7 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
+import org.openmrs.ui.framework.annotation.InjectBeans;
 import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.annotation.Validate;
@@ -42,7 +43,7 @@ public class UiFrameworkUtil {
 	private static Log log = LogFactory.getLog(UiFrameworkUtil.class);
 	
 	public static Object executeControllerMethod(Object controller, String httpRequestMethod, Map<Class<?>, Object> possibleArguments,
-                                                 ConversionService conversionService) throws PageAction {
+                                                 ConversionService conversionService, ApplicationContext applicationContext) throws PageAction {
 		Method controllerMethod = null;
         controllerMethod = findControllerMethodForHttpRequestMethod(controller, httpRequestMethod);
         if (controllerMethod == null) {
@@ -51,7 +52,7 @@ public class UiFrameworkUtil {
 		if (controllerMethod == null)
 			throw new UiFrameworkException("Cannot find controller method for request method " + httpRequestMethod + " in " + controller.getClass());
 		
-		return invokeMethodWithArguments(controller, controllerMethod, possibleArguments, conversionService);
+		return invokeMethodWithArguments(controller, controllerMethod, possibleArguments, conversionService, applicationContext);
 	}
 
     private static Method findGenericControllerMethod(Object controller) {
@@ -76,12 +77,12 @@ public class UiFrameworkUtil {
     }
 
     public static Object invokeMethodWithArguments(Object target, Method method, Map<Class<?>, Object> possibleArguments,
-	        ConversionService conversionService) throws PageAction {
+                                                   ConversionService conversionService, ApplicationContext applicationContext) throws PageAction {
 		try {
 			Class<?>[] types = method.getParameterTypes();
 			Object[] params = new Object[types.length];
 			for (int i = 0; i < types.length; ++i) {
-				Object result = determineArgumentValue(target, possibleArguments, new MethodParameter(method, i), conversionService);
+				Object result = determineArgumentValue(target, possibleArguments, new MethodParameter(method, i), conversionService, applicationContext);
                 if (result instanceof BindingResult) {
                     params[i] = ((BindingResult) result).getTarget();
                     if ((i + 1 < types.length) && Errors.class.isAssignableFrom(types[i + 1])) {
@@ -117,15 +118,16 @@ public class UiFrameworkUtil {
 	 * @param method the controller or action method whose parameters we need to determine
 	 * @param argumentsByType parameters to look up by type
 	 * @param conversionService
-	 * @return an array of the right number of objects to do controllerMethod.invoke
+	 * @param applicationContext
+     * @return an array of the right number of objects to do controllerMethod.invoke
 	 */
 	public static Object[] determineControllerMethodParameters(Object controller, Method method, Map<Class<?>, Object> argumentsByType,
-	        ConversionService conversionService) throws RequestValidationException {
+                                                               ConversionService conversionService, ApplicationContext applicationContext) throws RequestValidationException {
 		Class<?>[] types = method.getParameterTypes();
 		int numParams = types.length;
 		Object[] ret = new Object[numParams];
 		for (int i = 0; i < numParams; ++i) {
-			Object result = determineArgumentValue(controller, argumentsByType, new MethodParameter(method, i), conversionService);
+			Object result = determineArgumentValue(controller, argumentsByType, new MethodParameter(method, i), conversionService, applicationContext);
 			if (result instanceof BindingResult) {
 				ret[i] = ((BindingResult) result).getTarget();
 				if ((i + 1 < numParams) && Errors.class.isAssignableFrom(types[i + 1])) {
@@ -142,14 +144,15 @@ public class UiFrameworkUtil {
 	/**
 	 * Determines the appropriate value to a method argument, for a given type and annotations
 	 * 
-	 * @param controller if any @MethodParam annotations are present, the method will be called on this object
-	 * @param valuesByType
-	 * @param methodParam
-	 * @param conversionService
-	 * @return
+     * @param controller if any @MethodParam annotations are present, the method will be called on this object
+     * @param valuesByType
+     * @param methodParam
+     * @param conversionService
+     * @param applicationContext
+     * @return
 	 */
 	public static Object determineArgumentValue(Object controller, Map<Class<?>, Object> valuesByType, MethodParameter methodParam,
-	        ConversionService conversionService) {
+                                                ConversionService conversionService, ApplicationContext applicationContext) {
 		
 		// first, try to handle by type
 		Object byType = valuesByType.get(methodParam.getParameterType());
@@ -277,11 +280,26 @@ public class UiFrameworkUtil {
 			}
 			
 			try {
-				ret = invokeMethodWithArguments(controller, method, valuesByType, conversionService);
+				ret = invokeMethodWithArguments(controller, method, valuesByType, conversionService, applicationContext);
 			} catch (Exception ex) {
 				throw new UiFrameworkException("Error evaluating " + mp.value() + " method specified by @MethodParam", ex);
 			}
 		}
+
+        // If @InjectBeans is present, use Spring to wire @Autowired properties
+        if (methodParam.getParameterAnnotation(InjectBeans.class) != null) {
+            if (ret == null) {
+                try {
+                    ret = methodParam.getParameterType().newInstance();
+                }
+                catch (Exception ex) {
+                    throw new UiFrameworkException("Failed to instantiate a new " + methodParam.getParameterType().getSimpleName()
+                            + " for @InjectBeans annotated parameter", ex);
+                }
+            }
+
+            applicationContext.getAutowireCapableBeanFactory().autowireBean(ret);
+        }
 		
 		// If @BindParams is present, bind all relevent request parameters
 		String bindingPrefix = null;

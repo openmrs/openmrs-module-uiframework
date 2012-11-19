@@ -193,7 +193,7 @@ public class PageFactory {
         }
 
         String httpRequestMethod = context.getRequest().getRequest().getMethod();
-		return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService);
+		return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService, applicationContext);
 	}
 
     private String toHtml(String body, PageContext context) {

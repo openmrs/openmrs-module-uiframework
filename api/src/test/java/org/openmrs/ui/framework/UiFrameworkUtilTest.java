@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.MethodParam;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -21,11 +22,13 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class UiFrameworkUtilTest {
 
     ConversionService conversionService;
 	MockController controller;
+    ApplicationContext applicationContext;
 	
     @Before
 	public void beforeEachTest() throws Exception {
@@ -33,6 +36,7 @@ public class UiFrameworkUtilTest {
 		bean.afterPropertiesSet();
 		conversionService = bean.getObject();
 		controller = new MockController();
+        applicationContext = mock(ApplicationContext.class);
 	}
 	
 	@Test
@@ -46,7 +50,7 @@ public class UiFrameworkUtilTest {
 		
 		Method method = MockController.class.getMethod("action", MockDomainObject.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 		MockDomainObject bound = (MockDomainObject) temp[0];
 		
 		Assert.assertNotNull(bound);
@@ -69,7 +73,7 @@ public class UiFrameworkUtilTest {
 		
 		Method method = MockController.class.getMethod("action", MockDomainObject.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 		MockDomainObject bound = (MockDomainObject) temp[0];
 		
 		Assert.assertNotNull(bound);
@@ -90,7 +94,7 @@ public class UiFrameworkUtilTest {
 		
 		Method method = MockController.class.getMethod("controller", String[].class, Integer.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 
 		String[] props = (String[]) temp[0];
 		Assert.assertNotNull(props);
@@ -113,7 +117,7 @@ public class UiFrameworkUtilTest {
 		
 		Method method = MockController.class.getMethod("integerList", List.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 
 		@SuppressWarnings("unchecked")
         List<Integer> list = (List<Integer>) temp[0];
@@ -133,7 +137,7 @@ public class UiFrameworkUtilTest {
 		Method method = MockController.class.getMethod("controller", String[].class, Integer.class);
 		
 		try {
-			UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+			UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 			Assert.fail("Should have caught that a required parameter was missing");
 		} catch (MissingRequiredParameterException ex) {
 			// pass
@@ -141,17 +145,17 @@ public class UiFrameworkUtilTest {
 		
 		req.setParameter("properties", "name");
 		try {
-			UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+			UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 		} catch (MissingRequiredParameterException ex) {
 			Assert.fail("Should not have required the second parameter");
 		}
 		
 		req.setParameter("number", "");
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 		Assert.assertNull(temp[1]);
 		
 		req.setParameter("number", new String[] { "", "" });
-		temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 		Assert.assertNull(temp[1]);
 	}
 	
@@ -164,7 +168,7 @@ public class UiFrameworkUtilTest {
 		
 		Method method = MockController.class.getMethod("withDefault", int.class);
 		
-		UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 		// this should succeed
 	}
 	
@@ -178,7 +182,7 @@ public class UiFrameworkUtilTest {
 		
 		Method method = MockController.class.getMethod("fromMethod", MockDomainObject.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 		MockDomainObject bound = (MockDomainObject) temp[0];
 		
 		Assert.assertNotNull(bound);
@@ -195,7 +199,7 @@ public class UiFrameworkUtilTest {
 		
 		Method method = MockController.class.getMethod("fromMethodSubclass", MockDomainObject.class);
 		
-		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService);
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
 		MockDomainObject bound = (MockDomainObject) temp[0];
 		
 		Assert.assertNotNull(bound);
@@ -207,16 +211,16 @@ public class UiFrameworkUtilTest {
     public void test_executeControllerMethodShouldDependOnHttpRequestMethod() throws Exception {
         Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
 
-        Object result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), "GET", argumentsByType, conversionService);
+        Object result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), "GET", argumentsByType, conversionService, applicationContext);
         Assert.assertEquals("Got it", result);
 
-        result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), "POST", argumentsByType, conversionService);
+        result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), "POST", argumentsByType, conversionService, applicationContext);
         Assert.assertEquals("Posted it", result);
 
-        result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), "HEAD", argumentsByType, conversionService);
+        result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), "HEAD", argumentsByType, conversionService, applicationContext);
         Assert.assertEquals("Fallback", result);
 
-        result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), null, argumentsByType, conversionService);
+        result = UiFrameworkUtil.executeControllerMethod(new MockFormController(), null, argumentsByType, conversionService, applicationContext);
         Assert.assertEquals("Fallback", result);
     }
 
@@ -247,8 +251,8 @@ public class UiFrameworkUtilTest {
         possibleArguments.put(HttpServletRequest.class, request);
         possibleArguments.put(Integer.class, one);
 
-        UiFrameworkUtil.invokeMethodWithArguments(controller, postMethod1, possibleArguments, conversionService);
-        UiFrameworkUtil.invokeMethodWithArguments(controller, postMethod2, possibleArguments, conversionService);
+        UiFrameworkUtil.invokeMethodWithArguments(controller, postMethod1, possibleArguments, conversionService, applicationContext);
+        UiFrameworkUtil.invokeMethodWithArguments(controller, postMethod2, possibleArguments, conversionService, applicationContext);
     }
 
     public class MockFormController {

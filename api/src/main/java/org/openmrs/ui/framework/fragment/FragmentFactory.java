@@ -1,16 +1,5 @@
 package org.openmrs.ui.framework.fragment;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.ui.framework.RequestValidationException;
@@ -23,7 +12,6 @@ import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.page.PageRequest;
-import org.openmrs.ui.framework.page.PossiblePageControllerArgumentProvider;
 import org.openmrs.ui.framework.page.Redirect;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
@@ -34,6 +22,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Handles FragmentRequests
@@ -222,7 +220,7 @@ public class FragmentFactory {
         }
 
         String httpRequestMethod = context.getPageContext().getRequest().getRequest().getMethod();
-        return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService);
+        return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService, applicationContext);
 	}
 
     /**
@@ -463,7 +461,7 @@ public class FragmentFactory {
 
         Object[] params = null;
 		try {
-			params = UiFrameworkUtil.determineControllerMethodParameters(controller, method, possibleArguments, conversionService);
+			params = UiFrameworkUtil.determineControllerMethodParameters(controller, method, possibleArguments, conversionService, applicationContext);
 		}
 		catch (RequestValidationException ex) {
 			// this means we caught something via a @Validate annotation
