@@ -13,11 +13,8 @@
  */
 package org.openmrs.ui.framework;
 
-import static org.mockito.Mockito.mock;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.openmrs.module.uiframework.PageController;
 import org.openmrs.ui.framework.page.FileDownload;
 import org.openmrs.ui.framework.page.PageFactory;
@@ -28,6 +25,10 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.ui.ExtendedModelMap;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
@@ -42,17 +43,17 @@ public class PageControllerTest {
 		Session uiSession = new Session(session);
 		
 		PageFactory pageFactory = mock(PageFactory.class);
-		Mockito.when(pageFactory.handle(Mockito.any(PageRequest.class)))
+		when(pageFactory.handle(any(PageRequest.class)))
 			.thenThrow(new FileDownload("download.txt", "text/plain", "File contents".getBytes()));
 		
 		SessionFactory sessionFactory = mock(SessionFactory.class);
-		Mockito.when(sessionFactory.getSession(session)).thenReturn(uiSession);
+		when(sessionFactory.getSession(session)).thenReturn(uiSession);
 		
 		PageController controller = new PageController();
 		controller.setPageFactory(pageFactory);
 		controller.setSessionFactory(sessionFactory);
 		
-		controller.handlePage("somemodule", "download", request, response, new ExtendedModelMap(), session);
+		controller.handlePath("somemodule/download", request, response, new ExtendedModelMap(), session);
 		
 		Assert.assertEquals("text/plain", response.getContentType());
 		Assert.assertEquals("File contents", response.getContentAsString());

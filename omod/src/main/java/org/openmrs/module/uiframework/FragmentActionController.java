@@ -13,15 +13,6 @@
  */
 package org.openmrs.module.uiframework;
 
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.APIAuthenticationException;
@@ -46,15 +37,22 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.StringTokenizer;
 
 /**
  * Lets clients access pages via:
  * <ul>
- * 	<li>(in 2.x) .../openmrs/(fragmentName)/(action).action</li>
- *  <li>(in 1.x) .../openmrs/action/(fragmentName)/(action).form</li>
+ * 	<li>(in 1.8.4+) .../openmrs/provider/subfolder/fragmentName/methodName.action</li>
+ *  <li>(in 1.8-1.8.3) .../openmrs/action/subfolder/fragmentName/methodName.form</li>
  * </ul>
  */
 @Controller
@@ -67,158 +65,163 @@ public class FragmentActionController {
 	@Autowired
 	@Qualifier("coreFragmentFactory")
 	FragmentFactory fragmentFactory;
-	
-	@RequestMapping("/action/{providerName}/{fragmentName}/{action}")
-	public String helper1x(@PathVariable("providerName") String providerName,
-	                       @PathVariable("fragmentName") String fragmentName, @PathVariable("action") String action,
-	                       @RequestParam(value = "returnFormat", required = false) String returnFormat,
-	                       @RequestParam(value = "successUrl", required = false) String successUrl,
-	                       @RequestParam(value = "failureUrl", required = false) String failureUrl,
-	                       HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
-		return handleAction(providerName, fragmentName, action, returnFormat, successUrl, failureUrl, request, model, response);
-	}
-	
-	@RequestMapping("/action/{providerName}/{directoryName}/{fragmentName}/{action}")
-	public String helper1x(@PathVariable("providerName") String providerName,
-	                       @PathVariable("directoryName") String directoryName,
-	                       @PathVariable("fragmentName") String fragmentName, @PathVariable("action") String action,
-	                       @RequestParam(value = "returnFormat", required = false) String returnFormat,
-	                       @RequestParam(value = "successUrl", required = false) String successUrl,
-	                       @RequestParam(value = "failureUrl", required = false) String failureUrl,
-	                       HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
-		return handleAction(providerName, directoryName + "/" + fragmentName, action, returnFormat, successUrl, failureUrl, request,
-		    model, response);
-	}
-	
-	@RequestMapping("/{providerName}/{directoryName}/{fragmentName}/{action}.action")
-	public String handleAction(@PathVariable("providerName") String providerName,
-	                           @PathVariable("directoryName") String directoryName,
-	                           @PathVariable("fragmentName") String fragmentName, @PathVariable("action") String action,
-	                           @RequestParam(value = "returnFormat", required = false) String returnFormat,
-	                           @RequestParam(value = "successUrl", required = false) String successUrl,
-	                           @RequestParam(value = "failureUrl", required = false) String failureUrl,
+
+    @RequestMapping("/action/**")
+    public String handleUrlStartingWithAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
+                                              @RequestParam(value = "successUrl", required = false) String successUrl,
+                                              @RequestParam(value = "failureUrl", required = false) String failureUrl,
+                                              HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
+        // everything after the contextPath, e.g. "/action/emr/registration/checkin.form"
+        String path = request.getServletPath();
+        path = path.substring("/action/".length(), path.lastIndexOf("."));
+        return handlePath(path, returnFormat, successUrl, failureUrl, request, model, response);
+    }
+
+    @RequestMapping("**/*.action")
+    public String handleUrlWithDotAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
+                                         @RequestParam(value = "successUrl", required = false) String successUrl,
+                                         @RequestParam(value = "failureUrl", required = false) String failureUrl,
+                                         HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
+        // everything after the contextPath, e.g. "/emr/registration/checkin.action"
+        String path = request.getServletPath();
+        path = path.substring(1, path.lastIndexOf(".action"));
+        return handlePath(path, returnFormat, successUrl, failureUrl, request, model, response);
+    }
+
+    /**
+     * @param path should be of the form "provider/optional/subdirectories/fragmentName/actionName"
+     * @param returnFormat
+     * @param successUrl
+     * @param failureUrl
+     * @param request
+     * @param model
+     * @param response
+     * @return
+     * @throws Exception
+     */
+	public String handlePath(String path, String returnFormat, String successUrl, String failureUrl,
 	                           HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
-		return handleAction(providerName, directoryName + "/" + fragmentName, action, returnFormat, successUrl, failureUrl, request,
-		    model, response);
-	}
-	
-	@RequestMapping("/{providerName}/{fragmentName}/{action}.action")
-	public String handleAction(@PathVariable("providerName") String providerName,
-	                           @PathVariable("fragmentName") String fragmentName, @PathVariable("action") String action,
-	                           @RequestParam(value = "returnFormat", required = false) String returnFormat,
-	                           @RequestParam(value = "successUrl", required = false) String successUrl,
-	                           @RequestParam(value = "failureUrl", required = false) String failureUrl,
-	                           HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
-		
-		if (returnFormat == null) {
-			String acceptHeader = request.getHeader("Accept");
-			if (StringUtils.isNotEmpty(acceptHeader)) {
-				if (acceptHeader.startsWith("application/json")) {
-					returnFormat = "json";
-				}
-			}
-		}
-		
-		Object resultObject;
-		try {
-			resultObject = fragmentFactory.invokeFragmentAction(providerName, fragmentName, action, request);
-		}
-		catch (Exception ex) {
-			// it's possible that the underlying exception is that the user was logged out or lacks privileges
-			// and we want to special-case that
-			Exception authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
-			if (authEx != null) {
-				resultObject = new FailureResult("#APIAuthenticationException#" + authEx.getMessage());
-			} else {
-				authEx = ExceptionUtil.findExceptionInChain(ex, ContextAuthenticationException.class);
-				if (authEx != null) {
-					resultObject = new FailureResult("#APIAuthenticationException#" + authEx.getMessage());
-				} else {
-					// we don't know how to handle other types of exceptions
-					log.error("error", ex);
-					throw new UiFrameworkException("Error invoking fragment action", ex);
-				}
-			}
-		}
-		
-		if (!StringUtils.isEmpty(returnFormat)) {
-			// this is an ajax request, so we need to return an object
-			
-			// turn the non-object result types into ObjectResults
-			if (resultObject == null) {
-				resultObject = new SuccessResult();
-			} else if (resultObject instanceof SuccessResult) {
-				SuccessResult success = (SuccessResult) resultObject;
-				resultObject = SimpleObject.create("success", "true", "message", success.getMessage());
-			} else if (resultObject instanceof FailureResult) {
-				FailureResult failure = (FailureResult) resultObject;
-				response.setStatus(403);
-				resultObject = SimpleObject.create("failure", "true", "globalErrors", failure.getGlobalErrors(),
-				    "fieldErrors", failure.getFieldErrorMap());
-			} else if (resultObject instanceof ObjectResult) {
-				resultObject = ((ObjectResult) resultObject).getWrapped();
-			}
-			
-			Object result;
-			if (returnFormat.equals("json")) {
-				result = toJson(resultObject);
-			} else {
-				result = resultObject.toString();
-			}
-			model.addAttribute("html", result);
-			return SHOW_HTML_VIEW;
-			
-		} else {
-			// this is a regular post, so we will return a page
-			
-			if (successUrl == null)
-				successUrl = getSuccessUrl(request);
-			if (failureUrl == null)
-				failureUrl = getFailureUrl(request, successUrl);
-			
-			successUrl = removeContextPath(successUrl);
-			failureUrl = removeContextPath(failureUrl);
-			
-			if (resultObject == null || resultObject instanceof SuccessResult) {
-				if (resultObject != null) {
-					SuccessResult result = (SuccessResult) resultObject;
-					if (result.getMessage() != null)
-						request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, result.getMessage());
-				}
-				return "redirect:/" + successUrl;
-			} else if (resultObject instanceof FailureResult) {
-				// TODO harmonize this with the return-type version
-				FailureResult failureResult = (FailureResult) resultObject;
-				String errorMessage = null;
-				if (failureResult.getSingleError() != null) {
-					errorMessage = failureResult.getSingleError();
-				} else if (failureResult.getErrors() != null) {
-					Errors errors = failureResult.getErrors();
-					StringBuilder sb = new StringBuilder();
-					sb.append("<ul>");
-					for (ObjectError err : errors.getGlobalErrors()) {
-						sb.append("<li>" + UiFrameworkUtil.getMessage(err) + "</li>");
-					}
-					for (FieldError err : errors.getFieldErrors()) {
-						sb.append("<li>" + err.getField() + ": " + UiFrameworkUtil.getMessage(err) + "</li>");
-					}
-					sb.append("</ul>");
-					errorMessage = sb.toString();
-				}
-				request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, errorMessage);
-				return redirectHelper(failureUrl, model);
-			} else if (resultObject instanceof ObjectResult) {
-				// the best we can do is just display a formatted version of the wrapped object
-				String formatted = new FormatterImpl().format(((ObjectResult) resultObject).getWrapped());
-				model.addAttribute("html", formatted);
-				return SHOW_HTML_VIEW;
-				
-			} else {
-				throw new RuntimeException("Don't know how to handle fragment action result type: "
-				        + resultObject.getClass());
-			}
-		}
-	}
+        // handle the case where the url has two slashes, e.g. host/openmrs//emr/radiology/order.action
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        int firstSlash = path.indexOf("/");
+        int secondSlash = path.indexOf("/", firstSlash + 1);
+        if (firstSlash < 0 || secondSlash < 0) {
+            throw new IllegalArgumentException("fragment action request must have at least provider/fragmentName/actionName, but this does not: " + request.getRequestURI());
+        }
+        String providerName = path.substring(0, firstSlash);
+        String fragmentName = path.substring(firstSlash + 1, secondSlash);
+        String action = path.substring(secondSlash + 1);
+
+        if (returnFormat == null) {
+            String acceptHeader = request.getHeader("Accept");
+            if (StringUtils.isNotEmpty(acceptHeader)) {
+                if (acceptHeader.startsWith("application/json")) {
+                    returnFormat = "json";
+                }
+            }
+        }
+
+        Object resultObject;
+        try {
+            resultObject = fragmentFactory.invokeFragmentAction(providerName, fragmentName, action, request);
+        } catch (Exception ex) {
+            // it's possible that the underlying exception is that the user was logged out or lacks privileges
+            // and we want to special-case that
+            Exception authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
+            if (authEx != null) {
+                resultObject = new FailureResult("#APIAuthenticationException#" + authEx.getMessage());
+            } else {
+                authEx = ExceptionUtil.findExceptionInChain(ex, ContextAuthenticationException.class);
+                if (authEx != null) {
+                    resultObject = new FailureResult("#APIAuthenticationException#" + authEx.getMessage());
+                } else {
+                    // we don't know how to handle other types of exceptions
+                    log.error("error", ex);
+                    throw new UiFrameworkException("Error invoking fragment action", ex);
+                }
+            }
+        }
+
+        if (!StringUtils.isEmpty(returnFormat)) {
+            // this is an ajax request, so we need to return an object
+
+            // turn the non-object result types into ObjectResults
+            if (resultObject == null) {
+                resultObject = new SuccessResult();
+            } else if (resultObject instanceof SuccessResult) {
+                SuccessResult success = (SuccessResult) resultObject;
+                resultObject = SimpleObject.create("success", "true", "message", success.getMessage());
+            } else if (resultObject instanceof FailureResult) {
+                FailureResult failure = (FailureResult) resultObject;
+                response.setStatus(403);
+                resultObject = SimpleObject.create("failure", "true", "globalErrors", failure.getGlobalErrors(),
+                        "fieldErrors", failure.getFieldErrorMap());
+            } else if (resultObject instanceof ObjectResult) {
+                resultObject = ((ObjectResult) resultObject).getWrapped();
+            }
+
+            Object result;
+            if (returnFormat.equals("json")) {
+                result = toJson(resultObject);
+            } else {
+                result = resultObject.toString();
+            }
+            model.addAttribute("html", result);
+            return SHOW_HTML_VIEW;
+
+        } else {
+            // this is a regular post, so we will return a page
+
+            if (successUrl == null)
+                successUrl = getSuccessUrl(request);
+            if (failureUrl == null)
+                failureUrl = getFailureUrl(request, successUrl);
+
+            successUrl = removeContextPath(successUrl);
+            failureUrl = removeContextPath(failureUrl);
+
+            if (resultObject == null || resultObject instanceof SuccessResult) {
+                if (resultObject != null) {
+                    SuccessResult result = (SuccessResult) resultObject;
+                    if (result.getMessage() != null)
+                        request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, result.getMessage());
+                }
+                return "redirect:/" + successUrl;
+            } else if (resultObject instanceof FailureResult) {
+                // TODO harmonize this with the return-type version
+                FailureResult failureResult = (FailureResult) resultObject;
+                String errorMessage = null;
+                if (failureResult.getSingleError() != null) {
+                    errorMessage = failureResult.getSingleError();
+                } else if (failureResult.getErrors() != null) {
+                    Errors errors = failureResult.getErrors();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<ul>");
+                    for (ObjectError err : errors.getGlobalErrors()) {
+                        sb.append("<li>" + UiFrameworkUtil.getMessage(err) + "</li>");
+                    }
+                    for (FieldError err : errors.getFieldErrors()) {
+                        sb.append("<li>" + err.getField() + ": " + UiFrameworkUtil.getMessage(err) + "</li>");
+                    }
+                    sb.append("</ul>");
+                    errorMessage = sb.toString();
+                }
+                request.getSession().setAttribute(WebConstants.OPENMRS_ERROR_ATTR, errorMessage);
+                return redirectHelper(failureUrl, model);
+            } else if (resultObject instanceof ObjectResult) {
+                // the best we can do is just display a formatted version of the wrapped object
+                String formatted = new FormatterImpl().format(((ObjectResult) resultObject).getWrapped());
+                model.addAttribute("html", formatted);
+                return SHOW_HTML_VIEW;
+
+            } else {
+                throw new RuntimeException("Don't know how to handle fragment action result type: "
+                        + resultObject.getClass());
+            }
+        }
+    }
 	
 	private String removeContextPath(String url) {
 		if (url != null) {
