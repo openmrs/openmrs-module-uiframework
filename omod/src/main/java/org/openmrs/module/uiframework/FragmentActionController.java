@@ -106,13 +106,13 @@ public class FragmentActionController {
             path = path.substring(1);
         }
         int firstSlash = path.indexOf("/");
-        int secondSlash = path.indexOf("/", firstSlash + 1);
-        if (firstSlash < 0 || secondSlash < 0) {
+        int lastSlash = path.lastIndexOf("/");
+        if (firstSlash < 0 || lastSlash < 0) {
             throw new IllegalArgumentException("fragment action request must have at least provider/fragmentName/actionName, but this does not: " + request.getRequestURI());
         }
         String providerName = path.substring(0, firstSlash);
-        String fragmentName = path.substring(firstSlash + 1, secondSlash);
-        String action = path.substring(secondSlash + 1);
+        String fragmentName = path.substring(firstSlash + 1, lastSlash);
+        String action = path.substring(lastSlash + 1);
 
         if (returnFormat == null) {
             String acceptHeader = request.getHeader("Accept");
