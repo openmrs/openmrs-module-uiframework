@@ -123,26 +123,34 @@ public class FragmentActionController {
             }
         }
 
-        Object resultObject;
-        try {
-            resultObject = fragmentFactory.invokeFragmentAction(providerName, fragmentName, action, request);
-        } catch (Exception ex) {
-            // it's possible that the underlying exception is that the user was logged out or lacks privileges
-            // and we want to special-case that
-            Exception authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
-            if (authEx != null) {
-                resultObject = new FailureResult("#APIAuthenticationException#" + authEx.getMessage());
-            } else {
-                authEx = ExceptionUtil.findExceptionInChain(ex, ContextAuthenticationException.class);
-                if (authEx != null) {
-                    resultObject = new FailureResult("#APIAuthenticationException#" + authEx.getMessage());
-                } else {
-                    // we don't know how to handle other types of exceptions
-                    log.error("error", ex);
-                    throw new UiFrameworkException("Error invoking fragment action", ex);
-                }
-            }
-        }
+		Object resultObject;
+		try {
+			resultObject = fragmentFactory.invokeFragmentAction(providerName, fragmentName, action, request);
+
+			// Default status code for failures is 400 (BAD REQUEST), successes is 200 (OK)
+			response.setStatus((resultObject instanceof FailureResult) ? 400 : 200);
+
+		} catch (Exception ex) {
+
+			// Look for specific exceptions down the chain
+			Exception specificEx = null;
+
+			// It's possible that the underlying exception is that the user was logged out or lacks privileges
+			if ((specificEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class)) != null) {
+				resultObject = new FailureResult("#APIAuthenticationException#" + specificEx.getMessage());
+				response.setStatus(403); // 403 (FORBIDDEN)
+			} else if ((specificEx = ExceptionUtil.findExceptionInChain(ex, ContextAuthenticationException.class)) != null) {
+				resultObject = new FailureResult("#APIAuthenticationException#" + specificEx.getMessage());
+				response.setStatus(403); // 403 (FORBIDDEN)
+			} else {
+				// We don't know how to handle other types of exceptions
+				log.error("error", ex);
+
+				// TODO figure how to return UiFrameworkExceptions that result from
+				// missing controllers or methods with status 404 (NOT FOUND)
+				throw new UiFrameworkException("Error invoking fragment action", ex);
+			}
+		}
 
         if (!StringUtils.isEmpty(returnFormat)) {
             // this is an ajax request, so we need to return an object
@@ -155,20 +163,21 @@ public class FragmentActionController {
                 resultObject = SimpleObject.create("success", "true", "message", success.getMessage());
             } else if (resultObject instanceof FailureResult) {
                 FailureResult failure = (FailureResult) resultObject;
-                response.setStatus(403);
-                resultObject = SimpleObject.create("failure", "true", "globalErrors", failure.getGlobalErrors(),
-                        "fieldErrors", failure.getFieldErrorMap());
+                resultObject = SimpleObject.create("failure", "true", "globalErrors", failure.getGlobalErrors(), "fieldErrors", failure.getFieldErrorMap());
             } else if (resultObject instanceof ObjectResult) {
                 resultObject = ((ObjectResult) resultObject).getWrapped();
             }
 
+			// Convert result to JSON or plain text depending on requested format
             Object result;
             if (returnFormat.equals("json")) {
                 result = toJson(resultObject);
             } else {
                 result = resultObject.toString();
             }
+
             model.addAttribute("html", result);
+
             return SHOW_HTML_VIEW;
 
         } else {
@@ -297,5 +306,4 @@ public class FragmentActionController {
 			throw new ViewException("Error generating JSON", ex);
 		}
 	}
-	
 }
