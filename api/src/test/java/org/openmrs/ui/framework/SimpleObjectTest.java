@@ -39,6 +39,7 @@ public class SimpleObjectTest {
     public void fromObject_shouldCreateSimpleObjectWithNestedProperties() {
 
         Person person = new Person();
+		person.setPersonId(123);
         person.setGender("M");
 
         PersonName name = new PersonName();
@@ -48,13 +49,18 @@ public class SimpleObjectTest {
         name.setPreferred(true);
         person.addName(name);
 
-        String [] properties = {"gender", "personName.givenName", "personName.middleName", "personName.familyName"};
+        String [] properties = {"personId", "gender", "personName.givenName", "personName.middleName", "personName.familyName", "personName.preferred"};
         SimpleObject simplePerson = SimpleObject.fromObject(person, ui, properties);
 
+		Assert.assertEquals(new Integer(123), simplePerson.get("personId"));
         Assert.assertEquals("M", simplePerson.get("gender"));
-        Assert.assertEquals("John", ((Map<String,Object>) simplePerson.get("personName")).get("givenName"));
-        Assert.assertEquals("J", ((Map<String,Object>) simplePerson.get("personName")).get("middleName"));
-        Assert.assertEquals("Johnson", ((Map<String,Object>) simplePerson.get("personName")).get("familyName"));
+
+		Map<String,Object> nameMap = (Map<String,Object>) simplePerson.get("personName");
+
+        Assert.assertEquals("John", nameMap.get("givenName"));
+        Assert.assertEquals("J", nameMap.get("middleName"));
+        Assert.assertEquals("Johnson", nameMap.get("familyName"));
+		Assert.assertTrue((Boolean) nameMap.get("preferred"));
     }
 
     @Test
