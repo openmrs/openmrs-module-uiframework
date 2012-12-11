@@ -139,8 +139,15 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 					// deep property: recurse into this
 					ret.put(property, fromObjectHelper(propertyValue, ui, nextLevel, propertiesByLevel));
 				} else {
-					// shallow property: format it
-					ret.put(property, ui.format(propertyValue));
+					// shallow property
+
+					if (propertyValue == null || propertyValue instanceof Boolean || propertyValue instanceof Number) {
+						// is a non-string type that can be represented natively in JSON
+						ret.put(property, propertyValue);
+					}
+					else {
+						ret.put(property, ui.format(propertyValue));
+					}
 				}
 			}
 			return ret;
