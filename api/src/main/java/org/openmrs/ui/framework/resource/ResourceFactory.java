@@ -13,13 +13,17 @@
  */
 package org.openmrs.ui.framework.resource;
 
-import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.apache.commons.beanutils.PropertyUtils;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -34,7 +38,9 @@ public class ResourceFactory {
 	private static ResourceFactory instance;
 	
 	private static Map<String, ResourceProvider> resourceProviders;
-	
+
+    private static Set<String> resourceProvidersInDevelopmentMode = new HashSet<String>();
+
 	public ResourceFactory() {
 		// hack to allow our module servlet to access this
 		if (instance == null)
@@ -77,12 +83,31 @@ public class ResourceFactory {
 	public File getResource(String resourcePath) {
 		return getResource(null, resourcePath);
 	}
-	
+
+    /**
+     * @see #getResource(String, String)
+     * @param providerName
+     * @param resourcePath
+     * @return the resource's contents, as a String
+     * @throws IOException
+     */
+    public String getResourceAsString(String providerName, String resourcePath) throws IOException {
+        File file = getResource(providerName, resourcePath);
+        if (file == null) {
+            return null;
+        }
+        return OpenmrsUtil.getFileAsString(file);
+    }
+
     /**
      * @return the resourceProviders
      */
     public Map<String, ResourceProvider> getResourceProviders() {
     	return resourceProviders;
+    }
+
+    public boolean isResourceProviderInDevelopmentMode(String providerName) {
+        return resourceProvidersInDevelopmentMode.contains(providerName);
     }
 
     /**
@@ -125,7 +150,8 @@ public class ResourceFactory {
 			if (devFolder.exists() && devFolder.isDirectory()) {
 				try {
 					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
-				} catch (Exception ex) {
+                    resourceProvidersInDevelopmentMode.add(key);
+                } catch (Exception ex) {
 					// pass
 				}
 			} else {
