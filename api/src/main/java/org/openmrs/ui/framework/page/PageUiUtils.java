@@ -9,7 +9,7 @@ public class PageUiUtils extends UiUtils {
 		this.pageContext = pageContext;
 		this.fragmentIncluder = pageContext;
 		this.resourceIncluder = pageContext;
-		this.formatter = new FormatterImpl();
+		this.formatter = new FormatterImpl(pageContext.getMessageSource());
 		this.messager = pageContext;
 		this.decoratable = pageContext;
 		this.extensionManager = pageContext.getExtensionManager();

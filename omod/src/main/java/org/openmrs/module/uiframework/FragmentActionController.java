@@ -16,6 +16,7 @@ package org.openmrs.module.uiframework;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.ui.framework.FormatterImpl;
 import org.openmrs.ui.framework.SimpleObject;
@@ -32,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -65,6 +67,9 @@ public class FragmentActionController {
 	@Autowired
 	@Qualifier("coreFragmentFactory")
 	FragmentFactory fragmentFactory;
+
+    @Autowired
+    MessageSource messageSource;
 
     @RequestMapping("/action/**")
     public String handleUrlStartingWithAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
@@ -221,7 +226,7 @@ public class FragmentActionController {
                 return redirectHelper(failureUrl, model);
             } else if (resultObject instanceof ObjectResult) {
                 // the best we can do is just display a formatted version of the wrapped object
-                String formatted = new FormatterImpl().format(((ObjectResult) resultObject).getWrapped());
+                String formatted = new FormatterImpl(messageSource).format(((ObjectResult) resultObject).getWrapped(), Context.getLocale());
                 model.addAttribute("html", formatted);
                 return SHOW_HTML_VIEW;
 

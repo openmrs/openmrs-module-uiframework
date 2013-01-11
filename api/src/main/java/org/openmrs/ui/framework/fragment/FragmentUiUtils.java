@@ -1,9 +1,9 @@
 package org.openmrs.ui.framework.fragment;
 
-import java.util.Map;
-
 import org.openmrs.ui.framework.FormatterImpl;
 import org.openmrs.ui.framework.UiUtils;
+
+import java.util.Map;
 
 /**
  * Utility methods that you'd use in a view. These often delegate back to methods on the fragment
@@ -17,7 +17,7 @@ public class FragmentUiUtils extends UiUtils {
 		this.pageContext = context.getPageContext();
 		this.context = context;
 		this.resourceIncluder = pageContext;
-		this.formatter = new FormatterImpl();
+		this.formatter = new FormatterImpl(pageContext.getMessageSource());
 		this.messager = pageContext;
 		this.fragmentIncluder = context;
 		this.decoratable = context;

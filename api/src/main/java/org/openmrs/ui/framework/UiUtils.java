@@ -1,6 +1,7 @@
 package org.openmrs.ui.framework;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.fragment.action.ObjectResult;
@@ -17,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
@@ -24,6 +26,8 @@ import java.util.Random;
  * Utility methods that should be available in view technologies for pages and fragments 
  */
 public abstract class UiUtils {
+
+    protected Locale locale;
 	
 	protected PageContext pageContext;
 	
@@ -247,16 +251,22 @@ public abstract class UiUtils {
 	}
 	
 	public String format(Object o) {
-		return formatter.format(o);
+		return formatter.format(o, getLocale());
 	}
-	
-	public String formatTimeAgo(Date date) {
+
+    public String formatTimeAgo(Date date) {
 		long diff = System.currentTimeMillis() - date.getTime();
 		return message("duration.secondsAgo", (diff / 1000));
 	}
-	
+
+    /**
+     * @param o
+     * @return
+     * @deprecated use #format(Object o)
+     */
+    @Deprecated
 	public String formatAsText(Object o) {
-		return formatter.formatAsText(o);
+		return formatter.format(o, getLocale());
 	}
 	
 	public static String randomId(String prefix) {
@@ -333,5 +343,15 @@ public abstract class UiUtils {
 		if (result.hasErrors())
 			throw new BindParamsValidationException(bindingPrefix, result);
 	}
-	
+
+    /**
+     * @return the configured locale, or Context.getLocale() if none is set
+     */
+    public Locale getLocale() {
+        return Context.getLocale();
+    }
+
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
 }

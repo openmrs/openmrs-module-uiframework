@@ -12,7 +12,7 @@ public class FragmentActionUiUtils extends UiUtils {
 	
 	public FragmentActionUiUtils(MessageSource messageSource, ExtensionManager extensionManager,
 	    ConversionService conversionService) {
-		this.formatter = new FormatterImpl();
+		this.formatter = new FormatterImpl(messageSource);
 		this.messager = new MessagerImpl(Context.getLocale(), messageSource);
 		this.extensionManager = extensionManager;
 		this.conversionService = conversionService;

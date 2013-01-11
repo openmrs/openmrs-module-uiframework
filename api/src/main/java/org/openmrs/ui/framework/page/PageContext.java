@@ -24,12 +24,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class PageContext implements ResourceIncluder, Messager, Decoratable, FragmentIncluder, ExtensionAware {
 	
 	private Locale locale;
+
+    private MessageSource messageSource;
 	
 	private Messager messager;
 	
@@ -214,13 +214,19 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
     }
 	
 	/**
+     * Also instantiates a MessageerImpl with this message source
 	 * @param messageSource the messageSource to set
 	 */
 	public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
 		this.messager = new MessagerImpl(getLocale(), messageSource);
 	}
-	
-	/**
+
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
+    /**
 	 * @return the controller
 	 */
 	public Object getController() {
