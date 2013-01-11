@@ -73,7 +73,13 @@ public class FormatterImpl implements Formatter {
         if (messageSource == null) {
             return null;
         }
-        return messageSource.getMessage("ui.i18n." + shortClassName + ".name." + uuid, null, locale);
+        String code = "ui.i18n." + shortClassName + ".name." + uuid;
+        String localization = messageSource.getMessage(code, null, locale);
+        if (localization == null || localization.equals(code)) {
+            return null;
+        } else {
+            return localization;
+        }
     }
 
     private String format(Concept c, Locale locale) {

@@ -17,28 +17,23 @@ package org.openmrs.ui.framework;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.EncounterType;
-import org.springframework.context.MessageSource;
 
 import java.util.Locale;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  *
  */
 public class FormatterImplTest {
 
-    MessageSource messageSource;
+    MockMessageSource messageSource;
     FormatterImpl formatter;
 
     @Before
     public void setUp() {
-        messageSource = mock(MessageSource.class);
+        messageSource = new MockMessageSource();
         formatter = new FormatterImpl(messageSource);
     }
 
@@ -60,7 +55,7 @@ public class FormatterImplTest {
         String displayName = "Emergency Check-In";
         String uuid = "a-fake-uuid";
 
-        when(messageSource.getMessage(eq("ui.i18n.EncounterType.name." + uuid), any(Object[].class), eq(locale))).thenReturn(displayName);
+        messageSource.addMessage("ui.i18n.EncounterType.name." + uuid, displayName);
 
         EncounterType encounterType = new EncounterType();
         encounterType.setUuid(uuid);
