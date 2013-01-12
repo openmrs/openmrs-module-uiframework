@@ -164,19 +164,17 @@ public abstract class UiUtils {
 	public String pageLink(String providerName, String pageName) {
 		return pageLink(providerName, pageName, null);
 	}
-	
+
 	/**
-	 * Supports query parameters and anchors in the pageName, e.g. "myPage?one=1&two=2#mySection"
+	 * Like #pageLink(String, String, Map), but doesn't add the context path at the beginning.
+	 *
 	 * @param providerName
 	 * @param pageName
-	 * @param params
+	@param params
 	 * @return
-	 * @should handle page name
-	 * @should handle page name with question mark and query string
-	 * @should handle page name with anchor
-	 * @should handle page name with anchor and query string
+	 * @since 2.5
 	 */
-	public String pageLink(String providerName, String pageName, Map<String, Object> params) {
+	public String pageLinkWithoutContextPath(String providerName, String pageName, Map<String, Object> params) {
 		if (providerName == null) {
 			throw new UiFrameworkException("pageLink requires you specify a provider");
 		}
@@ -191,7 +189,7 @@ public abstract class UiUtils {
 			pageName = pageAndAnchor[0];
 			extraAnchor = pageAndAnchor[1];
 		}
-		String ret = "/" + contextPath() + "/" + providerName + "/" + pageName + ".page";
+		String ret = "/" + providerName + "/" + pageName + ".page";
 		if (params != null || extraQuery != null) {
 			ret += "?";
 			if (params != null) {
@@ -213,6 +211,21 @@ public abstract class UiUtils {
 		if (extraAnchor != null)
 			ret += "#" + extraAnchor;
 		return ret;
+	}
+
+	/**
+	 * Supports query parameters and anchors in the pageName, e.g. "myPage?one=1&two=2#mySection"
+	 * @param providerName
+	 * @param pageName
+	 * @param params
+	 * @return
+	 * @should handle page name
+	 * @should handle page name with question mark and query string
+	 * @should handle page name with anchor
+	 * @should handle page name with anchor and query string
+	 */
+	public String pageLink(String providerName, String pageName, Map<String, Object> params) {
+		return "/" + contextPath() + pageLinkWithoutContextPath(providerName, pageName, params);
 	}
 	
 	public String actionLink(String providerName, String controllerName, String action) {
