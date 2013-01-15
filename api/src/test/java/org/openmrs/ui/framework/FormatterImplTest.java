@@ -18,7 +18,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.EncounterType;
 import org.openmrs.Role;
-import org.springframework.test.AssertThrows;
 
 import java.util.Locale;
 
