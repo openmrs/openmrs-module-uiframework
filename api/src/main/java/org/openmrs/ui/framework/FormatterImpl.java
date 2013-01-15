@@ -61,7 +61,7 @@ public class FormatterImpl implements Formatter {
 	
 	private String format(Role role, Locale locale) {
         String override = getLocalization(locale, "Role", role.getUuid());
-		return role.getRole();
+		return override != null ? override : role.getRole();
 	}
 	
 	private String format(OpenmrsMetadata md, Locale locale) {

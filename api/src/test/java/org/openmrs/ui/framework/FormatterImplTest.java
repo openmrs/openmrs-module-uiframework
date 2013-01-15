@@ -17,6 +17,8 @@ package org.openmrs.ui.framework;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.EncounterType;
+import org.openmrs.Role;
+import org.springframework.test.AssertThrows;
 
 import java.util.Locale;
 
@@ -62,6 +64,34 @@ public class FormatterImplTest {
 
         String output = formatter.format(encounterType, locale);
 
+        assertThat(output, is(displayName));
+    }
+
+    @Test
+    public void testFormattingRole()  throws Exception {
+        Locale locale = Locale.ENGLISH;
+
+        Role role = new Role();
+        role.setRole("Admin");
+
+        String output = formatter.format(role, locale);
+        assertThat(output, is(role.getRole()));
+    }
+
+    @Test
+    public void testFormattingRoleWithOverriddenMetadataName()  throws Exception {
+        Locale locale = Locale.ENGLISH;
+
+        String displayName = "Administrator";
+        String uuid = "a-fake-uuid";
+
+        messageSource.addMessage("ui.i18n.Role.name." + uuid, displayName);
+
+        Role role = new Role();
+        role.setRole("Admin");
+        role.setUuid(uuid);
+
+        String output = formatter.format(role, locale);
         assertThat(output, is(displayName));
     }
 
