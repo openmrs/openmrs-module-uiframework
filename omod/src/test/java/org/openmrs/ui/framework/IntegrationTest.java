@@ -13,6 +13,7 @@
  */
 package org.openmrs.ui.framework;
 
+import org.hamcrest.core.Is;
 import org.junit.Test;
 import org.openmrs.ui.framework.annotation.InjectBeans;
 import org.openmrs.ui.framework.page.PageAction;
@@ -31,8 +32,11 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
+import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -54,10 +58,18 @@ public class IntegrationTest extends BaseModuleWebContextSensitiveTest {
 	public void integrationTest() throws Exception {
 		MockHttpSession httpSession = new MockHttpSession();
 		Session session = sessionFactory.getSession(httpSession);
-		PageRequest req = new PageRequest("uiframework", "home", new MockHttpServletRequest(),
-		        new MockHttpServletResponse(), session);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        PageRequest req = new PageRequest("uiframework", "home", new MockHttpServletRequest(),
+                response, session);
+
 		String html = pageFactory.handle(req);
 		System.out.println("Result = " + html);
+
+        // should be HTML5
+        assertThat(html, startsWith("<!DOCTYPE html><html>"));
+
+        // should not be cached
+        assertThat((String) response.getHeader("Cache-Control"), is("no-cache,no-store,must-revalidate"));
 	}
 	
 	/**

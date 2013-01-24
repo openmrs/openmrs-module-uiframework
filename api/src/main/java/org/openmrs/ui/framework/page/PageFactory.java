@@ -86,8 +86,16 @@ public class PageFactory {
 
         }
         String result = process(context);
-		log.info(">>> Page >>> handled " + request + " in " + (System.currentTimeMillis() - startTime) + " ms");
-		return result;
+        if (log.isDebugEnabled()) {
+		    log.debug(">>> Page >>> handled " + request + " in " + (System.currentTimeMillis() - startTime) + " ms");
+        }
+
+        // generally all pages are dynamic and should not be cached
+        request.getResponse().setHeader("Cache-Control", "no-cache,no-store,must-revalidate"); // HTTP 1.1
+        request.getResponse().setHeader("Pragma", "no-cache"); // HTTP 1.0
+        request.getResponse().setDateHeader("Expires", 0); // prevents caching at any proxy server
+
+        return result;
 	}
 	
 	/**
@@ -200,9 +208,8 @@ public class PageFactory {
 
     private String toHtml(String body, PageContext context) {
 		StringBuilder ret = new StringBuilder();
-		ret.append("<?xml version=\"1.0\"?>\n");
-		ret.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n");
-		ret.append("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
+		ret.append("<!DOCTYPE html>");
+		ret.append("<html>\n");
 		ret.append("<head>\n");
 		if (context.getPageTitle() != null) {
 			ret.append("<title>" + context.getPageTitle() + "</title>\n");
