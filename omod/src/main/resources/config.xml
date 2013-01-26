@@ -30,6 +30,22 @@
 		<file>messages.properties</file>
 	</messages>
 	<!-- /Internationalization -->
+
+    <globalProperty>
+        <property>uiframework.formatter.dateFormat</property>
+        <defaultValue>dd.MMM.yyyy</defaultValue>
+        <description>
+            Format used by UiUtils.format for dates that do not have a time component
+        </description>
+    </globalProperty>
+
+    <globalProperty>
+        <property>uiframework.formatter.dateAndTimeFormat</property>
+        <defaultValue>dd.MMM.yyyy, HH:mm:ss</defaultValue>
+        <description>
+            Format used by UiUtils.format for dates that have a time component
+        </description>
+    </globalProperty>
 	
 	<servlet>
 		<servlet-name>resource</servlet-name>

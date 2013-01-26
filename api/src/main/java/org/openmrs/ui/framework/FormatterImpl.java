@@ -10,18 +10,22 @@ import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
+import org.openmrs.api.AdministrationService;
 import org.springframework.context.MessageSource;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class FormatterImpl implements Formatter {
 
-    MessageSource messageSource;
+    private MessageSource messageSource;
+    private AdministrationService administrationService;
 
-    public FormatterImpl(MessageSource messageSource) {
+    public FormatterImpl(MessageSource messageSource, AdministrationService administrationService) {
         this.messageSource = messageSource;
+        this.administrationService = administrationService;
     }
 
     @Override
@@ -54,12 +58,20 @@ public class FormatterImpl implements Formatter {
 	}
 	
 	private String format(Date d, Locale locale) {
-		String datePart = new SimpleDateFormat("dd-MMM-yyyy", locale).format(d);
-		String timePart = new SimpleDateFormat("HH:mm:ss", locale).format(d);
-		return "00:00:00".equals(timePart) ? datePart : (datePart + " (" + timePart + ")");
+        if (hasTimeComponent(d)) {
+            return new SimpleDateFormat(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT), locale).format(d);
+        } else {
+            return new SimpleDateFormat(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT), locale).format(d);
+        }
 	}
-	
-	private String format(Role role, Locale locale) {
+
+    private boolean hasTimeComponent(Date d) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+        return cal.get(Calendar.HOUR_OF_DAY) != 0 || cal.get(Calendar.MINUTE) != 0 || cal.get(Calendar.SECOND) != 0 || cal.get(Calendar.MILLISECOND) != 0;
+    }
+
+    private String format(Role role, Locale locale) {
         String override = getLocalization(locale, "Role", role.getUuid());
 		return override != null ? override : role.getRole();
 	}

@@ -18,24 +18,31 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.EncounterType;
 import org.openmrs.Role;
+import org.openmrs.api.AdministrationService;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
  */
 public class FormatterImplTest {
 
+    AdministrationService administrationService;
     MockMessageSource messageSource;
     FormatterImpl formatter;
 
     @Before
     public void setUp() {
+        administrationService = mock(AdministrationService.class);
         messageSource = new MockMessageSource();
-        formatter = new FormatterImpl(messageSource);
+        formatter = new FormatterImpl(messageSource, administrationService);
     }
 
     @Test
@@ -92,6 +99,28 @@ public class FormatterImplTest {
 
         String output = formatter.format(role, locale);
         assertThat(output, is(displayName));
+    }
+
+    @Test
+    public void testFormattingADateWithNoTime() throws Exception {
+        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT)).thenReturn("dd.MMM.yyyy");
+
+        Locale locale = Locale.ENGLISH;
+        Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2003-02-01");
+
+        String output = formatter.format(date, locale);
+        assertThat(output, is("01.Feb.2003"));
+    }
+
+    @Test
+    public void testFormattingADateWithATime() throws Exception {
+        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT)).thenReturn("dd.MMM.yyyy, HH:mm:ss");
+
+        Locale locale = Locale.ENGLISH;
+        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse("2003-02-01 14:25:07.123");
+
+        String output = formatter.format(date, locale);
+        assertThat(output, is("01.Feb.2003, 14:25:07"));
     }
 
 }

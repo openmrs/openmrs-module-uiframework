@@ -16,6 +16,7 @@ package org.openmrs.module.uiframework;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.ui.framework.FormatterImpl;
@@ -70,6 +71,10 @@ public class FragmentActionController {
 
     @Autowired
     MessageSource messageSource;
+
+    @Autowired
+    @Qualifier("adminService")
+    AdministrationService administrationService;
 
     @RequestMapping("/action/**")
     public String handleUrlStartingWithAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
@@ -226,7 +231,7 @@ public class FragmentActionController {
                 return redirectHelper(failureUrl, model);
             } else if (resultObject instanceof ObjectResult) {
                 // the best we can do is just display a formatted version of the wrapped object
-                String formatted = new FormatterImpl(messageSource).format(((ObjectResult) resultObject).getWrapped(), Context.getLocale());
+                String formatted = new FormatterImpl(messageSource, administrationService).format(((ObjectResult) resultObject).getWrapped(), Context.getLocale());
                 model.addAttribute("html", formatted);
                 return SHOW_HTML_VIEW;
 
