@@ -58,12 +58,20 @@ public class FormatterImpl implements Formatter {
 	}
 	
 	private String format(Date d, Locale locale) {
-        if (hasTimeComponent(d)) {
-            return new SimpleDateFormat(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT), locale).format(d);
+        if (administrationService != null) {
+            if (hasTimeComponent(d)) {
+                return new SimpleDateFormat(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT), locale).format(d);
+            } else {
+                return new SimpleDateFormat(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT), locale).format(d);
+            }
         } else {
-            return new SimpleDateFormat(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT), locale).format(d);
+            if (hasTimeComponent(d)) {
+                return new SimpleDateFormat("dd.MMM.yyyy, HH:mm:ss", locale).format(d);
+            } else {
+                return new SimpleDateFormat("dd.MMM.yyyy", locale).format(d);
+            }
         }
-	}
+    }
 
     private boolean hasTimeComponent(Date d) {
         Calendar cal = Calendar.getInstance();
