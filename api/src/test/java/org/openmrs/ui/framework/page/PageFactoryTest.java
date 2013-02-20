@@ -7,11 +7,15 @@ import org.apache.commons.collections.Transformer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.internal.matchers.Contains;
+import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -26,13 +30,21 @@ import java.util.regex.Pattern;
 
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Context.class)
 public class PageFactoryTest {
 	
 	PageFactory factory;
 	
 	@Before
 	public void beforeEachTest() throws Exception {
+
+        mockStatic(Context.class);
+        when(Context.getAdministrationService()).thenReturn(null);
+
 		factory = new PageFactory();
 		
 		Map<String, PageControllerProvider> cps = new HashMap<String, PageControllerProvider>(); 

@@ -3,20 +3,33 @@ package org.openmrs.ui.framework;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
+import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.fragment.FragmentActionUiUtils;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Map;
 
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(Context.class)
 public class SimpleObjectTest {
 
     private UiUtils ui;
 
     @Before
     public void before() {
+
+        mockStatic(Context.class);
+        when(Context.getAdministrationService()).thenReturn(null);
+
         this.ui = new FragmentActionUiUtils(null, null, null);
     }
 
