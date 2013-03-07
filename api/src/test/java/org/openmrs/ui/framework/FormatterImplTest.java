@@ -74,6 +74,22 @@ public class FormatterImplTest {
     }
 
     @Test
+    public void testFormattingProxiedObjectWithOverriddenMetadataName() throws Exception {
+        Locale locale = Locale.ENGLISH;
+        String displayName = "Emergency Check-In";
+        String uuid = "a-fake-uuid";
+
+        messageSource.addMessage("ui.i18n.EncounterType.name." + uuid, displayName);
+
+        EncounterType_$$_javassist_26 encounterType = new EncounterType_$$_javassist_26();
+        encounterType.setUuid(uuid);
+
+        String output = formatter.format(encounterType, locale);
+
+        assertThat(output, is(displayName));
+    }
+
+    @Test
     public void testFormattingRole()  throws Exception {
         Locale locale = Locale.ENGLISH;
 
@@ -121,6 +137,10 @@ public class FormatterImplTest {
 
         String output = formatter.format(date, locale);
         assertThat(output, is("01.Feb.2003, 14:25:07"));
+    }
+
+    private class EncounterType_$$_javassist_26 extends EncounterType {
+
     }
 
 }

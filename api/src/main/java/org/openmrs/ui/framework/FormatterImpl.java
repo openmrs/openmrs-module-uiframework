@@ -93,6 +93,14 @@ public class FormatterImpl implements Formatter {
         if (messageSource == null) {
             return null;
         }
+
+        // in case this is a hibernate proxy, strip off anything after an underscore
+        // ie: EncounterType_$$_javassist_26 needs to be converted to EncounterType
+        int underscoreIndex = shortClassName.indexOf("_");
+        if (underscoreIndex > 0) {
+            shortClassName = shortClassName.substring(0, underscoreIndex);
+        }
+
         String code = "ui.i18n." + shortClassName + ".name." + uuid;
         String localization = messageSource.getMessage(code, null, locale);
         if (localization == null || localization.equals(code)) {
@@ -132,5 +140,5 @@ public class FormatterImpl implements Formatter {
 	private String format(PatientIdentifier pi, Locale locale) {
 		return format(pi.getIdentifierType(), locale) + ": " + pi.getIdentifier();
 	}
-	
+
 }
