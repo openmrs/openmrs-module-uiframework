@@ -96,7 +96,7 @@ public class FormatterImpl implements Formatter {
 
         // in case this is a hibernate proxy, strip off anything after an underscore
         // ie: EncounterType_$$_javassist_26 needs to be converted to EncounterType
-        int underscoreIndex = shortClassName.indexOf("_");
+        int underscoreIndex = shortClassName.indexOf("_$");
         if (underscoreIndex > 0) {
             shortClassName = shortClassName.substring(0, underscoreIndex);
         }
