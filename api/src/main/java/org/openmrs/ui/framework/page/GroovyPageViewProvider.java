@@ -2,17 +2,18 @@ package org.openmrs.ui.framework.page;
 
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.util.OpenmrsUtil;
 
 /**
  * Generates views based on Groovy templates, stored in ".gsp" files.
@@ -31,33 +32,44 @@ public class GroovyPageViewProvider implements PageViewProvider {
 	
 	// internal data
 	SimpleTemplateEngine engine = new SimpleTemplateEngine(getClass().getClassLoader());
-	
-	@Override
-	public PageView getView(String name) {
-		try {
-			String gsp = getViewContents(name);
-			if (gsp == null)
-				return null;
-			
-			String controllerProviderAndName = null;
-			// <!--CONTROLLER:{non-whitespace, not greedy}--> allowing for whitespaces between elements
-			Pattern p = Pattern.compile("<!--\\s*CONTROLLER\\s*:\\s*(\\S*?)\\s*-->"); // TODO BW: Can be moved to static attr or constructor
-			Matcher m = p.matcher(gsp);
-			if (m.find())
-				controllerProviderAndName = m.group(1);
 
-			Template template = engine.createTemplate(gsp);
-			// TODO maybe configure this template with the request, session, etc. See groovy.servlet.TemplateServlet for guidance
-			return new GroovyPageView(template, controllerProviderAndName);
-		}
-		catch (Exception ex) {
-			log.error("Error creating GroovyPageView", ex);
-			throw new RuntimeException("Error creating GroovyPageView", ex);
-		}
-	}
-	
-	
-	/**
+    // cache these
+    Map<String, GroovyPageView> cache = new HashMap<String, GroovyPageView>();
+
+    @Override
+	public PageView getView(String name) {
+        GroovyPageView cached = cache.get(name);
+        if (cached != null) {
+            return cached;
+        }
+        try {
+            String gsp = getViewContents(name);
+            if (gsp == null)
+                return null;
+
+            String controllerProviderAndName = null;
+            // <!--CONTROLLER:{non-whitespace, not greedy}--> allowing for whitespaces between elements
+            Pattern p = Pattern.compile("<!--\\s*CONTROLLER\\s*:\\s*(\\S*?)\\s*-->"); // TODO BW: Can be moved to static attr or constructor
+            Matcher m = p.matcher(gsp);
+            if (m.find())
+                controllerProviderAndName = m.group(1);
+
+            Template template = engine.createTemplate(gsp);
+            GroovyPageView compiledView = new GroovyPageView(template, controllerProviderAndName);
+            if (developmentFolder == null) {
+                // cache for performance, since compiling templates is expensive.
+                // Also we suspect that compiling groovy templates leaks permgen memory
+                cache.put(name, compiledView);
+            }
+            return compiledView;
+        } catch (Exception ex) {
+            log.error("Error creating GroovyPageView", ex);
+            throw new RuntimeException("Error creating GroovyPageView", ex);
+        }
+    }
+
+
+    /**
 	 * @param name
 	 * @return if there's a matching view file for the given name, returns its contents 
 	 * @throws Exception
