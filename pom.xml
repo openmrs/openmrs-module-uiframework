@@ -126,20 +126,21 @@
 				<scope>provided</scope>
 			</dependency>
 			
-			<!-- Jackson JSON -->
+			<!-- Jackson JSON is provided by OpenMRS core's web module. uiframework doesn't compile against this, so we have to declare
+			the dependency this way. Any other application (besides the legacy OpenMRS web layer) needs to provide jackson. -->
 	        <dependency>
 	            <groupId>org.codehaus.jackson</groupId>
 	            <artifactId>jackson-mapper-asl</artifactId>
-	            <version>1.6.0</version>
+	            <version>1.5.0</version>
 	            <type>jar</type>
-	            <scope>compile</scope>
+	            <scope>provided</scope>
 	        </dependency>
 	        <dependency>
 	            <groupId>org.codehaus.jackson</groupId>
 	            <artifactId>jackson-core-asl</artifactId>
-	            <version>1.6.0</version>
+	            <version>1.5.0</version>
 	            <type>jar</type>
-	            <scope>compile</scope>
+	            <scope>provided</scope>
 	        </dependency>
 
 		</dependencies>
