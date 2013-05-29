@@ -506,23 +506,27 @@ public class FragmentFactory {
 			}
 			
 			// we don't know how to handle other types of exceptions
-			log.error("Error invoking fragment action with parameters: " + desribeParamsForErrorMessage(params));
+			log.error("Error invoking fragment action with parameters: " + describeParamsForErrorMessage(method, params));
 			throw new UiFrameworkException("Error invoking fragment action " + method, ex);
 		}
 		
 		return result;
 	}
 
-    private String desribeParamsForErrorMessage(Object[] params) {
-        List<String> classes = new ArrayList<String>();
-        for (Object param : params) {
-            if (param == null) {
-                classes.add("null");
-            } else {
-                classes.add(param.getClass() + " (classloader " + param.getClass().getClassLoader() + ")");
-            }
+    private String describeParamsForErrorMessage(Method method, Object[] params) {
+        if (method.getParameterTypes().length != params.length) {
+            return "Parameter length mismatch: expected " + method.getParameterTypes().length + " but passed " + params.length;
         }
-        return OpenmrsUtil.join(classes, ", ");
+        List<String> lines = new ArrayList<String>();
+        for (int i = 0; i < method.getParameterTypes().length; ++i) {
+            Class<?> expected = method.getParameterTypes()[i];
+            String temp = "" + i + ": ";
+            temp += "Expected: " + expected.getName() + " (cl: " + expected.getClassLoader() + ")";
+            temp += " | Actual: ";
+            temp += params[i].getClass().getName() + " (cl: " + params[i].getClass().getClassLoader() + ")";
+            lines.add(temp);
+        }
+        return "\n" + OpenmrsUtil.join(lines, "\n");
     }
 
     public boolean fragmentExists(String providerName, String fragmentName) {
