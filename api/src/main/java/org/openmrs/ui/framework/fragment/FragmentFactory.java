@@ -16,6 +16,7 @@ import org.openmrs.ui.framework.page.Redirect;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
 import org.openmrs.ui.util.ExceptionUtil;
+import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -504,14 +506,26 @@ public class FragmentFactory {
 			}
 			
 			// we don't know how to handle other types of exceptions
-			log.error("error", ex);
+			log.error("Error invoking fragment action with parameters: " + desribeParamsForErrorMessage(params));
 			throw new UiFrameworkException("Error invoking fragment action " + method, ex);
 		}
 		
 		return result;
 	}
-	
-	public boolean fragmentExists(String providerName, String fragmentName) {
+
+    private String desribeParamsForErrorMessage(Object[] params) {
+        List<String> classes = new ArrayList<String>();
+        for (Object param : params) {
+            if (param == null) {
+                classes.add("null");
+            } else {
+                classes.add(param.getClass() + " (classloader " + param.getClass().getClassLoader() + ")");
+            }
+        }
+        return OpenmrsUtil.join(classes, ", ");
+    }
+
+    public boolean fragmentExists(String providerName, String fragmentName) {
 		Object controller = getController(providerName, fragmentName);
 		if (controller != null) {
 			return true;
