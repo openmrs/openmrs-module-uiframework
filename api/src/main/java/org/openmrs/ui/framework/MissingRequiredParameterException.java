@@ -17,5 +17,10 @@ public class MissingRequiredParameterException extends RequestValidationExceptio
 	public Map<String, List<String>> getFieldErrorCodes() {
 		return singleFieldError(requiredParameter, "error.required");
 	}
-	
+
+    @Override
+    public String getMessage() {
+        return ("Required: " + requiredParameter);
+    }
+
 }
