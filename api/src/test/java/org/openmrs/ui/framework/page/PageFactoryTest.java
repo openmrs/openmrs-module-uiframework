@@ -12,6 +12,7 @@ import org.mockito.internal.matchers.Contains;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.UiFrameworkException;
+import org.openmrs.ui.framework.interceptor.InterceptorFactory;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -67,6 +68,8 @@ public class PageFactoryTest {
         List<PageModelConfigurator> pageModelConfigurators = new ArrayList<PageModelConfigurator>();
         pageModelConfigurators.add(configurator);
         factory.setModelConfigurators(pageModelConfigurators);
+
+		factory.setInterceptorFactory(new InterceptorFactory());
     }
 	
 	/**

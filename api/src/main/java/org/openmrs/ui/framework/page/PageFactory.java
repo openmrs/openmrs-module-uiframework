@@ -13,6 +13,7 @@ import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
+import org.openmrs.ui.framework.interceptor.InterceptorFactory;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.util.OpenmrsUtil;
@@ -56,6 +57,9 @@ public class PageFactory {
 	
 	@Autowired
 	ConversionService conversionService;
+
+	@Autowired
+	InterceptorFactory interceptorFactory;
 
     @Autowired(required = false)
     List<PageModelConfigurator> modelConfigurators;
@@ -149,6 +153,9 @@ public class PageFactory {
 			}
 		}
 		context.setController(controller);
+
+		// invoke any request interceptors
+		interceptorFactory.handlePageRequest(context);
 		
 		// let the controller handle the request
 		// TODO: refactor because fragment controllers can now also return a FragmentRequest
@@ -182,8 +189,15 @@ public class PageFactory {
 		String output = view.render(context);
 		return output;
 	}
-	
-	// if you change the supported parameter classes, make sure to update the documentation on the wiki
+
+	/**
+	 * Invokes the appropriate method on the controller to handle this page request
+	 *
+	 * NB. If you change the supported parameter classes, make sure to update the documentation on the wiki
+	 * @param context the page context
+	 * @return the controller output
+	 * @throws PageAction
+	 */
 	private Object handleRequestWithController(PageContext context) throws PageAction {
 		Map<Class<?>, Object> possibleArguments = new HashMap<Class<?>, Object>();
 		possibleArguments.put(PageContext.class, context);
@@ -484,4 +498,7 @@ public class PageFactory {
         this.possiblePageControllerArgumentProviders = possiblePageControllerArgumentProviders;
     }
 
+	public void setInterceptorFactory(InterceptorFactory interceptorFactory) {
+		this.interceptorFactory = interceptorFactory;
+	}
 }
