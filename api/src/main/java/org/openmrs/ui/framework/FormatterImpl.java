@@ -1,22 +1,26 @@
 package org.openmrs.ui.framework;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.PatientIdentifier;
 import org.openmrs.PatientIdentifierType;
 import org.openmrs.Person;
+import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.AdministrationService;
 import org.springframework.context.MessageSource;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 public class FormatterImpl implements Formatter {
 
@@ -52,6 +56,8 @@ public class FormatterImpl implements Formatter {
 			return format((Obs) o, locale);
 		} else if (o instanceof PatientIdentifier) {
 			return format((PatientIdentifier) o, locale);
+		} else if (o instanceof PersonAddress) {
+			return format((PersonAddress) o, locale);
 		} else {
 			return o.toString();
 		}
@@ -141,4 +147,20 @@ public class FormatterImpl implements Formatter {
 		return format(pi.getIdentifierType(), locale) + ": " + pi.getIdentifier();
 	}
 
+	private String format(PersonAddress personAddress, Locale locale) {
+		List<String> address = new ArrayList<String>();
+		if (!StringUtils.isBlank(personAddress.getStateProvince())) {
+			address.add(personAddress.getStateProvince());
+		}
+		if (!StringUtils.isBlank(personAddress.getCityVillage())) {
+			address.add(personAddress.getCityVillage());
+		}
+		if (!StringUtils.isBlank(personAddress.getAddress1())) {
+			address.add(personAddress.getAddress1());
+		}
+		if (!StringUtils.isBlank(personAddress.getAddress2())) {
+			address.add(personAddress.getAddress2());
+		}
+		return StringUtils.join(address, ", ");
+	}
 }
