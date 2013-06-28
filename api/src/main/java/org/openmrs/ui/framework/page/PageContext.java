@@ -1,5 +1,6 @@
 package org.openmrs.ui.framework.page;
 
+import org.apache.commons.collections.Transformer;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.Decoratable;
 import org.openmrs.ui.framework.FragmentIncluder;
@@ -15,15 +16,7 @@ import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.resource.Resource;
 import org.springframework.context.MessageSource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PageContext implements ResourceIncluder, Messager, Decoratable, FragmentIncluder, ExtensionAware {
 	
@@ -48,8 +41,6 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	private PageModel model;
 	
 	private FragmentRequest decorateWith;
-	
-	private String pageTitle;
 
     private List<Resource> resourcesToInclude = new ArrayList<Resource>();
 
@@ -110,6 +101,20 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 		if (ret.charAt(ret.length() - 1) == '&')
 			ret.deleteCharAt(ret.length() - 1);
 		return ret.toString();
+	}
+
+	/**
+	 * Gets the unique resources of the given category included by this page
+	 * @param resourceCategory the resource category
+	 * @return the resources
+	 */
+	public Collection<Resource> getUniqueResourcesByCategory(String resourceCategory) {
+		List<Resource> mayHaveDuplicates = getResourcesToInclude(resourceCategory);
+		LinkedHashSet<Resource> noDuplicates = new LinkedHashSet<Resource>();
+		for (Resource resource : mayHaveDuplicates) {
+			noDuplicates.add(resource);
+		}
+		return noDuplicates;
 	}
 	
 	/**
@@ -295,19 +300,4 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	public void setExtensionManager(ExtensionManager extensionManager) {
 		this.extensionManager = extensionManager;
 	}
-	
-	/**
-	 * @return the pageTitle
-	 */
-	public String getPageTitle() {
-		return pageTitle;
-	}
-	
-	/**
-	 * @param pageTitle the pageTitle to set
-	 */
-	public void setPageTitle(String pageTitle) {
-		this.pageTitle = pageTitle;
-	}
-		
 }

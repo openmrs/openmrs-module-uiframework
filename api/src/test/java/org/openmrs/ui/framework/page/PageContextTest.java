@@ -17,8 +17,10 @@ package org.openmrs.ui.framework.page;
 import org.junit.Test;
 import org.openmrs.ui.framework.resource.Resource;
 
+import java.util.Collection;
 import java.util.List;
 
+import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -27,21 +29,36 @@ import static org.junit.Assert.assertThat;
  */
 public class PageContextTest {
 
-    @Test
-    public void testIncludingResources_shouldMaintainInsertionOrder() throws Exception {
-        PageContext pageContext = new PageContext(null);
-        Resource first = new Resource(Resource.CATEGORY_CSS, "source", "z_first", null);
-        Resource second = new Resource(Resource.CATEGORY_CSS, "source", "a_second", null);
-        Resource third = new Resource(Resource.CATEGORY_CSS, "source", "c_third", null);
-        pageContext.includeResource(first);
-        pageContext.includeResource(second);
-        pageContext.includeResource(third);
+	@Test
+	public void getResourcesToInclude_shouldMaintainInsertionOrder() throws Exception {
+		Resource first = new Resource(Resource.CATEGORY_CSS, "source", "z_first", null);
+		Resource second = new Resource(Resource.CATEGORY_CSS, "source", "a_second", null);
+		Resource third = new Resource(Resource.CATEGORY_CSS, "source", "c_third", null);
 
-        List<Resource> resources = pageContext.getResourcesToInclude(Resource.CATEGORY_CSS);
+		PageContext pageContext = new PageContext(null);
+		pageContext.includeResource(first);
+		pageContext.includeResource(second);
+		pageContext.includeResource(third);
 
-        assertThat(resources.get(0), is(first));
-        assertThat(resources.get(1), is(second));
-        assertThat(resources.get(2), is(third));
-    }
+		List<Resource> resources = pageContext.getResourcesToInclude(Resource.CATEGORY_CSS);
 
+		assertThat(resources.get(0), is(first));
+		assertThat(resources.get(1), is(second));
+		assertThat(resources.get(2), is(third));
+	}
+
+	@Test
+	public void getUniqueResourcesByCategory_shouldGetCorrectOrder() throws Exception {
+		Resource first = new Resource(Resource.CATEGORY_JS, "normal", "normal.js", null);
+		Resource second = new Resource(Resource.CATEGORY_JS, "low", "low.js", -100);
+		Resource third = new Resource(Resource.CATEGORY_JS, "high", "high.js", 100);
+
+		PageContext pageContext = new PageContext(null);
+		pageContext.includeResource(first);
+		pageContext.includeResource(second);
+		pageContext.includeResource(third);
+
+		Collection<Resource> resources = pageContext.getUniqueResourcesByCategory(Resource.CATEGORY_JS);
+		assertThat(resources, contains(third, first, second));
+	}
 }

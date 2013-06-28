@@ -121,13 +121,13 @@ public class PageFactory {
 	public String process(PageContext context) throws PageAction {
 		String result = processThisFragment(context);
 		if (context.getDecorateWith() == null)
-			return toHtml(result, context);
+			return result;
 		
 		FragmentRequest decoratorRequest = context.getDecorateWith();
 		decoratorRequest.getConfiguration().put("content", result);
 		FragmentContext decoratorContext = new FragmentContext(decoratorRequest, context);
 		result = fragmentFactory.process(decoratorContext);
-		return toHtml(result, context);
+		return result;
 	}
 	
 	private String processThisFragment(PageContext context) throws PageAction {
@@ -224,64 +224,7 @@ public class PageFactory {
 		return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService, applicationContext);
 	}
 
-    private String toHtml(String body, PageContext context) {
-		StringBuilder ret = new StringBuilder();
-		ret.append("<!DOCTYPE html>");
-		ret.append("<html>\n");
-		ret.append("<head>\n");
-		if (context.getPageTitle() != null) {
-			ret.append("<title>" + context.getPageTitle() + "</title>\n");
-		} else {
-			ret.append("<title>OpenMRS</title>\n");
-		}
-		ret.append("<link rel=\"shortcut icon\" type=\"image/ico\" href=\"/" + WebConstants.CONTEXT_PATH + "/images/openmrs-favicon.ico\">\n");
-		ret.append("<link rel=\"icon\" type=\"image/png\" href=\"/" + WebConstants.CONTEXT_PATH + "/images/openmrs-favicon.png\">\n");
-        for (String include : uniqueSortedIncludesByCategory(context, Resource.CATEGORY_JS, new Transformer() {
-            @Override
-            public Object transform(Object input) {
-                Resource resource = (Resource) input;
-                return "<script type=\"text/javascript\" src=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\"></script>";
-            }
-        })) {
-            ret.append(include).append("\n");
-        }
-
-        for (String include : uniqueSortedIncludesByCategory(context, Resource.CATEGORY_CSS, new Transformer() {
-            @Override
-            public Object transform(Object input) {
-                Resource resource = (Resource) input;
-                return "<link rel=\"stylesheet\" href=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\" type=\"text/css\"/>";
-            }
-        })) {
-            ret.append(include).append("\n");
-        }
-
-		ret.append("</head>\n");
-		ret.append("<body>\n");
-		ret.append("<script>var OPENMRS_CONTEXT_PATH = '" + WebConstants.CONTEXT_PATH + "';</script>");
-		ret.append(body);
-		ret.append("</body>\n");
-		ret.append("</html>");
-		return ret.toString();
-	}
-
-    /**
-     * (This method is only non-private so it can be tested.)
-     * @param pageContext
-     * @param resourceCategory
-     * @param resourceToStringTransformer needs to transform a Resource to a String
-     * @return
-     */
-     Collection<String> uniqueSortedIncludesByCategory(ResourceIncluder pageContext, String resourceCategory, Transformer resourceToStringTransformer) {
-        List<Resource> mayHaveDuplicates = pageContext.getResourcesToInclude(resourceCategory);
-        LinkedHashSet<String> noDuplicates = new LinkedHashSet<String>();
-        for (Resource resource : mayHaveDuplicates) {
-            noDuplicates.add((String) resourceToStringTransformer.transform(resource));
-        }
-        return noDuplicates;
-    }
-
-    /**
+	/**
 	 * @param request
 	 * @return controller class, or null if none is available
 	 * @should get a controller from the specified provider
