@@ -199,29 +199,15 @@ public class PageFactoryTest {
 
         factory.getModelConfigurators().add(globalResourceIncluder);
 
-        String output = factory.handle(pageRequest("somemodule", "somepage"));
+        String output = factory.handle(pageRequest("somemodule", "groovy"));
+
+		System.out.println(output);
 
         Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/mirebalais\\.css\" type=\"text/css\"/>").matcher(output).find());
         Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/emr\\.css\" type=\"text/css\"/>").matcher(output).find());
         Assert.assertTrue(output.indexOf("emr.css") < output.indexOf("mirebalais.css"));
 
         Assert.assertTrue(Pattern.compile("<script type=\"text/javascript\" src=\".*/mirebalais/mirebalais-utils\\.js\"").matcher(output).find());
-    }
-
-    @Test
-    public void shouldGetCorrectOrder() throws Exception {
-        PageContext pageContext = new PageContext(null);
-        pageContext.includeResource(new Resource(Resource.CATEGORY_JS, "normal", "normal.js", null));
-        pageContext.includeResource(new Resource(Resource.CATEGORY_JS, "low", "low.js", -100));
-        pageContext.includeResource(new Resource(Resource.CATEGORY_JS, "high", "high.js", 100));
-
-        Collection<String> includes = factory.uniqueSortedIncludesByCategory(pageContext, Resource.CATEGORY_JS, new Transformer() {
-            @Override
-            public Object transform(Object input) {
-                return ((Resource) input).getResourcePath();
-            }
-        });
-        assertThat(includes, contains("high.js", "normal.js", "low.js"));
     }
 
     /**
@@ -276,7 +262,7 @@ public class PageFactoryTest {
 	        	return new PageView() {
 					@Override
 					public String render(PageContext context) throws PageAction {
-						return "Contents of Some Page";
+						return "<html><body>Contents of Some Page</body></html>";
 					}
 					@Override
                     public ProviderAndName getController() {
@@ -285,7 +271,8 @@ public class PageFactoryTest {
 				};
             } else if ("groovy".equals(name)) {
                 try {
-                    Template template = new SimpleTemplateEngine(getClass().getClassLoader()).createTemplate("Testing ${ varInjectedByConfigurator } and ${ varInjectedByInterceptor }");
+					Template template = new SimpleTemplateEngine(getClass().getClassLoader()).createTemplate(
+						"<html><head><%= ui.resourceLinks() %></head><body>Testing ${ varInjectedByConfigurator } and ${ varInjectedByInterceptor }</body>");
                     return new GroovyPageView(template, "somemodule:groovy");
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
