@@ -1,6 +1,5 @@
 package org.openmrs.ui.framework.page;
 
-import org.apache.commons.collections.Transformer;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.Decoratable;
 import org.openmrs.ui.framework.FragmentIncluder;
@@ -16,7 +15,17 @@ import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.resource.Resource;
 import org.springframework.context.MessageSource;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 public class PageContext implements ResourceIncluder, Messager, Decoratable, FragmentIncluder, ExtensionAware {
 	
@@ -108,7 +117,7 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	 * @param resourceCategory the resource category
 	 * @return the resources
 	 */
-	public Collection<Resource> getUniqueResourcesByCategory(String resourceCategory) {
+	public Collection<Resource> uniqueSortedResourcesByCategory(String resourceCategory) {
 		List<Resource> mayHaveDuplicates = getResourcesToInclude(resourceCategory);
 		LinkedHashSet<Resource> noDuplicates = new LinkedHashSet<Resource>();
 		for (Resource resource : mayHaveDuplicates) {
@@ -192,11 +201,11 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
         }
         // we count on Java providing a stable sort algorithm, so insertion order is maintained where priority is equal
         Collections.sort(ret, new Comparator<Resource>() {
-            @Override
-            public int compare(Resource left, Resource right) {
-                return right.getPriority().compareTo(left.getPriority());
-            }
-        });
+			@Override
+			public int compare(Resource left, Resource right) {
+				return right.getPriority().compareTo(left.getPriority());
+			}
+		});
         return ret;
     }
 

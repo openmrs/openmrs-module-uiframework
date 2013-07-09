@@ -1,6 +1,5 @@
 package org.openmrs.ui.framework;
 
-import org.apache.commons.collections.Transformer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.extension.ExtensionManager;
@@ -78,12 +77,12 @@ public abstract class UiUtils {
 		StringBuilder ret = new StringBuilder();
 
 		// Include all Javascript resources
-		for (Resource resource : pageContext.getUniqueResourcesByCategory(Resource.CATEGORY_JS)) {
+		for (Resource resource : pageContext.uniqueSortedResourcesByCategory(Resource.CATEGORY_JS)) {
 			ret.append("<script type=\"text/javascript\" src=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\"></script>\n");
 		}
 
 		// Include all CSS resources
-		for (Resource resource : pageContext.getUniqueResourcesByCategory(Resource.CATEGORY_CSS)) {
+		for (Resource resource : pageContext.uniqueSortedResourcesByCategory(Resource.CATEGORY_CSS)) {
 			ret.append("<link rel=\"stylesheet\" href=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\" type=\"text/css\"/>\n");
 		}
 

@@ -58,7 +58,7 @@ public class PageContextTest {
 		pageContext.includeResource(second);
 		pageContext.includeResource(third);
 
-		Collection<Resource> resources = pageContext.getUniqueResourcesByCategory(Resource.CATEGORY_JS);
+		Collection<Resource> resources = pageContext.uniqueSortedResourcesByCategory(Resource.CATEGORY_JS);
 		assertThat(resources, contains(third, first, second));
 	}
 }
