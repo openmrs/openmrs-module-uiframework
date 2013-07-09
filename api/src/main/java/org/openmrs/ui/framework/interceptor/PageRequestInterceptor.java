@@ -17,13 +17,15 @@ package org.openmrs.ui.framework.interceptor;
 import org.openmrs.ui.framework.page.PageContext;
 
 /**
- * Base class for general page request interceptors
+ * Interface for general page request interceptors. When {@link org.openmrs.ui.framework.page.PageFactory} is handling a
+ * request it will invoke the <code>beforeHandleRequest</code> method of any component which implements this interface,
+ * before handling the request using it's associated controller.
  */
 public interface PageRequestInterceptor {
 
 	/**
 	 * Invoked before the page request is handled by the controller
-	 * @param context the page context
+	 * @param pageContext the page context
 	 */
-	void beforeHandleRequest(PageContext context);
+	void beforeHandleRequest(PageContext pageContext);
 }

@@ -13,7 +13,7 @@ import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
-import org.openmrs.ui.framework.interceptor.InterceptorFactory;
+import org.openmrs.ui.framework.interceptor.PageRequestInterceptor;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.util.OpenmrsUtil;
@@ -58,8 +58,8 @@ public class PageFactory {
 	@Autowired
 	ConversionService conversionService;
 
-	@Autowired
-	InterceptorFactory interceptorFactory;
+	@Autowired(required = false)
+	List<PageRequestInterceptor> pageRequestInterceptors;
 
     @Autowired(required = false)
     List<PageModelConfigurator> modelConfigurators;
@@ -154,8 +154,12 @@ public class PageFactory {
 		}
 		context.setController(controller);
 
-		// invoke any request interceptors
-		interceptorFactory.handlePageRequest(context);
+		// invoke all page request interceptors
+		if (pageRequestInterceptors != null) {
+			for (PageRequestInterceptor interceptor : pageRequestInterceptors) {
+				interceptor.beforeHandleRequest(context);
+			}
+		}
 		
 		// let the controller handle the request
 		// TODO: refactor because fragment controllers can now also return a FragmentRequest
@@ -490,15 +494,27 @@ public class PageFactory {
         return modelConfigurators;
     }
 
-    public void setModelConfigurators(List<PageModelConfigurator> modelConfigurators) {
-        this.modelConfigurators = modelConfigurators;
-    }
+	/**
+	 * Sets the model configurators for this page factory. Usually these are autowired but this is used for testing.
+	 * @param modelConfigurators the model configurators
+	 */
+	public void setModelConfigurators(List<PageModelConfigurator> modelConfigurators) {
+		this.modelConfigurators = modelConfigurators;
+	}
 
-    public void setPossiblePageControllerArgumentProviders(List<PossiblePageControllerArgumentProvider> possiblePageControllerArgumentProviders) {
-        this.possiblePageControllerArgumentProviders = possiblePageControllerArgumentProviders;
-    }
+	/**
+	 * Sets the page controller argument providers for this page factory. Usually these are autowired but this is used for testing.
+	 * @param possiblePageControllerArgumentProviders the page controller argument providers
+	 */
+	public void setPossiblePageControllerArgumentProviders(List<PossiblePageControllerArgumentProvider> possiblePageControllerArgumentProviders) {
+		this.possiblePageControllerArgumentProviders = possiblePageControllerArgumentProviders;
+	}
 
-	public void setInterceptorFactory(InterceptorFactory interceptorFactory) {
-		this.interceptorFactory = interceptorFactory;
+	/**
+	 * Sets the page request interceptors for this page factory. Usually these are autowired but this is used for testing.
+	 * @param pageRequestInterceptors the page request interceptors
+	 */
+	public void setPageRequestInterceptors(List<PageRequestInterceptor> pageRequestInterceptors) {
+		this.pageRequestInterceptors = pageRequestInterceptors;
 	}
 }
