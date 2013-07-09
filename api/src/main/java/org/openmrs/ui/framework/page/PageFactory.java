@@ -13,6 +13,7 @@ import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
+import org.openmrs.ui.framework.interceptor.PageRequestInterceptor;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.util.OpenmrsUtil;
@@ -56,6 +57,9 @@ public class PageFactory {
 	
 	@Autowired
 	ConversionService conversionService;
+
+	@Autowired(required = false)
+	List<PageRequestInterceptor> pageRequestInterceptors;
 
     @Autowired(required = false)
     List<PageModelConfigurator> modelConfigurators;
@@ -149,6 +153,13 @@ public class PageFactory {
 			}
 		}
 		context.setController(controller);
+
+		// invoke all page request interceptors
+		if (pageRequestInterceptors != null) {
+			for (PageRequestInterceptor interceptor : pageRequestInterceptors) {
+				interceptor.beforeHandleRequest(context);
+			}
+		}
 		
 		// let the controller handle the request
 		// TODO: refactor because fragment controllers can now also return a FragmentRequest
@@ -182,8 +193,15 @@ public class PageFactory {
 		String output = view.render(context);
 		return output;
 	}
-	
-	// if you change the supported parameter classes, make sure to update the documentation on the wiki
+
+	/**
+	 * Invokes the appropriate method on the controller to handle this page request
+	 *
+	 * NB. If you change the supported parameter classes, make sure to update the documentation on the wiki
+	 * @param context the page context
+	 * @return the controller output
+	 * @throws PageAction
+	 */
 	private Object handleRequestWithController(PageContext context) throws PageAction {
 		Map<Class<?>, Object> possibleArguments = new HashMap<Class<?>, Object>();
 		possibleArguments.put(PageContext.class, context);
@@ -476,12 +494,27 @@ public class PageFactory {
         return modelConfigurators;
     }
 
-    public void setModelConfigurators(List<PageModelConfigurator> modelConfigurators) {
-        this.modelConfigurators = modelConfigurators;
-    }
+	/**
+	 * Sets the model configurators for this page factory. Usually these are autowired but this is used for testing.
+	 * @param modelConfigurators the model configurators
+	 */
+	public void setModelConfigurators(List<PageModelConfigurator> modelConfigurators) {
+		this.modelConfigurators = modelConfigurators;
+	}
 
-    public void setPossiblePageControllerArgumentProviders(List<PossiblePageControllerArgumentProvider> possiblePageControllerArgumentProviders) {
-        this.possiblePageControllerArgumentProviders = possiblePageControllerArgumentProviders;
-    }
+	/**
+	 * Sets the page controller argument providers for this page factory. Usually these are autowired but this is used for testing.
+	 * @param possiblePageControllerArgumentProviders the page controller argument providers
+	 */
+	public void setPossiblePageControllerArgumentProviders(List<PossiblePageControllerArgumentProvider> possiblePageControllerArgumentProviders) {
+		this.possiblePageControllerArgumentProviders = possiblePageControllerArgumentProviders;
+	}
 
+	/**
+	 * Sets the page request interceptors for this page factory. Usually these are autowired but this is used for testing.
+	 * @param pageRequestInterceptors the page request interceptors
+	 */
+	public void setPageRequestInterceptors(List<PageRequestInterceptor> pageRequestInterceptors) {
+		this.pageRequestInterceptors = pageRequestInterceptors;
+	}
 }
