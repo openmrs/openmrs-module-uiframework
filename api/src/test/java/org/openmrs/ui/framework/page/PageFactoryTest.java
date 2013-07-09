@@ -12,6 +12,7 @@ import org.mockito.internal.matchers.Contains;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.UiFrameworkException;
+import org.openmrs.ui.framework.interceptor.PageRequestInterceptor;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -38,36 +39,47 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class PageFactoryTest {
 	
 	PageFactory factory;
-	
+
 	@Before
 	public void beforeEachTest() throws Exception {
 
-        mockStatic(Context.class);
-        when(Context.getAdministrationService()).thenReturn(null);
+		mockStatic(Context.class);
+		when(Context.getAdministrationService()).thenReturn(null);
 
 		factory = new PageFactory();
-		
-		Map<String, PageControllerProvider> cps = new HashMap<String, PageControllerProvider>(); 
+
+		Map<String, PageControllerProvider> cps = new HashMap<String, PageControllerProvider>();
 		cps.put("somemodule", new MockControllerProvider("somepage"));
 		cps.put("othermodule", new MockControllerProvider("otherpage"));
 		factory.setControllerProviders(cps);
-		
+
 		Map<String, PageViewProvider> vps = new HashMap<String, PageViewProvider>();
 		vps.put("somemodule", new MockViewProvider("somepage"));
 		vps.put("othermodule", new MockViewProvider("otherpage"));
 		factory.setViewProviders(vps);
 
-        PageModelConfigurator configurator = new PageModelConfigurator() {
-            @Override
-            public void configureModel(PageContext pageContext) {
-                pageContext.getModel().put("someCustomVariable", "Success!!!");
-            }
-        };
+		PageModelConfigurator configurator = new PageModelConfigurator() {
+			@Override
+			public void configureModel(PageContext pageContext) {
+				pageContext.getModel().put("varInjectedByConfigurator", "Success!!!");
+			}
+		};
 
-        List<PageModelConfigurator> pageModelConfigurators = new ArrayList<PageModelConfigurator>();
-        pageModelConfigurators.add(configurator);
-        factory.setModelConfigurators(pageModelConfigurators);
-    }
+		PageRequestInterceptor interceptor = new PageRequestInterceptor() {
+			@Override
+			public void beforeHandleRequest(PageContext pageContext) {
+				pageContext.getModel().put("varInjectedByInterceptor", "Success!!!");
+			}
+		};
+
+		List<PageModelConfigurator> configurators = new ArrayList<PageModelConfigurator>();
+		configurators.add(configurator);
+		factory.setModelConfigurators(configurators);
+
+		List<PageRequestInterceptor> interceptors = new ArrayList<PageRequestInterceptor>();
+		interceptors.add(interceptor);
+		factory.setPageRequestInterceptors(interceptors);
+	}
 	
 	/**
 	 * @see PageFactory#getController(PageRequest)
@@ -273,7 +285,7 @@ public class PageFactoryTest {
 				};
             } else if ("groovy".equals(name)) {
                 try {
-                    Template template = new SimpleTemplateEngine(getClass().getClassLoader()).createTemplate("Testing ${ someCustomVariable }");
+                    Template template = new SimpleTemplateEngine(getClass().getClassLoader()).createTemplate("Testing ${ varInjectedByConfigurator } and ${ varInjectedByInterceptor }");
                     return new GroovyPageView(template, "somemodule:groovy");
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
