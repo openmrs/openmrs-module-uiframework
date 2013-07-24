@@ -14,6 +14,7 @@
 
 package org.openmrs.ui.framework.interceptor;
 
+import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 
 /**
@@ -27,5 +28,5 @@ public interface PageRequestInterceptor {
 	 * Invoked before the page request is handled by the controller
 	 * @param pageContext the page context
 	 */
-	void beforeHandleRequest(PageContext pageContext);
+	void beforeHandleRequest(PageContext pageContext) throws PageAction;
 }
