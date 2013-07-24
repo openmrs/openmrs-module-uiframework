@@ -523,7 +523,11 @@ public class FragmentFactory {
             String temp = "" + i + ": ";
             temp += "Expected: " + expected.getName() + " (cl: " + expected.getClassLoader() + ")";
             temp += " | Actual: ";
-            temp += params[i].getClass().getName() + " (cl: " + params[i].getClass().getClassLoader() + ")";
+            if (params[i] == null) {
+                temp += "null";
+            } else {
+                temp += params[i].getClass().getName() + " (cl: " + params[i].getClass().getClassLoader() + ")";
+            }
             lines.add(temp);
         }
         return "\n" + OpenmrsUtil.join(lines, "\n");
