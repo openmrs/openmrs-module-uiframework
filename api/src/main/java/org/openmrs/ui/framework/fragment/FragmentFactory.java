@@ -8,6 +8,7 @@ import org.openmrs.ui.framework.UiFrameworkUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
+import org.openmrs.ui.framework.interceptor.FragmentActionInterceptor;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.page.PageModel;
@@ -59,6 +60,9 @@ public class FragmentFactory {
 	
 	@Autowired(required = false)
 	ServletContext servletContext;
+
+	@Autowired(required = false)
+	List<FragmentActionInterceptor> fragmentActionInterceptors;
 
     @Autowired(required = false)
     List<FragmentModelConfigurator> modelConfigurators;
@@ -445,6 +449,13 @@ public class FragmentFactory {
 		}
 		if (method == null) {
 			throw new UiFrameworkException("Error getting " + controller.getClass() + "." + action + " method");
+		}
+
+		// invoke all fragment action interceptors
+		if (fragmentActionInterceptors != null) {
+			for (FragmentActionInterceptor interceptor : fragmentActionInterceptors) {
+				interceptor.beforeHandleRequest(request, method);
+			}
 		}
 		
 		// determine method arguments
