@@ -140,6 +140,9 @@ public class FormatterImpl implements Formatter {
     }
 
 	private String format(Obs o, Locale locale) {
+		if(o.getValueDatetime() != null){
+			return format(o.getValueDatetime(), locale);
+		}
 		return o.getValueAsString(locale);
 	}
 	
