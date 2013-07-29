@@ -116,8 +116,9 @@ public class FormatterImpl implements Formatter {
         }
     }
 
-    private String format(Concept c, Locale locale) {
-		return c.getName(locale).getName();
+	private String format(Concept c, Locale locale) {
+		String override = getLocalization(locale, "Concept", c.getUuid());
+		return override != null ? override : c.getName(locale).getName();
 	}
 	
 	private String format(Person p, Locale locale) {
