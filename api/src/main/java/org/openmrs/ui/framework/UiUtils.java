@@ -315,14 +315,24 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * @param complex
-	 * @return a simplified representation of 'complex', suitable for serialization to JSON
+	 * Simplifies a complex object into a simple object suitable for serialization to JSON
+	 * @param complex the complex object
+	 * @return the simplified representation
 	 */
 	public SimpleObject simplifyObject(Object complex) {
 		return convert(complex, SimpleObject.class);
 	}
-	
+
+	/**
+	 * Simplifies a collection of complex objects into an array of simple objects suitable for serialization to JSON
+	 * @param complex the collection of complex objects
+	 * @return the simplified representation
+	 */
 	public SimpleObject[] simplifyCollection(Collection<?> complex) {
+		if (complex.size() == 0) {
+			return new SimpleObject[] {};
+		}
+
 		return convert(complex, SimpleObject[].class);
 	}
 	
