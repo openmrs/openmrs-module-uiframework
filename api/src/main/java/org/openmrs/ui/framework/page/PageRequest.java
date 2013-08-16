@@ -138,6 +138,8 @@ public class PageRequest implements AttributeHolder {
 	}
 	
 	/**
+     * This method actually gets a <em>parameter</em> from the HTTP Request (not an attribute), but the method must be
+     * named this way due to the AttributeHolder interface.
 	 * @see org.openmrs.ui.framework.AttributeHolder#getAttribute(java.lang.String)
 	 */
 	@Override
