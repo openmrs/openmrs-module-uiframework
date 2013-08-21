@@ -17,16 +17,5 @@
   		    http://www.springframework.org/schema/util
   		    http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <!-- Module global property listeners -->
-    <bean id="${project.parent.artifactId}EventListeners" parent="openmrsEventListeners">
-        <property name="globalPropertyListeners">
-            <list value-type="org.openmrs.api.GlobalPropertyListener">
-                <bean class="org.openmrs.ui.framework.FormatterImpl">
-                    <constructor-arg ref="messageSourceService" />
-                    <constructor-arg ref="adminService" />
-                </bean>
-            </list>
-        </property>
-    </bean>
 
 </beans>

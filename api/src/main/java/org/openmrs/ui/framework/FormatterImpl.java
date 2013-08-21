@@ -3,7 +3,6 @@ package org.openmrs.ui.framework;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -13,7 +12,6 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
-import org.openmrs.GlobalProperty;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.PatientIdentifier;
@@ -26,20 +24,15 @@ import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.api.GlobalPropertyListener;
 import org.openmrs.api.context.Context;
-import org.openmrs.layout.web.address.AddressSupport;
-import org.openmrs.layout.web.address.AddressTemplate;
 import org.springframework.context.MessageSource;
 
-public class FormatterImpl implements Formatter, GlobalPropertyListener {
+public class FormatterImpl implements Formatter {
 
     private MessageSource messageSource;
     private AdministrationService administrationService;
 
     private static final String ADDRESS_LAYOUT_TEMPLATE_NAME_GP = "layout.address.format";
-
-    private static AddressTemplate oldAddressTemplate = null;
 
     public FormatterImpl(MessageSource messageSource, AdministrationService administrationService) {
         this.messageSource = messageSource;
@@ -76,7 +69,7 @@ public class FormatterImpl implements Formatter, GlobalPropertyListener {
 			return o.toString();
 		}
 	}
-	
+
 	private String format(Date d, Locale locale) {
         if (administrationService != null) {
             if (hasTimeComponent(d)) {
@@ -103,7 +96,7 @@ public class FormatterImpl implements Formatter, GlobalPropertyListener {
         String override = getLocalization(locale, "Role", role.getUuid());
 		return override != null ? override : role.getRole();
 	}
-	
+
 	private String format(OpenmrsMetadata md, Locale locale) {
         String override = getLocalization(locale, md.getClass().getSimpleName(), md.getUuid());
         return override != null ? override : md.getName();
@@ -134,14 +127,14 @@ public class FormatterImpl implements Formatter, GlobalPropertyListener {
 		String override = getLocalization(locale, "Concept", c.getUuid());
 		return override != null ? override : c.getName(locale).getName();
 	}
-	
+
 	private String format(Person p, Locale locale) {
 		if (p == null)
 			return null;
 		PersonName n = p.getPersonName();
 		return n == null ? messageSource.getMessage("uiframework.formatter.noNamePerson", null, locale) : n.getFullName();
 	}
-	
+
 	private String format(User u, Locale locale) {
         String un = u.getUsername();
         if (un == null) {
@@ -161,49 +154,39 @@ public class FormatterImpl implements Formatter, GlobalPropertyListener {
 		}
 		return o.getValueAsString(locale);
 	}
-	
+
 	private String format(PatientIdentifier pi, Locale locale) {
 		return format(pi.getIdentifierType(), locale) + ": " + pi.getIdentifier();
 	}
 
     private String format(PersonAddress personAddress, Locale locale) {
         List<String> addressFieldValues = new ArrayList<String>();
-        List<String> addressHierarchyLevels = getAddressHierarchyLevels();
         try {
-            if (addressHierarchyLevels.size() > 0) {
-                for (String addressLevel : addressHierarchyLevels) {
-                    String tokenValue = BeanUtils.getProperty(personAddress, addressLevel);
-                    if (StringUtils.isNotBlank(tokenValue)) {
-                        addressFieldValues.add(tokenValue);
-                    }
-                }
+            Class<?> addressSupportClass = Context.loadClass("org.openmrs.layout.web.address.AddressSupport");
+            Object addressSupport = addressSupportClass.getMethod("getInstance").invoke(null);
+            Object addressTemplate = null;
+            if (isOneNineOrLater()) {
+                Object templates = MethodUtils.invokeExactMethod(addressSupport, "getAddressTemplate", null);
+                addressTemplate = ((List<?>) templates).get(0);
             } else {
-                AddressTemplate addressTemplate;
-                if (isOneNineOrLater()) {
-                    Object templates = MethodUtils.invokeExactMethod(AddressSupport.getInstance(), "getAddressTemplate",
-                            null);
-                    addressTemplate = ((List<AddressTemplate>) templates).get(0);
-                } else {
-                    if (oldAddressTemplate == null) {
-                        String templateName = administrationService.getGlobalProperty(
-                                ADDRESS_LAYOUT_TEMPLATE_NAME_GP);
-                        if (templateName != null) {
-                            oldAddressTemplate = AddressSupport.getInstance().getLayoutTemplateByName(templateName);
-                        }
-                        if (oldAddressTemplate == null) {
-                            oldAddressTemplate = AddressSupport.getInstance().getDefaultLayoutTemplate();
-                        }
-                    }
-                    addressTemplate = oldAddressTemplate;
+                String templateName = administrationService.getGlobalProperty(ADDRESS_LAYOUT_TEMPLATE_NAME_GP);
+                if (templateName != null) {
+                    addressTemplate = MethodUtils.invokeExactMethod(addressSupport, "getLayoutTemplateByName", templateName);
                 }
+                if (addressTemplate == null) {
+                    addressTemplate = MethodUtils.invokeExactMethod(addressSupport, "getDefaultLayoutTemplate", null);
+                }
+            }
 
-                for (List<Map<String, String>> line : addressTemplate.getLines()) {
-                    for (Map<String, String> lineToken : line) {
-                        if (lineToken.get("isToken").equals(addressTemplate.getLayoutToken())) {
-                            String tokenValue = BeanUtils.getProperty(personAddress, lineToken.get("codeName"));
-                            if (StringUtils.isNotBlank(tokenValue)) {
-                                addressFieldValues.add(tokenValue);
-                            }
+            List<List<Map<String, String>>> lines = (List<List<Map<String, String>>>) MethodUtils.invokeExactMethod(
+                    addressTemplate, "getLines", null);
+            String layoutToken = (String) MethodUtils.invokeExactMethod(addressTemplate, "getLayoutToken", null);
+            for (List<Map<String, String>> line : lines) {
+                for (Map<String, String> lineToken : line) {
+                    if (lineToken.get("isToken").equals(layoutToken)) {
+                        String tokenValue = BeanUtils.getProperty(personAddress, lineToken.get("codeName"));
+                        if (StringUtils.isNotBlank(tokenValue)) {
+                            addressFieldValues.add(tokenValue);
                         }
                     }
                 }
@@ -217,35 +200,10 @@ public class FormatterImpl implements Formatter, GlobalPropertyListener {
         return StringUtils.join(addressFieldValues, ", ");
     }
 
-    private static List<String> getAddressHierarchyLevels() {
-        List<String> l = new ArrayList<String>();
-
-        try {
-            Class<?> svcClass = Context.loadClass("org.openmrs.module.addresshierarchy.service.AddressHierarchyService");
-            Object svc = Context.getService(svcClass);
-            List<Object> levels = (List<Object>) svcClass.getMethod("getOrderedAddressHierarchyLevels", Boolean.class,
-                    Boolean.class).invoke(svc, true, true);
-            Class<?> levelClass = Context.loadClass("org.openmrs.module.addresshierarchy.AddressHierarchyLevel");
-            Class<?> fieldClass = Context.loadClass("org.openmrs.module.addresshierarchy.AddressField");
-            for (Object o : levels) {
-                Object addressField = levelClass.getMethod("getAddressField").invoke(o);
-                String fieldName = (String) fieldClass.getMethod("getName").invoke(addressField);
-                l.add(fieldName);
-            }
-            if (l.size() > 1) {
-                Collections.reverse(l);
-            }
-        }
-        catch (ClassNotFoundException cnfe) {
-            //ignore, the module isn't installed
-        }
-        catch (Exception e) {
-            throw new APIException("Error obtaining address hierarchy levels", e);
-        }
-
-        return l;
-    }
-
+    /**
+     * We are using this hacky code to check if it is OpenMRS 1.9 or later until
+     * https://tickets.openmrs.org/browse/TRUNK-3751 is done and back ported to 1.8.x and 1.9.x
+     */
     private boolean isOneNineOrLater() {
         try {
             Context.loadClass("org.openmrs.api.VisitService");
@@ -256,20 +214,5 @@ public class FormatterImpl implements Formatter, GlobalPropertyListener {
         }
 
         return false;
-    }
-
-    @Override
-    public boolean supportsPropertyName(String propertyName) {
-        return ADDRESS_LAYOUT_TEMPLATE_NAME_GP.equals(propertyName);
-    }
-
-    @Override
-    public void globalPropertyChanged(GlobalProperty globalProperty) {
-        oldAddressTemplate = null;
-    }
-
-    @Override
-    public void globalPropertyDeleted(String propertyName) {
-        oldAddressTemplate = null;
     }
 }
