@@ -278,57 +278,47 @@ public abstract class UiUtils {
 		return new SimpleDateFormat(WebConstants.DATE_FORMAT_TIMESTAMP).format(date);
 	}
 
-    public String dateToString(Date date, String format) {
-        return dateToString(date, format, null, false);
-    }
-
     /**
-     * Formats the specified date to a string using the specified format and locale, if
-     * useTodayOrYesterday is set to true and the date is the current or previous date, it replaces
-     * the date with the text
+     * Formats the specified date to a string using the specified format and drops the time
+     * component, the text 'Today' is returned, if the date matches the previous date or the text
+     * Yesterday is returned if the date matches the previous day of the year.
      *
-     * @param date
-     * @param format
-     * @param locale
-     * @param useTodayOrYesterday if set to true and the date matches the current the text 'Today'
-     *            is returned, if it matches the previous date, the text Yesterday is returned
+     * @param date teh date to format
      * @should replace the current date with today text if useTodayOrYesterday is set to true
      * @should replace the previous date with yesterday text if useTodayOrYesterday is set to true
      */
-    public String dateToString(Date date, String format, Locale locale, boolean useTodayOrYesterday) {
-        if (useTodayOrYesterday) {
-            Calendar yesterdayCal = Calendar.getInstance();
-            yesterdayCal.add(Calendar.DAY_OF_YEAR, -1);
-            yesterdayCal.set(Calendar.HOUR_OF_DAY, 0);
-            yesterdayCal.set(Calendar.SECOND, 0);
-            yesterdayCal.set(Calendar.MILLISECOND, 0);
+    public String formatDatePretty(Date date) {
+        Calendar yesterdayCal = Calendar.getInstance();
+        yesterdayCal.add(Calendar.DAY_OF_YEAR, -1);
+        yesterdayCal.set(Calendar.HOUR_OF_DAY, 0);
+        yesterdayCal.set(Calendar.MINUTE, 0);
+        yesterdayCal.set(Calendar.SECOND, 0);
+        yesterdayCal.set(Calendar.MILLISECOND, 0);
 
-            Calendar todayCal = Calendar.getInstance();
-            todayCal.set(Calendar.HOUR_OF_DAY, 0);
-            todayCal.set(Calendar.SECOND, 0);
-            todayCal.set(Calendar.MILLISECOND, 0);
+        Calendar todayCal = Calendar.getInstance();
+        todayCal.set(Calendar.HOUR_OF_DAY, 0);
+        todayCal.set(Calendar.MINUTE, 0);
+        todayCal.set(Calendar.SECOND, 0);
+        todayCal.set(Calendar.MILLISECOND, 0);
 
-            Calendar dateCal = Calendar.getInstance();
-            dateCal.setTime(date);
-            dateCal.set(Calendar.HOUR_OF_DAY, 0);
-            dateCal.set(Calendar.SECOND, 0);
-            dateCal.set(Calendar.MILLISECOND, 0);
+        Calendar dateCal = Calendar.getInstance();
+        dateCal.setTime(date);
+        dateCal.set(Calendar.HOUR_OF_DAY, 0);
+        dateCal.set(Calendar.MINUTE, 0);
+        dateCal.set(Calendar.SECOND, 0);
+        dateCal.set(Calendar.MILLISECOND, 0);
 
-            if (dateCal.get(Calendar.YEAR) == todayCal.get(Calendar.YEAR)
-                    || dateCal.get(Calendar.YEAR) == yesterdayCal.get(Calendar.YEAR)) {
+        if (dateCal.get(Calendar.YEAR) == todayCal.get(Calendar.YEAR)
+                || dateCal.get(Calendar.YEAR) == yesterdayCal.get(Calendar.YEAR)) {
 
-                if (dateCal.get(Calendar.DAY_OF_YEAR) == todayCal.get(Calendar.DAY_OF_YEAR)) {
-                    return message("uiframework.today");
-                } else if (dateCal.get(Calendar.DAY_OF_YEAR) == yesterdayCal.get(Calendar.DAY_OF_YEAR)) {
-                    return message("uiframework.yesterday");
-                }
+            if (dateCal.get(Calendar.DAY_OF_YEAR) == todayCal.get(Calendar.DAY_OF_YEAR)) {
+                return message("uiframework.today");
+            } else if (dateCal.get(Calendar.DAY_OF_YEAR) == yesterdayCal.get(Calendar.DAY_OF_YEAR)) {
+                return message("uiframework.yesterday");
             }
         }
-        if (StringUtils.isBlank(format)) {
-            throw new IllegalArgumentException("No format string specified to format the date");
-        }
 
-        return DateFormatUtils.format(date, format, (locale != null) ? locale : Context.getLocale());
+        return format(dateCal.getTime());
     }
 	
 	public String format(Object o) {

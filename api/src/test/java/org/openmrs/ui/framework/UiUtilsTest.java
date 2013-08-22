@@ -1,5 +1,7 @@
 package org.openmrs.ui.framework;
 
+import static org.mockito.Mockito.any;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -10,8 +12,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.openmrs.ui.framework.BasicUiUtils;
-import org.openmrs.ui.framework.UiUtils;
 
 public class UiUtilsTest {
 	
@@ -67,39 +67,34 @@ public class UiUtilsTest {
 		String link = ui.pageLink("mymoduleid", "myPage?param=val#mySection", null);
 		Assert.assertTrue(link.endsWith("/mymoduleid/myPage.page?param=val#mySection"));
 	}
-
-    /**
-     * @verifies replace the current date with today text if useTodayOrYesterday is set to true
-     * @see UiUtils#dateToString(java.util.Date, String, java.util.Locale, boolean)
-     */
-    @Test
-    public void dateToString_shouldReplaceTheCurrentDateWithTodayTextIfUseTodayOrYesterdayIsSetToTrue() throws Exception {
-        final Locale locale = Locale.ENGLISH;
-        UiUtils ui = Mockito.mock(UiUtils.class);
-        Mockito.when(ui.message(Mockito.eq("uiframework.today"))).thenReturn("Today");
-        Mockito.when(ui.dateToString(Mockito.any(Date.class), Mockito.anyString(), Mockito.eq(locale), Mockito.eq(true)))
-                .thenCallRealMethod();
-        Assert.assertEquals("Today", ui.dateToString(Calendar.getInstance().getTime(), "yyyy-MM-dd", locale, true));
-    }
-
-    /**
-     * @verifies replace the previous date with yesterday text if useTodayOrYesterday is set to true
-     * @see UiUtils#dateToString(java.util.Date, String, java.util.Locale, boolean)
-     */
-    @Test
-    public void dateToString_shouldReplaceThePreviousDateWithYesterdayTextIfUseTodayOrYesterdayIsSetToTrue()
-            throws Exception {
-        final Locale locale = Locale.ENGLISH;
-        UiUtils ui = Mockito.mock(UiUtils.class);
-        Mockito.when(ui.message(Mockito.eq("uiframework.yesterday"))).thenReturn("Yesterday");
-        Mockito.when(ui.dateToString(Mockito.any(Date.class), Mockito.anyString(), Mockito.eq(locale), Mockito.eq(true)))
-                .thenCallRealMethod();
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_YEAR, -1);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        Assert.assertEquals("Yesterday", ui.dateToString(cal.getTime(), "yyyy-MM-dd", locale, true));
-    }
+	
+	/**
+	 * @verifies replace the current date with today text if useTodayOrYesterday is set to true
+	 * @see UiUtils#formatDatePretty(java.util.Date)
+	 */
+	@Test
+	public void formatDatePretty_shouldReplaceTheCurrentDateWithTodayTextIfUseTodayOrYesterdayIsSetToTrue() throws Exception {
+		final Locale locale = Locale.ENGLISH;
+		UiUtils ui = Mockito.mock(UiUtils.class);
+		Mockito.when(ui.message(Mockito.eq("uiframework.today"))).thenReturn("Today");
+		Mockito.when(ui.formatDatePretty(any(Date.class))).thenCallRealMethod();
+		Assert.assertEquals("Today", ui.formatDatePretty(Calendar.getInstance().getTime()));
+	}
+	
+	/**
+	 * @verifies replace the previous date with yesterday text if useTodayOrYesterday is set to true
+	 * @see UiUtils#formatDatePretty(java.util.Date)
+	 */
+	@Test
+	public void formatDatePretty_shouldReplaceThePreviousDateWithYesterdayTextIfUseTodayOrYesterdayIsSetToTrue()
+	    throws Exception {
+		final Locale locale = Locale.ENGLISH;
+		UiUtils ui = Mockito.mock(UiUtils.class);
+		Mockito.when(ui.message(Mockito.eq("uiframework.yesterday"))).thenReturn("Yesterday");
+		Mockito.when(ui.formatDatePretty(any(Date.class))).thenCallRealMethod();
+		
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_YEAR, -1);
+		Assert.assertEquals("Yesterday", ui.formatDatePretty(cal.getTime()));
+	}
 }
