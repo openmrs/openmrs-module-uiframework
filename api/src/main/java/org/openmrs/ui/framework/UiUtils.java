@@ -283,43 +283,47 @@ public abstract class UiUtils {
      * component, the text 'Today' is returned, if the date matches the previous date or the text
      * Yesterday is returned if the date matches the previous day of the year.
      *
-     * @param date teh date to format
-     * @should replace the current date with today text if useTodayOrYesterday is set to true
-     * @should replace the previous date with yesterday text if useTodayOrYesterday is set to true
+     * @param date the date to format
      */
     public String formatDatePretty(Date date) {
-        Calendar yesterdayCal = Calendar.getInstance();
-        yesterdayCal.add(Calendar.DAY_OF_YEAR, -1);
-        yesterdayCal.set(Calendar.HOUR_OF_DAY, 0);
-        yesterdayCal.set(Calendar.MINUTE, 0);
-        yesterdayCal.set(Calendar.SECOND, 0);
-        yesterdayCal.set(Calendar.MILLISECOND, 0);
-
-        Calendar todayCal = Calendar.getInstance();
-        todayCal.set(Calendar.HOUR_OF_DAY, 0);
-        todayCal.set(Calendar.MINUTE, 0);
-        todayCal.set(Calendar.SECOND, 0);
-        todayCal.set(Calendar.MILLISECOND, 0);
-
-        Calendar dateCal = Calendar.getInstance();
-        dateCal.setTime(date);
-        dateCal.set(Calendar.HOUR_OF_DAY, 0);
-        dateCal.set(Calendar.MINUTE, 0);
-        dateCal.set(Calendar.SECOND, 0);
-        dateCal.set(Calendar.MILLISECOND, 0);
-
-        if (dateCal.get(Calendar.YEAR) == todayCal.get(Calendar.YEAR)
-                || dateCal.get(Calendar.YEAR) == yesterdayCal.get(Calendar.YEAR)) {
-
-            if (dateCal.get(Calendar.DAY_OF_YEAR) == todayCal.get(Calendar.DAY_OF_YEAR)) {
-                return message("uiframework.today");
-            } else if (dateCal.get(Calendar.DAY_OF_YEAR) == yesterdayCal.get(Calendar.DAY_OF_YEAR)) {
-                return message("uiframework.yesterday");
-            }
-        }
-
-        return format(dateCal.getTime());
+    	return formatDatePretty(date, new Date());
     }
+
+	/**
+	 * @should replace the current date with today text if useTodayOrYesterday is set to true
+	 * @should replace the previous date with yesterday text if useTodayOrYesterday is set to true
+	 */
+	String formatDatePretty(Date date, Date currentDate) {
+		Calendar yesterdayCal = Calendar.getInstance();
+		yesterdayCal.setTime(currentDate);
+		yesterdayCal.add(Calendar.DAY_OF_YEAR, -1);
+		yesterdayCal.set(Calendar.HOUR_OF_DAY, 0);
+		yesterdayCal.set(Calendar.MINUTE, 0);
+		yesterdayCal.set(Calendar.SECOND, 0);
+		yesterdayCal.set(Calendar.MILLISECOND, 0);
+
+		Calendar todayCal = Calendar.getInstance();
+		todayCal.setTime(currentDate);
+		todayCal.set(Calendar.HOUR_OF_DAY, 0);
+		todayCal.set(Calendar.MINUTE, 0);
+		todayCal.set(Calendar.SECOND, 0);
+		todayCal.set(Calendar.MILLISECOND, 0);
+
+		Calendar dateCal = Calendar.getInstance();
+		dateCal.setTime(date);
+		dateCal.set(Calendar.HOUR_OF_DAY, 0);
+		dateCal.set(Calendar.MINUTE, 0);
+		dateCal.set(Calendar.SECOND, 0);
+		dateCal.set(Calendar.MILLISECOND, 0);
+
+		if (dateCal.equals(todayCal)) {
+			return message("uiframework.today");
+		} else if (dateCal.equals(yesterdayCal)) {
+			return message("uiframework.yesterday");
+		} else {
+			return format(dateCal.getTime());
+		}
+	}
 	
 	public String format(Object o) {
 		return formatter.format(o, getLocale());
