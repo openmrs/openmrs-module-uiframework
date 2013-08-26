@@ -293,7 +293,7 @@ public abstract class UiUtils {
 	 * @should replace the current date with today text if useTodayOrYesterday is set to true
 	 * @should replace the previous date with yesterday text if useTodayOrYesterday is set to true
 	 */
-	String formatDatePretty(Date date, Date currentDate) {
+	public String formatDatePretty(Date date, Date currentDate) {
 		Calendar yesterdayCal = Calendar.getInstance();
 		yesterdayCal.setTime(currentDate);
 		yesterdayCal.add(Calendar.DAY_OF_YEAR, -1);
