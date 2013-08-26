@@ -160,7 +160,7 @@ public class FormatterImpl implements Formatter {
 	}
 
     private String format(PersonAddress personAddress, Locale locale) {
-        List<String> addressFieldValues = new ArrayList<String>();
+        List<String> personAddressLines = new ArrayList<String>();
         try {
             Class<?> addressSupportClass = Context.loadClass("org.openmrs.layout.web.address.AddressSupport");
             Object addressSupport = addressSupportClass.getMethod("getInstance").invoke(null);
@@ -182,13 +182,17 @@ public class FormatterImpl implements Formatter {
                     addressTemplate, "getLines", null);
             String layoutToken = (String) MethodUtils.invokeExactMethod(addressTemplate, "getLayoutToken", null);
             for (List<Map<String, String>> line : lines) {
+                String addressLine = "";
                 for (Map<String, String> lineToken : line) {
                     if (lineToken.get("isToken").equals(layoutToken)) {
                         String tokenValue = BeanUtils.getProperty(personAddress, lineToken.get("codeName"));
                         if (StringUtils.isNotBlank(tokenValue)) {
-                            addressFieldValues.add(tokenValue);
+                            addressLine += (addressLine.length() > 0 ? " " + tokenValue : tokenValue);
                         }
                     }
+                }
+                if (StringUtils.isNotBlank(addressLine)) {
+                    personAddressLines.add(addressLine);
                 }
             }
         }
@@ -197,7 +201,7 @@ public class FormatterImpl implements Formatter {
             throw new APIException("Error while getting patient address", e);
         }
 
-        return StringUtils.join(addressFieldValues, ", ");
+        return StringUtils.join(personAddressLines, "\n");
     }
 
     /**
