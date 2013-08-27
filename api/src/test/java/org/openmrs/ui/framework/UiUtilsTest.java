@@ -73,20 +73,20 @@ public class UiUtilsTest {
 	
 	/**
 	 * @verifies replace the current date with today text
-	 * @see UiUtils#formatDatePretty(java.util.Date, java.util.Date)
+	 * @see UiUtils#formatDatePretty(java.util.Date)
 	 */
 	@Test
 	public void formatDatePretty_shouldReplaceTheCurrentDateWithTodayText() throws Exception {
 		final Locale locale = Locale.ENGLISH;
 		UiUtils ui = Mockito.mock(UiUtils.class);
 		Mockito.when(ui.message(eq("uiframework.today"))).thenReturn("Today");
-		Mockito.when(ui.formatDatePretty(any(Date.class), any(Date.class))).thenCallRealMethod();
-		Assert.assertEquals("Today", ui.formatDatePretty(Calendar.getInstance().getTime(), new Date()));
+		Mockito.when(ui.formatDatePretty(any(Date.class))).thenCallRealMethod();
+		Assert.assertEquals("Today", ui.formatDatePretty(new Date()));
 	}
 	
 	/**
 	 * @verifies replace the previous date with yesterday text
-	 * @see UiUtils#formatDatePretty(java.util.Date, java.util.Date)
+	 * @see UiUtils#formatDatePretty(java.util.Date)
 	 */
 	@Test
 	public void formatDatePretty_shouldReplaceThePreviousDateWithYesterdayText()
@@ -94,36 +94,10 @@ public class UiUtilsTest {
 		final Locale locale = Locale.ENGLISH;
 		UiUtils ui = Mockito.mock(UiUtils.class);
 		Mockito.when(ui.message(eq("uiframework.yesterday"))).thenReturn("Yesterday");
-		Mockito.when(ui.formatDatePretty(any(Date.class), any(Date.class))).thenCallRealMethod();
+		Mockito.when(ui.formatDatePretty(any(Date.class))).thenCallRealMethod();
 		
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DAY_OF_YEAR, -1);
-		Assert.assertEquals("Yesterday", ui.formatDatePretty(cal.getTime(), new Date()));
-	}
-
-	@Test
-	public void formatDatePretty_shouldReturnYesterdayWhenYearChanges() {
-		UiUtils ui = Mockito.mock(UiUtils.class);
-		Mockito.when(ui.message(eq("uiframework.yesterday"))).thenReturn("Yesterday");
-		Mockito.when(ui.formatDatePretty(any(Date.class), any(Date.class))).thenCallRealMethod();
-
-		Calendar currentDate = Calendar.getInstance();
-		currentDate.set(2000, Calendar.JANUARY, 01);
-		Calendar pastDate = Calendar.getInstance();
-		pastDate.set(1999, Calendar.DECEMBER, 31);
-		assertThat(ui.formatDatePretty(pastDate.getTime(), currentDate.getTime()), is("Yesterday"));
-	}
-
-	@Test
-	public void formatDatePretty_shouldReturnYesterdayForFebruary29WhenLeapYear() {
-		UiUtils ui = Mockito.mock(UiUtils.class);
-		Mockito.when(ui.message(eq("uiframework.yesterday"))).thenReturn("Yesterday");
-		Mockito.when(ui.formatDatePretty(any(Date.class), any(Date.class))).thenCallRealMethod();
-
-		Calendar currentDate = Calendar.getInstance();
-		currentDate.set(2012, Calendar.MARCH, 01);
-		Calendar pastDate = Calendar.getInstance();
-		pastDate.set(2012, Calendar.FEBRUARY, 29);
-		assertThat(ui.formatDatePretty(pastDate.getTime(), currentDate.getTime()), is("Yesterday"));
+		Assert.assertEquals("Yesterday", ui.formatDatePretty(cal.getTime()));
 	}
 }

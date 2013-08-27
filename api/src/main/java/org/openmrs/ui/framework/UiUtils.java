@@ -1,7 +1,5 @@
 package org.openmrs.ui.framework;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.extension.ExtensionManager;
@@ -10,6 +8,7 @@ import org.openmrs.ui.framework.fragment.action.ObjectResult;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.resource.Resource;
+import org.openmrs.ui.framework.util.DateExt;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -17,7 +16,6 @@ import org.springframework.validation.Validator;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -284,46 +282,21 @@ public abstract class UiUtils {
      * Yesterday is returned if the date matches the previous day of the year.
      *
      * @param date the date to format
+	 * @should replace the current date with today text
+	 * @should replace the previous date with yesterday
      */
     public String formatDatePretty(Date date) {
-    	return formatDatePretty(date, new Date());
-    }
+		DateExt dateExt = new DateExt(date);
+		Date today = new Date();
 
-	/**
-	 * @should replace the current date with today text if useTodayOrYesterday is set to true
-	 * @should replace the previous date with yesterday text if useTodayOrYesterday is set to true
-	 */
-	public String formatDatePretty(Date date, Date currentDate) {
-		Calendar yesterdayCal = Calendar.getInstance();
-		yesterdayCal.setTime(currentDate);
-		yesterdayCal.add(Calendar.DAY_OF_YEAR, -1);
-		yesterdayCal.set(Calendar.HOUR_OF_DAY, 0);
-		yesterdayCal.set(Calendar.MINUTE, 0);
-		yesterdayCal.set(Calendar.SECOND, 0);
-		yesterdayCal.set(Calendar.MILLISECOND, 0);
-
-		Calendar todayCal = Calendar.getInstance();
-		todayCal.setTime(currentDate);
-		todayCal.set(Calendar.HOUR_OF_DAY, 0);
-		todayCal.set(Calendar.MINUTE, 0);
-		todayCal.set(Calendar.SECOND, 0);
-		todayCal.set(Calendar.MILLISECOND, 0);
-
-		Calendar dateCal = Calendar.getInstance();
-		dateCal.setTime(date);
-		dateCal.set(Calendar.HOUR_OF_DAY, 0);
-		dateCal.set(Calendar.MINUTE, 0);
-		dateCal.set(Calendar.SECOND, 0);
-		dateCal.set(Calendar.MILLISECOND, 0);
-
-		if (dateCal.equals(todayCal)) {
+		if (dateExt.isSameDay(today)) {
 			return message("uiframework.today");
-		} else if (dateCal.equals(yesterdayCal)) {
+		} else if (dateExt.isDayBefore(today)) {
 			return message("uiframework.yesterday");
 		} else {
-			return format(dateCal.getTime());
+			return format(date.getTime());
 		}
-	}
+    }
 	
 	public String format(Object o) {
 		return formatter.format(o, getLocale());
