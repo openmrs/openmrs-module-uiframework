@@ -294,7 +294,7 @@ public abstract class UiUtils {
 		} else if (dateExt.isDayBefore(today)) {
 			return message("uiframework.yesterday");
 		} else {
-			return format(date.getTime());
+			return format(date);
 		}
     }
 	
