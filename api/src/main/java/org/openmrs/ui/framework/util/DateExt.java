@@ -63,4 +63,15 @@ public class DateExt {
 
 		return day.equals(anotherDay);
 	}
+
+	public Date getDateWithoutTime() {
+		Calendar day = Calendar.getInstance();
+		day.setTime(date);
+		day.set(Calendar.HOUR_OF_DAY, 0);
+		day.set(Calendar.MINUTE, 0);
+		day.set(Calendar.SECOND, 0);
+		day.set(Calendar.MILLISECOND, 0);
+
+		return day.getTime();
+	}
 }
