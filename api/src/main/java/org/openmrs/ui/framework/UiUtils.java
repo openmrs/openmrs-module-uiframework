@@ -118,16 +118,6 @@ public abstract class UiUtils {
 		return messager.message(code, args);
 	}
 	
-	/*
-	public String includeFragment(String fragmentProviderAndId) throws PageAction {
-		return fragmentIncluder.includeFragment(new FragmentRequest(fragmentProviderAndId));
-	}
-	
-	public String includeFragment(String fragmentProviderAndId, Map<String, Object> config) throws PageAction {
-		return fragmentIncluder.includeFragment(new FragmentRequest(fragmentProviderAndId, config));
-	}
-	*/
-	
 	public String includeFragment(String providerName, String fragmentId) throws PageAction {
 		return fragmentIncluder.includeFragment(new FragmentRequest(providerName, fragmentId));
 	}
