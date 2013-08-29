@@ -1,5 +1,15 @@
 package org.openmrs.ui.framework;
 
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.extension.ExtensionManager;
@@ -13,15 +23,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
-
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * Utility methods that should be available in view technologies for pages and fragments 
@@ -286,6 +287,15 @@ public abstract class UiUtils {
 		} else {
 			return format(dateExt.getDateWithoutTime());
 		}
+    }
+    
+    /**
+     * Formats a date with this format: dd MMM yyyy hh:mm a
+     *
+     * @param date the date to format
+     */
+    public String formatDatetimePretty(Date date) {
+    	return DateFormatUtils.format(date, "dd MMM yyyy hh:mm a", Context.getLocale());
     }
 	
 	public String format(Object o) {
