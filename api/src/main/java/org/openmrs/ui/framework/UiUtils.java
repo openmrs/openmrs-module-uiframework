@@ -297,15 +297,6 @@ public abstract class UiUtils {
     public String formatDatetimePretty(Date date) {
     	return formatDatePretty(date) + " " + DateFormatUtils.format(date, "hh:mm a", locale);
     }
-	
-    /**
-     * Formats a date with this format: dd MMM yyyy
-     *
-     * @param date the date to format
-     */
-    public String formatDateMedium(Date date) {
-    	return DateFormatUtils.format(date, "dd MMM yyyy", locale);
-    }
     
 	public String format(Object o) {
 		return formatter.format(o, getLocale());
