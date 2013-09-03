@@ -11,6 +11,7 @@ import java.util.Random;
 
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
@@ -298,6 +299,15 @@ public abstract class UiUtils {
     	return formatDatePretty(date) + " " + DateFormatUtils.format(date, "hh:mm a", locale);
     }
 	
+    /**
+     * Formats a date with this format: dd MMM yyyy
+     *
+     * @param date the date to format
+     */
+    public String formatDateMedium(Date date) {
+    	return DateFormatUtils.format(date, "dd MMM yyyy", locale);
+    }
+    
 	public String format(Object o) {
 		return formatter.format(o, getLocale());
 	}
