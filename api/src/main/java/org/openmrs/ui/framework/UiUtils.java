@@ -11,7 +11,6 @@ import java.util.Random;
 
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.openmrs.Patient;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
