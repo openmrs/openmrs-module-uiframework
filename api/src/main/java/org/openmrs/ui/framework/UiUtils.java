@@ -12,6 +12,7 @@ import java.util.Random;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.uiframework.UiFrameworkActivator;
 import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.fragment.action.ObjectResult;
@@ -80,12 +81,22 @@ public abstract class UiUtils {
 
 		// Include all Javascript resources
 		for (Resource resource : pageContext.uniqueSortedResourcesByCategory(Resource.CATEGORY_JS)) {
-			ret.append("<script type=\"text/javascript\" src=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\"></script>\n");
+			ret.append("<script type=\"text/javascript\" src=\"/");
+			ret.append(WebConstants.CONTEXT_PATH);
+			ret.append("/ms/uiframework/resource/");
+			ret.append(resource.getProviderName() + "/" + resource.getResourcePath());
+			ret.append("?cache=" + UiFrameworkActivator.getContextLastRefreshedTime());
+			ret.append("\"></script>\n");
 		}
 
 		// Include all CSS resources
 		for (Resource resource : pageContext.uniqueSortedResourcesByCategory(Resource.CATEGORY_CSS)) {
-			ret.append("<link rel=\"stylesheet\" href=\"/" + WebConstants.CONTEXT_PATH + "/ms/uiframework/resource/" + resource.getProviderName() + "/" + resource.getResourcePath() + "\" type=\"text/css\"/>\n");
+			ret.append("<link rel=\"stylesheet\" href=\"/");
+			ret.append(WebConstants.CONTEXT_PATH);
+			ret.append("/ms/uiframework/resource/");
+			ret.append(resource.getProviderName() + "/" + resource.getResourcePath());
+			ret.append("?cache=" + UiFrameworkActivator.getContextLastRefreshedTime());
+			ret.append("\" type=\"text/css\"/>\n");
 		}
 
 		return ret.toString();

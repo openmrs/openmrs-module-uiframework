@@ -33,7 +33,12 @@ import org.openmrs.ui.framework.resource.ResourceFactory;
 public class UiFrameworkActivator extends BaseModuleActivator implements ModuleActivator {
 	
 	private Log log = LogFactory.getLog(getClass());
-	
+	private volatile static long contextLastRefreshedTime;
+
+	public static long getContextLastRefreshedTime() {
+		return contextLastRefreshedTime;
+	}
+
 	/**
 	 * @see org.openmrs.module.BaseModuleActivator#willStart()
 	 */
@@ -59,6 +64,8 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 	 */
 	@Override
 	public void contextRefreshed() {
+		contextLastRefreshedTime = System.currentTimeMillis();
+
 		// START HACK
 		// since we're not using a Listener anymore, these are not set at startup
 		try {
