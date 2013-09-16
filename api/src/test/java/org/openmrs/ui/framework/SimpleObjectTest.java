@@ -91,6 +91,7 @@ public class SimpleObjectTest {
     @Test
     public void fromObject_shouldFetchMapProperties()  {
         PersonAttributeType healthCenterType = new PersonAttributeType();
+		healthCenterType.setPersonAttributeTypeId(1);
         healthCenterType.setName("Health Center");
 
         Person person = new Person();

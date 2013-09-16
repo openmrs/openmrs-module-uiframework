@@ -203,11 +203,11 @@ public class PageFactoryTest {
 
 		System.out.println(output);
 
-        Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/mirebalais\\.css\" type=\"text/css\"/>").matcher(output).find());
-        Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/emr\\.css\" type=\"text/css\"/>").matcher(output).find());
+        Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/mirebalais\\.css.*\" type=\"text/css\"/>").matcher(output).find());
+        Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/emr\\.css.*\" type=\"text/css\"/>").matcher(output).find());
         Assert.assertTrue(output.indexOf("emr.css") < output.indexOf("mirebalais.css"));
 
-        Assert.assertTrue(Pattern.compile("<script type=\"text/javascript\" src=\".*/mirebalais/mirebalais-utils\\.js\"").matcher(output).find());
+        Assert.assertTrue(Pattern.compile("<script type=\"text/javascript\" src=\".*/mirebalais/mirebalais-utils\\.js.*\"").matcher(output).find());
     }
 
     /**
