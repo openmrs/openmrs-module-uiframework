@@ -273,6 +273,15 @@ public abstract class UiUtils {
 		// TODO fix this
 		return java.net.URLEncoder.encode(string.toString());
 	}
+
+	public String urlBind(String url, Map<String, Object> bindings) {
+		for (Map.Entry<String, Object> binding : bindings.entrySet()) {
+			String key = binding.getKey().replace(" ", "");
+			url = url.replace("{{" + key + "}}", "" + binding.getValue());
+		}
+
+		return url;
+	}
 	
 	public String dateToString(Date date) {
 		return new SimpleDateFormat(WebConstants.DATE_FORMAT_TIMESTAMP).format(date);
