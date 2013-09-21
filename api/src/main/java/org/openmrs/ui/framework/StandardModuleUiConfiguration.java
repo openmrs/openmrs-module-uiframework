@@ -13,8 +13,6 @@
  */
 package org.openmrs.ui.framework;
 
-import java.util.Map;
-
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.ui.framework.fragment.ConventionBasedClasspathFragmentControllerProvider;
@@ -26,6 +24,8 @@ import org.openmrs.ui.framework.page.PageFactory;
 import org.openmrs.ui.framework.resource.ModuleResourceProvider;
 import org.openmrs.ui.framework.resource.ResourceFactory;
 
+import java.util.Map;
+
 /**
  *
  */
@@ -33,8 +33,13 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 	
 	private String moduleId;
 	private Map<String, String> resourceShortcuts;
-	
-	/**
+
+    @Override
+    public String toString() {
+        return getClass().getName() + " for module " + moduleId;
+    }
+
+    /**
 	 * @return the moduleId
 	 */
 	public String getModuleId() {
