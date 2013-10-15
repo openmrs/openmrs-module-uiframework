@@ -15,6 +15,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Map;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -104,4 +107,20 @@ public class SimpleObjectTest {
         Assert.assertEquals("M", simplePerson.get("gender"));
         Assert.assertEquals("Beth Israel", ((Map<String,Object>) simplePerson.get("attributeMap")).get("Health Center"));
     }
+
+    @Test
+    public void fromObject_shouldTranslateIfMessageIsSpecified() {
+        PersonName name = new PersonName();
+        name.setGivenName("John");
+
+        String [] properties = { "givenName:message" };
+
+        UiUtils uiUtils = mock(UiUtils.class);
+        when(uiUtils.message("John")).thenReturn("Translated");
+
+        SimpleObject simpleName = SimpleObject.fromObject(name, uiUtils, properties);
+
+        assertThat((String) simpleName.get("givenName"), is("Translated"));
+    }
+
 }
