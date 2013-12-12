@@ -431,7 +431,10 @@ public class FragmentFactory {
 	
 	public Object invokeFragmentAction(String providerName, String fragmentName, String action, HttpServletRequest httpRequest) {
 		log.info("Invoking " + providerName + ":" + fragmentName + " . " + action);
-		FragmentActionRequest request = new FragmentActionRequest(this, httpRequest);
+        if ("controller".equals(action)) {
+            throw new UiFrameworkException("Illegal to access fragment controller() method as an action");
+        }
+        FragmentActionRequest request = new FragmentActionRequest(this, httpRequest);
 		
 		// try to find the requested fragment controller
 		Object controller = getController(providerName, fragmentName);
@@ -450,6 +453,9 @@ public class FragmentFactory {
 		if (method == null) {
 			throw new UiFrameworkException("Error getting " + controller.getClass() + "." + action + " method");
 		}
+        if (method.getDeclaringClass().equals(Object.class)) {
+            throw new UiFrameworkException("Cannot invoke methods from Object as fragment actions");
+        }
 
 		// invoke all fragment action interceptors
 		if (fragmentActionInterceptors != null) {

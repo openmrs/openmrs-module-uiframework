@@ -211,7 +211,35 @@ public class FragmentFactoryTest {
         httpRequest.setSession(new MockHttpSession());
         factory.invokeFragmentAction("test", "test", "action", httpRequest);
     }
-	
+
+    @Test(expected = UiFrameworkException.class)
+    public void shouldNotAllowYouToInvokeObjectClassMethods() throws Exception {
+        factory.addControllerProvider("test", new FragmentControllerProvider() {
+            @Override
+            public Object getController(String id) {
+                return new SimpleFragmentController();
+            }
+        });
+
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        httpRequest.setSession(new MockHttpSession());
+        factory.invokeFragmentAction("test", "test", "hashCode", httpRequest);
+    }
+
+    @Test(expected = UiFrameworkException.class)
+    public void shouldNotAllowYouToInvokeControllerMethods() throws Exception {
+        factory.addControllerProvider("test", new FragmentControllerProvider() {
+            @Override
+            public Object getController(String id) {
+                return new SimpleFragmentController();
+            }
+        });
+
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        httpRequest.setSession(new MockHttpSession());
+        factory.invokeFragmentAction("test", "test", "controller", httpRequest);
+    }
+
 	class MockControllerProvider implements FragmentControllerProvider {
 
 		private String fragmentName;
@@ -277,6 +305,11 @@ public class FragmentFactoryTest {
             Assert.assertNotNull("Integer argument was not injected", injected);
             Assert.assertNull("Long argument should not have been injected", notInjected);
             return new SuccessResult();
+        }
+    }
+
+    public class SimpleFragmentController {
+        public void controller() {
         }
     }
 
