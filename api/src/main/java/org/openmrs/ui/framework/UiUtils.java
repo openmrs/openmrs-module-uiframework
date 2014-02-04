@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.context.Context;
@@ -127,6 +128,9 @@ public abstract class UiUtils {
 	}
 	
 	public String message(String code, Object... args) {
+		if (StringUtils.isBlank(code)) {
+			return "";
+		}
 		return messager.message(code, args);
 	}
 	
