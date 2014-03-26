@@ -14,15 +14,18 @@
 
 package org.openmrs.ui.framework;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.openmrs.EncounterType;
-import org.openmrs.Role;
-import org.openmrs.api.AdministrationService;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.openmrs.ConceptDatatype;
+import org.openmrs.ConceptNumeric;
+import org.openmrs.EncounterType;
+import org.openmrs.Obs;
+import org.openmrs.Role;
+import org.openmrs.api.AdministrationService;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -137,6 +140,45 @@ public class FormatterImplTest {
 
         String output = formatter.format(date, locale);
         assertThat(output, is("01.Feb.2003, 14:25:07"));
+    }
+
+    @Test
+    public void testFormattingConceptNumeric() throws Exception {
+
+        Locale locale = Locale.ENGLISH;
+
+        ConceptNumeric conceptNumeric = new ConceptNumeric();
+        conceptNumeric.setUnits("mg");
+        ConceptDatatype numericDatatype = new ConceptDatatype();
+        numericDatatype.setHl7Abbreviation("NM");
+        conceptNumeric.setDatatype(numericDatatype);
+
+        Obs numericObs = new Obs();
+        numericObs.setConcept(conceptNumeric);
+        numericObs.setValueNumeric(1.0);
+
+        String output = formatter.format(numericObs, locale);
+        assertThat(output, is ("1.0 mg"));
+
+    }
+
+    @Test
+    public void testFormattingConceptNumeric_shouldNotFailIfNoUnits() throws Exception {
+
+        Locale locale = Locale.ENGLISH;
+
+        ConceptNumeric conceptNumeric = new ConceptNumeric();
+        ConceptDatatype numericDatatype = new ConceptDatatype();
+        numericDatatype.setHl7Abbreviation("NM");
+        conceptNumeric.setDatatype(numericDatatype);
+
+        Obs numericObs = new Obs();
+        numericObs.setConcept(conceptNumeric);
+        numericObs.setValueNumeric(1.0);
+
+        String output = formatter.format(numericObs, locale);
+        assertThat(output, is ("1.0"));
+
     }
 
     private class EncounterType_$$_javassist_26 extends EncounterType {

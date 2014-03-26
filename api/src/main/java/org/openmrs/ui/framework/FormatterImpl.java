@@ -12,6 +12,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
+import org.openmrs.ConceptNumeric;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsMetadata;
 import org.openmrs.PatientIdentifier;
@@ -152,7 +153,13 @@ public class FormatterImpl implements Formatter {
 			// limitation of Obs.getValueAsString() and java date locale
 			return format(o.getValueDatetime(), locale);
 		}
-		return o.getValueAsString(locale);
+        if (o.getConcept() instanceof ConceptNumeric) {
+            String units = ((ConceptNumeric) o.getConcept()).getUnits();
+		    return o.getValueAsString(locale) + (StringUtils.isNotBlank(units) ? " " + units : "");
+        }
+        else {
+            return o.getValueAsString(locale);
+        }
 	}
 
 	private String format(PatientIdentifier pi, Locale locale) {
