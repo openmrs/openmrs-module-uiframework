@@ -65,13 +65,29 @@ public class FormatterImpl implements Formatter {
 		} else if (o instanceof PatientIdentifier) {
 			return format((PatientIdentifier) o, locale);
 		} else if (o instanceof PersonAddress) {
-			return format((PersonAddress) o, locale);
+            return format((PersonAddress) o, locale);
+        } else if (o instanceof Number) {
+            return format((Number) o, locale);
+        } else if (o instanceof Class) {
+            return ((Class) o).getName();
 		} else {
 			return o.toString();
 		}
 	}
 
-	private String format(Date d, Locale locale) {
+    private String format(Number n, Locale locale) {
+        if (wholeNumber(n)) {
+            return "" + n.intValue();
+        } else {
+            return "" + n;
+        }
+    }
+
+    private boolean wholeNumber(Number n) {
+        return n != null && n.intValue() == n.doubleValue();
+    }
+
+    private String format(Date d, Locale locale) {
         if (administrationService != null) {
             if (hasTimeComponent(d)) {
                 return new SimpleDateFormat(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT), locale).format(d);

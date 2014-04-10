@@ -14,10 +14,6 @@
 
 package org.openmrs.ui.framework;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.ConceptDatatype;
@@ -26,6 +22,10 @@ import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Role;
 import org.openmrs.api.AdministrationService;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -179,6 +179,24 @@ public class FormatterImplTest {
         String output = formatter.format(numericObs, locale);
         assertThat(output, is ("1.0"));
 
+    }
+
+    @Test
+    public void testFormattingClass() throws Exception {
+        String output = formatter.format(Date.class, Locale.ENGLISH);
+        assertThat(output, is("java.util.Date"));
+    }
+
+    @Test
+    public void testFormattingWholeNumber() throws Exception {
+        String output = formatter.format(100d, Locale.ENGLISH);
+        assertThat(output, is("100"));
+    }
+
+    @Test
+    public void testFormattingDecimalNumber() throws Exception {
+        String output = formatter.format(0.5, Locale.ENGLISH);
+        assertThat(output, is("0.5"));
     }
 
     private class EncounterType_$$_javassist_26 extends EncounterType {
