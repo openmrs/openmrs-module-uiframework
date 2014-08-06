@@ -3,14 +3,11 @@ package org.openmrs.ui.framework.converter;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Patient;
 import org.openmrs.api.PatientService;
+import org.openmrs.ui.framework.converter.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
-import java.util.regex.Pattern;
-
 public class StringToPatientConverter implements Converter<String, Patient> {
-
-    private Pattern onlyDigits = Pattern.compile("\\d+");
 
     @Autowired
     private PatientService patientService;
@@ -23,7 +20,7 @@ public class StringToPatientConverter implements Converter<String, Patient> {
 	public Patient convert(String id) {
 		if (StringUtils.isBlank(id)) {
 			return null;
-        } else if (onlyDigits.matcher(id).matches()) {
+        } else if (ConversionUtil.onlyDigits(id)) {
             return patientService.getPatient(Integer.valueOf(id));
         }else {
             return patientService.getPatientByUuid(id);
