@@ -2,18 +2,18 @@ package org.openmrs.ui.framework.page;
 
 import groovy.lang.Writable;
 import groovy.text.Template;
-
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.ui.framework.FragmentException;
 import org.openmrs.ui.framework.ProviderAndName;
+import org.openmrs.ui.framework.ViewException;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.util.ExceptionUtil;
+import org.openmrs.util.OpenmrsUtil;
+
+import java.util.Map;
 
 public class GroovyPageView implements PageView {
 	
@@ -48,9 +48,11 @@ public class GroovyPageView implements PageView {
 			
 			ContextAuthenticationException cAuthEx = ExceptionUtil.findExceptionInChain(ex, ContextAuthenticationException.class);
 			if (cAuthEx != null)
-				throw cAuthEx;  
+				throw cAuthEx;
 
-			throw ex;
+            String message = "Error rendering page view for " + context.getRequest().getPageName() + ". ";
+            message += "Model properties:\n" + OpenmrsUtil.join(model.keySet(), " \n");
+            throw new ViewException(message, ex);
 		}
 
 	}
