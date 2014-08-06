@@ -3,9 +3,6 @@ package org.openmrs.ui.framework.fragment;
 import groovy.lang.MissingPropertyException;
 import groovy.lang.Writable;
 import groovy.text.Template;
-
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
@@ -16,6 +13,8 @@ import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.ViewException;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.util.ExceptionUtil;
+
+import java.util.Map;
 
 public class GroovyFragmentView implements FragmentView {
 	
@@ -48,13 +47,22 @@ public class GroovyFragmentView implements FragmentView {
 		}
 		catch (MissingPropertyException ex) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("In view '" + viewName + "', could not find property '" + ex.getProperty() + "'.\n");
+			sb.append("*** In view '" + viewName + "', could not find property '" + ex.getProperty() + "'.\n");
 			sb.append("Passed from controller: ");
 			for (Map.Entry<String, Object> e : model.entrySet()) {
 				sb.append("\n  " + e.getKey() + " -> " + e.getValue());
 			}
 			throw new ViewException(sb.toString());
 		}
+        catch (NullPointerException ex) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("*** In view '" + viewName + "', NullPointerException: " + ex.getMessage() + ".\n");
+            sb.append("Passed from controller: ");
+            for (Map.Entry<String, Object> e : model.entrySet()) {
+                sb.append("\n  " + e.getKey() + " -> " + e.getValue());
+            }
+            throw new ViewException(sb.toString());
+        }
 		catch (ViewException ex) {
 			throw new ViewException("(in '" + viewName + "')\n" + ex.getMessage());
 		}
