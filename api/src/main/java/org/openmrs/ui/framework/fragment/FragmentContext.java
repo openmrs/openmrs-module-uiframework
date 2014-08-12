@@ -1,6 +1,7 @@
 package org.openmrs.ui.framework.fragment;
 
 import org.openmrs.ui.framework.Decoratable;
+import org.openmrs.ui.framework.Formatter;
 import org.openmrs.ui.framework.FragmentIncluder;
 import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.extension.ExtensionAware;
@@ -167,5 +168,9 @@ public class FragmentContext implements Decoratable, FragmentIncluder, Extension
 		else
 			return 1;
 	}
-	
+
+    public Formatter getFormatter() {
+        return pageContext.getFormatter();
+    }
+
 }

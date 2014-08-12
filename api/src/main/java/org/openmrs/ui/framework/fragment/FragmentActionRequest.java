@@ -1,15 +1,14 @@
 package org.openmrs.ui.framework.fragment;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.ui.framework.AttributeExpressionException;
 import org.openmrs.ui.framework.AttributeHolder;
 import org.openmrs.ui.framework.AttributeHolderUtil;
 import org.springframework.validation.Errors;
 import org.springframework.validation.MapBindingResult;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 public class FragmentActionRequest implements AttributeHolder {
 	
@@ -26,7 +25,7 @@ public class FragmentActionRequest implements AttributeHolder {
 		this.httpRequest = httpRequest;
 		errors = new MapBindingResult(httpRequest.getParameterMap(), "request");
 		this.ui = new FragmentActionUiUtils(factory.getMessageSource(), factory.getExtensionManager(), factory
-		        .getConversionService());
+		        .getConversionService(), factory.getFormatterService());
 	}
 	
 	public FragmentActionUiUtils getUiUtils() {

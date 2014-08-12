@@ -7,6 +7,7 @@ import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.UiFrameworkUtil;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.extension.ExtensionManager;
+import org.openmrs.ui.framework.formatter.FormatterService;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.interceptor.FragmentActionInterceptor;
 import org.openmrs.ui.framework.page.PageAction;
@@ -51,6 +52,9 @@ public class FragmentFactory {
 	
 	@Autowired
 	MessageSource messageSource;
+
+    @Autowired
+    FormatterService formatterService;
 	
 	@Autowired
 	ExtensionManager extensionManager;
@@ -579,8 +583,12 @@ public class FragmentFactory {
 	public ConversionService getConversionService() {
 		return conversionService;
 	}
-	
-	public ServletContext getServletContext() {
+
+    public FormatterService getFormatterService() {
+        return formatterService;
+    }
+
+    public ServletContext getServletContext() {
 		return servletContext;
 	}
 

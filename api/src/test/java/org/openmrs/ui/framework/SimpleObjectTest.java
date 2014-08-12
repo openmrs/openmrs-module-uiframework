@@ -3,37 +3,35 @@ package org.openmrs.ui.framework;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.openmrs.Person;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
-import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ServiceContext;
+import org.openmrs.ui.framework.formatter.FormatterService;
 import org.openmrs.ui.framework.fragment.FragmentActionUiUtils;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.context.MessageSource;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Map;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
+@DirtiesContext
 public class SimpleObjectTest {
 
     private UiUtils ui;
 
     @Before
     public void before() {
+        ServiceContext.getInstance().setAdministrationService(null);
 
-        mockStatic(Context.class);
-        when(Context.getAdministrationService()).thenReturn(null);
-
-        this.ui = new FragmentActionUiUtils(null, null, null);
+        FormatterService formatterService = new FormatterService();
+        formatterService.setMessageSource(mock(MessageSource.class));
+        this.ui = new FragmentActionUiUtils(null, null, null, formatterService);
     }
 
     @Test

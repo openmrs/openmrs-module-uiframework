@@ -1,13 +1,5 @@
 package org.openmrs.ui.framework;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,12 +18,32 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.ui.framework.formatter.FormatterFactory;
+import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * Contains default formatting for most OpenMRS classes, which can be override with {@link FormatterFactory} instances.
+ * Do not construct this class directly, but rather use {@link FormatterService#getFormatter()}.
+ */
 public class FormatterImpl implements Formatter {
 
     private MessageSource messageSource;
     private AdministrationService administrationService;
+
+    /**
+     * Map from fully-qualified classname, to the formatter to use for this class
+     */
+    private Map<String, Formatter> classFormatters = new HashMap<String, Formatter>();
 
     private static final String ADDRESS_LAYOUT_TEMPLATE_NAME_GP = "layout.address.format";
 
@@ -44,7 +56,11 @@ public class FormatterImpl implements Formatter {
     public String format(Object o, Locale locale) {
 		if (o == null)
 			return "";
-		if (o instanceof Date) {
+
+        Formatter classFormatter = classFormatters.get(o.getClass().getName());
+        if (classFormatter != null) {
+            return classFormatter.format(o, locale);
+        } else if (o instanceof Date) {
 			return format((Date) o, locale);
 		} else if (o instanceof Role) {
 			return format((Role) o, locale);
@@ -242,4 +258,9 @@ public class FormatterImpl implements Formatter {
 
         return false;
     }
+
+    public void registerClassFormatter(String forClass, Formatter formatter) {
+        classFormatters.put(forClass, formatter);
+    }
+
 }

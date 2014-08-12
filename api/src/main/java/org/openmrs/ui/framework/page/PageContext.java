@@ -2,6 +2,7 @@ package org.openmrs.ui.framework.page;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.Decoratable;
+import org.openmrs.ui.framework.Formatter;
 import org.openmrs.ui.framework.FragmentIncluder;
 import org.openmrs.ui.framework.Messager;
 import org.openmrs.ui.framework.MessagerImpl;
@@ -309,4 +310,13 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	public void setExtensionManager(ExtensionManager extensionManager) {
 		this.extensionManager = extensionManager;
 	}
+
+    public Formatter getFormatter() {
+        try {
+            return fragmentFactory.getFormatterService().getFormatter();
+        } catch (NullPointerException ex) {
+            return null;
+        }
+    }
+
 }

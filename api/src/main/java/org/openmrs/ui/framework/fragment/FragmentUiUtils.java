@@ -1,7 +1,5 @@
 package org.openmrs.ui.framework.fragment;
 
-import org.openmrs.api.context.Context;
-import org.openmrs.ui.framework.FormatterImpl;
 import org.openmrs.ui.framework.UiUtils;
 
 import java.util.Map;
@@ -18,7 +16,7 @@ public class FragmentUiUtils extends UiUtils {
 		this.pageContext = context.getPageContext();
 		this.context = context;
 		this.resourceIncluder = pageContext;
-		this.formatter = new FormatterImpl(pageContext.getMessageSource(), Context.getAdministrationService());
+        this.formatter = context.getFormatter();
 		this.messager = pageContext;
 		this.fragmentIncluder = context;
 		this.decoratable = context;
