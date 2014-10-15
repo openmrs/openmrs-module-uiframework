@@ -80,6 +80,7 @@
 	<bean class="org.openmrs.ui.framework.converter.PatientIdentifierToSimpleObjectConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.OpenmrsMetadataToSimpleObjectConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.OpenmrsObjectToSimpleObjectConverter"/>
+    <bean class="org.openmrs.ui.framework.converter.StringToCodedValueOrFreeTextConverter"/>
 	
 	<!-- Conversion Service, will autowire converters -->
 	<bean id="conversionService" class="org.openmrs.module.uiframework.UiFrameworkConversionServiceFactoryBean"/>
