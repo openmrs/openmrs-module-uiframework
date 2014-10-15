@@ -61,10 +61,10 @@ public class GroovyFragmentView implements FragmentView {
             for (Map.Entry<String, Object> e : model.entrySet()) {
                 sb.append("\n  " + e.getKey() + " -> " + e.getValue());
             }
-            throw new ViewException(sb.toString());
+            throw new ViewException(sb.toString(), ex);
         }
 		catch (ViewException ex) {
-			throw new ViewException("(in '" + viewName + "')\n" + ex.getMessage());
+			throw new ViewException("(in '" + viewName + "')\n" + ex.getMessage(), ex);
 		}
 		catch (Exception ex) {
 			APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
