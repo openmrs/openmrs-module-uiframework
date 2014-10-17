@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
  * passed in string as the wrapped value. Note that this converter never returns null but the
  * wrapped value can be null.
  */
-@Component
 public class StringToCodedOrFreeTextValueConverter implements Converter<String, CodedOrFreeTextValue> {
 	
 	@Autowired

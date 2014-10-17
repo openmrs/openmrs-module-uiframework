@@ -24,5 +24,6 @@
     <bean id="conversionService" class="org.openmrs.module.uiframework.UiFrameworkConversionServiceFactoryBean"/>
     <bean class="org.openmrs.ui.framework.converter.StringToConceptConverter"/>
     <bean class="org.openmrs.ui.framework.converter.StringToConceptNameConverter"/>
+    <bean class="org.openmrs.ui.framework.converter.StringToCodedOrFreeTextValueConverter"/>
 
 </beans>
