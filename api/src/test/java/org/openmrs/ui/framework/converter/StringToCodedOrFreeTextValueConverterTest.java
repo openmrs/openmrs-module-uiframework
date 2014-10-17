@@ -18,27 +18,19 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.openmrs.ui.framework.CodedOrFreeTextValue.CONCEPT_NAME_PREFIX;
 import static org.openmrs.ui.framework.CodedOrFreeTextValue.CONCEPT_PREFIX;
+import static org.openmrs.ui.framework.CodedOrFreeTextValue.NON_CODED_PREFIX;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.openmrs.ui.framework.CodedOrFreeTextValue;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class StringToCodedOrFreeTextValueConverterTest extends BaseModuleContextSensitiveTest {
 	
-	private ConceptService cs;
-	
+	@Autowired
 	private StringToCodedOrFreeTextValueConverter converter;
-	
-	@Before
-	public void setup() {
-		cs = Context.getConceptService();
-		converter = new StringToCodedOrFreeTextValueConverter();
-	}
 	
 	/**
 	 * @verifies convert a valid concept id string
@@ -95,7 +87,7 @@ public class StringToCodedOrFreeTextValueConverterTest extends BaseModuleContext
 	@Test
 	public void convert_shouldHandleFreeText() throws Exception {
 		String text = "some random text";
-		CodedOrFreeTextValue codedValue = converter.convert(text);
+		CodedOrFreeTextValue codedValue = converter.convert(NON_CODED_PREFIX + text);
 		assertEquals(text, codedValue.getValue());
 	}
 	

@@ -19,7 +19,7 @@ import org.openmrs.ConceptName;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * Wrapper for any kind of Coded value e.g a concept
+ * Wrapper for coded or free text value. The coded value could be a Concept or ConceptName
  */
 public class CodedOrFreeTextValue {
 	
@@ -27,11 +27,16 @@ public class CodedOrFreeTextValue {
 	
 	public static final String CONCEPT_NAME_PREFIX = "CONCEPT_NAME:";
 	
+	public static final String NON_CODED_PREFIX = "NON_CODED:";
+	
 	private Concept codedValue;
 	
 	private ConceptName codedNameValue;
 	
 	private String nonCodedValue;
+	
+	public CodedOrFreeTextValue() {
+	}
 	
 	public CodedOrFreeTextValue(Concept codedValue) {
 		this.codedValue = codedValue;
@@ -82,13 +87,23 @@ public class CodedOrFreeTextValue {
 	@Override
 	public String toString() {
 		if (codedNameValue != null) {
-			return CONCEPT_NAME_PREFIX + codedNameValue.getUuid();
+			return codedNameValue.getName();
 		} else if (codedValue != null) {
-			return CONCEPT_PREFIX + codedValue.getUuid();
+			return codedValue.getName().getName();
 		} else {
 			return nonCodedValue;
 		}
 	}
+
+    public String getRawValue() {
+        if (codedNameValue != null) {
+            return CONCEPT_NAME_PREFIX + codedNameValue.getUuid();
+        } else if (codedValue != null) {
+            return CONCEPT_PREFIX + codedValue.getUuid();
+        } else {
+            return NON_CODED_PREFIX + nonCodedValue;
+        }
+    }
 	
 	@Override
 	public boolean equals(Object o) {

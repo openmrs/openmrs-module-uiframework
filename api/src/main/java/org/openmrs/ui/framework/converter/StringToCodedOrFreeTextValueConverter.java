@@ -15,15 +15,16 @@ package org.openmrs.ui.framework.converter;
 
 import static org.openmrs.ui.framework.CodedOrFreeTextValue.CONCEPT_NAME_PREFIX;
 import static org.openmrs.ui.framework.CodedOrFreeTextValue.CONCEPT_PREFIX;
+import static org.openmrs.ui.framework.CodedOrFreeTextValue.NON_CODED_PREFIX;
 
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
-import org.openmrs.api.ConceptService;
-import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.CodedOrFreeTextValue;
-import org.openmrs.ui.framework.converter.util.ConversionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 /**
  * Converts a String to a concept name, concept, the string to be converted has to start with
@@ -31,7 +32,11 @@ import org.springframework.core.convert.converter.Converter;
  * passed in string as the wrapped value. Note that this converter never returns null but the
  * wrapped value can be null.
  */
+@Component
 public class StringToCodedOrFreeTextValueConverter implements Converter<String, CodedOrFreeTextValue> {
+	
+	@Autowired
+	private ConversionServiceFactoryBean conversionServiceFactory;
 	
 	/**
 	 * @see Converter#convert(Object)
@@ -46,18 +51,11 @@ public class StringToCodedOrFreeTextValueConverter implements Converter<String, 
 	 */
 	@Override
 	public CodedOrFreeTextValue convert(String str) {
-		String nonCodedValue = null;
 		if (StringUtils.isNotBlank(str)) {
-			ConceptService cs = Context.getConceptService();
 			if (str.startsWith(CONCEPT_PREFIX)) {
 				String uuidOrConceptId = str.substring(str.indexOf(CONCEPT_PREFIX) + CONCEPT_PREFIX.length());
 				if (StringUtils.isNotBlank(uuidOrConceptId)) {
-					Concept concept;
-					if (ConversionUtil.onlyDigits(uuidOrConceptId)) {
-						concept = cs.getConcept(Integer.valueOf(uuidOrConceptId));
-					} else {
-						concept = cs.getConceptByUuid(uuidOrConceptId);
-					}
+					Concept concept = conversionServiceFactory.getObject().convert(uuidOrConceptId, Concept.class);
 					return new CodedOrFreeTextValue(concept);
 				}
 				
@@ -65,20 +63,15 @@ public class StringToCodedOrFreeTextValueConverter implements Converter<String, 
 				String uuidOrConceptNameId = str.substring(str.indexOf(CONCEPT_NAME_PREFIX) + CONCEPT_NAME_PREFIX.length());
 				
 				if (StringUtils.isNotBlank(uuidOrConceptNameId)) {
-					ConceptName name;
-					if (ConversionUtil.onlyDigits(uuidOrConceptNameId)) {
-						name = cs.getConceptName(Integer.valueOf(uuidOrConceptNameId));
-					} else {
-						name = cs.getConceptNameByUuid(uuidOrConceptNameId);
-					}
+					ConceptName name = conversionServiceFactory.getObject().convert(uuidOrConceptNameId, ConceptName.class);
 					return new CodedOrFreeTextValue(name);
 				}
 				
-			} else {
-				nonCodedValue = str;
+			} else if (str.startsWith(NON_CODED_PREFIX)) {
+				return new CodedOrFreeTextValue(str.substring(str.indexOf(NON_CODED_PREFIX) + NON_CODED_PREFIX.length()));
 			}
 		}
 		
-		return new CodedOrFreeTextValue(nonCodedValue);
+		return new CodedOrFreeTextValue();
 	}
 }
