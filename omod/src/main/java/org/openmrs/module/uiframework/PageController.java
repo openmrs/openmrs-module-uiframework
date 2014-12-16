@@ -115,7 +115,7 @@ public class PageController {
             if (!redirect.getUrl().startsWith("/"))
                 ret += "/";
             ret += redirect.getUrl();
-            if (ret.startsWith("/" + WebConstants.CONTEXT_PATH)) {
+            if (ret.startsWith("/" + WebConstants.CONTEXT_PATH + "/")) {
                 ret = ret.substring(WebConstants.CONTEXT_PATH.length() + 1);
             }
             return "redirect:" + ret;
