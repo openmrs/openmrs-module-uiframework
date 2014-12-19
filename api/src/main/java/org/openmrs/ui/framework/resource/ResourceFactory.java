@@ -13,7 +13,7 @@
  */
 package org.openmrs.ui.framework.resource;
 
-import org.apache.commons.beanutils.PropertyUtils;
+import org.openmrs.ui.framework.UiFrameworkUtil;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,31 +132,16 @@ public class ResourceFactory {
 
 	/**
      * Registers a Resource Provider.
-	 * 
-	 * If a system property exists called "uiFramework.development.${ key }", and the resource provider has
-	 * a "developmentFolder" property, the value of "${systemProperty}/omod/src/main/webapp/resources" will be set
-	 * for that property 
-	 * 
-	 * @param key
-	 * @param provider
+	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
      */
     public void addResourceProvider(String key, ResourceProvider provider) {
-	    if (resourceProviders == null)
-	    	resourceProviders = new LinkedHashMap<String, ResourceProvider>();
-	    
-	    String devRootFolder = System.getProperty("uiFramework.development." + key);
-		if (devRootFolder != null) {
-			File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources");
-			if (devFolder.exists() && devFolder.isDirectory()) {
-				try {
-					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
-                    resourceProvidersInDevelopmentMode.add(key);
-                } catch (Exception ex) {
-					// pass
-				}
-			} else {
-				log.warn("Failed to set development mode for ResourceProvider " + key + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
-			}
+	    if (resourceProviders == null) {
+			resourceProviders = new LinkedHashMap<String, ResourceProvider>();
+		}
+
+		boolean addedInDevMode = UiFrameworkUtil.checkAndSetDevelopmentModeForProvider(key, provider);
+		if (addedInDevMode) {
+			resourceProvidersInDevelopmentMode.add(key);
 		}
 		
 		resourceProviders.put(key, provider);

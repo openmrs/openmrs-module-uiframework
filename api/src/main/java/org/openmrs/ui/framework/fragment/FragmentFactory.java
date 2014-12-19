@@ -1,6 +1,5 @@
 package org.openmrs.ui.framework.fragment;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.ui.framework.RequestValidationException;
 import org.openmrs.ui.framework.UiFrameworkException;
@@ -29,7 +28,6 @@ import org.springframework.core.convert.ConversionService;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -344,33 +342,15 @@ public class FragmentFactory {
 	}
 	
 	/**
-	 * Registers a Controller Provider. If a system property exists called
-	 * "uiFramework.development.${ key }", and the controller provider has a "developmentFolder"
-	 * property, the value of "${systemProperty}/omod/target/classes" will be set for that property
-	 * 
-	 * @param key
-	 * @param provider
+	 * Registers a Fragment Controller Provider
+	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
 	 */
 	public void addControllerProvider(String key, FragmentControllerProvider provider) {
-		if (controllerProviders == null)
+		if (controllerProviders == null) {
 			controllerProviders = new LinkedHashMap<String, FragmentControllerProvider>();
-		
-		String devRootFolder = System.getProperty("uiFramework.development." + key);
-		if (devRootFolder != null) {
-			File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "target" + File.separator
-			        + "classes");
-			if (devFolder.exists() && devFolder.isDirectory()) {
-				try {
-					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
-				}
-				catch (Exception ex) {
-					// pass
-				}
-			} else {
-				log.warn("Failed to set development mode for FragmentControllerProvider " + key + " because "
-				        + devFolder.getAbsolutePath() + " does not exist or is not a directory");
-			}
 		}
+
+		UiFrameworkUtil.checkAndSetDevelopmentModeForProvider(key, provider);
 		
 		controllerProviders.put(key, provider);
 	}
@@ -402,33 +382,15 @@ public class FragmentFactory {
 	}
 	
 	/**
-	 * If a system property exists called "uiFramework.development.${ key }", and the view provider
-	 * has a "developmentFolder" property, the value of
-	 * "${systemProperty}/omod/src/main/webapp/fragments" will be set for that property
-	 * 
-	 * @param key
-	 * @param provider
+	 * Registers a Fragment View Provider
+	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
 	 */
 	public void addViewProvider(String key, FragmentViewProvider provider) {
-		if (viewProviders == null)
+		if (viewProviders == null) {
 			viewProviders = new LinkedHashMap<String, FragmentViewProvider>();
-		
-		String devRootFolder = System.getProperty("uiFramework.development." + key);
-		if (devRootFolder != null) {
-			File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "src" + File.separator
-			        + "main" + File.separator + "webapp" + File.separator + "fragments");
-			if (devFolder.exists() && devFolder.isDirectory()) {
-				try {
-					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
-				}
-				catch (Exception ex) {
-					// pass
-				}
-			} else {
-				log.warn("Failed to set development mode for FragmentViewProvider " + key + " because "
-				        + devFolder.getAbsolutePath() + " does not exist or is not a directory");
-			}
 		}
+
+		UiFrameworkUtil.checkAndSetDevelopmentModeForProvider(key, provider);
 		
 		viewProviders.put(key, provider);
 	}

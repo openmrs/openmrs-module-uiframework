@@ -1,5 +1,6 @@
 package org.openmrs.ui.framework;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,8 +13,13 @@ import org.openmrs.ui.framework.annotation.MethodParam;
 import org.openmrs.ui.framework.annotation.SpringBean;
 import org.openmrs.ui.framework.annotation.Validate;
 import org.openmrs.ui.framework.fragment.FragmentConfiguration;
+import org.openmrs.ui.framework.fragment.FragmentControllerProvider;
+import org.openmrs.ui.framework.fragment.FragmentViewProvider;
 import org.openmrs.ui.framework.page.PageAction;
+import org.openmrs.ui.framework.page.PageControllerProvider;
 import org.openmrs.ui.framework.page.PageRequest;
+import org.openmrs.ui.framework.page.PageViewProvider;
+import org.openmrs.ui.framework.resource.ResourceProvider;
 import org.openmrs.util.HandlerUtil;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -34,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
@@ -478,5 +485,88 @@ public class UiFrameworkUtil {
     	}
     	return ret;
     }
-	
+
+	/**
+	 * Sets the developmentFolder property on an appropriate factory object in order to facilitate
+	 * developers automatically having changes to pages and controllers picked up by the application live during development
+	 *
+	 * This supports two different mechanisms:
+	 *
+	 * 1. If a system property exists called "uiFramework.development.${ key }", and the resource provider has
+	 * a "developmentFolder" property, the value of "${systemProperty}/omod/src/main/webapp/resources" will be set
+	 * for that property
+	 *
+	 * 2. If a runtime property exists called "developmentMode.directory", and folder exists at either
+	 *		${developmentMode.directory}/openmrs-module-${key} or at ${developmentMode.directory}/${key},
+	 *	and if the resource provider has a "developmentFolder" property, the value of
+	 * "${foundFolder}/omod/src/main/webapp/resources" will be set for that property
+	 *
+	 * @return true if development mode has been set for the given provider
+	 */
+	public static boolean checkAndSetDevelopmentModeForProvider(String key, Object provider) {
+
+		boolean addedInDevMode = false;
+
+		// Setting development mode this way is implicit and passive, so no need to warn if no matches are found
+		String devModeDir = Context.getRuntimeProperties().getProperty("developmentMode.directory");
+		if (devModeDir != null) {
+			addedInDevMode = addPossibleDevFolder(devModeDir + File.separator + "openmrs-module-"+key, key, provider);
+			if (!addedInDevMode) {
+				addedInDevMode = addPossibleDevFolder(devModeDir + File.separator + key, key, provider);
+			}
+		}
+
+		// Setting development mode this way is explicit and active, so warn if the development mode that was set is not found
+		if (!addedInDevMode) {
+			String devRootFolder = System.getProperty("uiFramework.development." + key);
+			if (devRootFolder != null) {
+				addedInDevMode = addPossibleDevFolder(devRootFolder, key, provider);
+				if (!addedInDevMode) {
+					log.warn("Failed to set development mode for " + provider.getClass().getSimpleName() + " in " + key + " because it does not exist or is not a directory");
+				}
+			}
+		}
+
+		return addedInDevMode;
+	}
+
+	/**
+	 * Checks whether or not the passed baseFolder exists and has the property subdirectory structure to server as a dev folder
+	 * If it does, it indicates that this should server as a resource provider in development mode, and returns true
+	 * If it does not, or if problems occur while trying to perform the operation, it returns false
+	 */
+	private static boolean addPossibleDevFolder(String baseFolder, String key, Object provider) {
+
+		// Get the appropriate folderPath to check, given the type of provider passed in
+		String folderPath = baseFolder + File.separator + "omod" + File.separator;
+		if (provider instanceof ResourceProvider) {
+			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
+		}
+		else if (provider instanceof PageViewProvider) {
+			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages";
+		}
+		else if (provider instanceof FragmentViewProvider) {
+			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "fragments";
+		}
+		else if (provider instanceof PageControllerProvider || provider instanceof FragmentControllerProvider) {
+			folderPath += "target" + File.separator + "classes";
+		}
+		else {
+			throw new IllegalArgumentException("Provider is not of an expected type.  Found: " + provider.getClass());
+		}
+
+		File devFolder = new File(folderPath);
+		if (devFolder.exists() && devFolder.isDirectory()) {
+			try {
+				PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
+				log.warn("Folder " + devFolder.getAbsolutePath() + " successfully set as developmentFolder mode folder for provider " + key);
+				return true;
+			}
+			catch (Exception ex) {
+				// pass
+			}
+		}
+		return false;
+	}
+
 }

@@ -3,7 +3,6 @@ package org.openmrs.ui.framework.page;
 
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
-import org.apache.commons.collections.Transformer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,11 +21,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
@@ -45,6 +44,7 @@ public class PageFactoryTest {
 
 		mockStatic(Context.class);
 		when(Context.getAdministrationService()).thenReturn(null);
+		when(Context.getRuntimeProperties()).thenReturn(new Properties());
 
 		factory = new PageFactory();
 
