@@ -1,1 +1,0 @@
-I'm in the middle of porting the OpenMRS 2.x UI Framework described at https://wiki.openmrs.org/x/6gDn to be a module that can be installed in the existing 1.x web application, as well as forming the foundation for 2.x.
