@@ -490,16 +490,24 @@ public class UiFrameworkUtil {
 	 * Sets the developmentFolder property on an appropriate factory object in order to facilitate
 	 * developers automatically having changes to pages and controllers picked up by the application live during development
 	 *
-	 * This supports two different mechanisms:
+	 * This supports a couple of different mechanisms, based on properties set at runtime.  These
+	 * properties can be specified either in the OpenMRS runtime properties file, or as system properties
 	 *
-	 * 1. If a system property exists called "uiFramework.development.${ key }", and the resource provider has
-	 * a "developmentFolder" property, the value of "${systemProperty}/omod/src/main/webapp/resources" will be set
-	 * for that property
+	 * 1. For developers who tend to check out their code into a single folder, organized by module id, they can specify:
 	 *
-	 * 2. If a runtime property exists called "developmentMode.directory", and folder exists at either
-	 *		${developmentMode.directory}/openmrs-module-${key} or at ${developmentMode.directory}/${key},
-	 *	and if the resource provider has a "developmentFolder" property, the value of
-	 * "${foundFolder}/omod/src/main/webapp/resources" will be set for that property
+	 * uiFramework.developmentFolder=/path/to/where/developer/keeps/their/modules/checked/out
+	 *
+	 * Any modules whose code exists in this folder, under either "moduleId" or "openmrs-module-moduleId" will be included
+	 * if they are uiframework-enabled and started
+	 *
+	 * 2. As an optional restriction to this, one can specify uiFramework.developmentModules=comma,separated,module,ids
+	 *
+	 * This will have the effect of limiting the modules included using option 1 to only those specified using option 2
+	 *
+	 * 3. As an alternative (or addition) to this, in the event that the developer wants more specific control over the module/folder combinations,
+	 * they can specify one or more properties in the format of:
+	 *
+	 * uiFramework.development.${moduleId}=/path/to/where/the/code/to/this/module/resides
 	 *
 	 * @return true if development mode has been set for the given provider
 	 */
@@ -507,18 +515,36 @@ public class UiFrameworkUtil {
 
 		boolean addedInDevMode = false;
 
-		// Setting development mode this way is implicit and passive, so no need to warn if no matches are found
-		String devModeDir = Context.getRuntimeProperties().getProperty("developmentMode.directory");
+		// Option 1:  User can specify uiFramework.developmentFolder and (optionally) uiFramework.developmentModules (comma-separated)
+		// Setting development mode this way is implicit and passive, so no need to warn if no match is found
+
+		String devModeDir = getRuntimeOrSystemProperty("uiFramework.developmentFolder");
 		if (devModeDir != null) {
-			addedInDevMode = addPossibleDevFolder(devModeDir + File.separator + "openmrs-module-"+key, key, provider);
-			if (!addedInDevMode) {
-				addedInDevMode = addPossibleDevFolder(devModeDir + File.separator + key, key, provider);
+			String devModeModules = getRuntimeOrSystemProperty("uiFramework.developmentModules");
+			boolean moduleAllowed = false;
+			if (devModeModules != null) {
+				for (String devModeModule : devModeModules.split(",")) {
+					if (devModeModule.trim().equalsIgnoreCase(key)) {
+						moduleAllowed = true;
+					}
+				}
+			}
+			else {
+				moduleAllowed = true;
+			}
+			if (moduleAllowed) {
+				addedInDevMode = addPossibleDevFolder(devModeDir + File.separator + "openmrs-module-" + key, key, provider);
+				if (!addedInDevMode) {
+					addedInDevMode = addPossibleDevFolder(devModeDir + File.separator + key, key, provider);
+				}
 			}
 		}
 
+		// Option 2:  User can specify uiFramework.development.moduleId=/path/to/module/code/on/filesystem to enable dev mode for a given module and path explicitly
 		// Setting development mode this way is explicit and active, so warn if the development mode that was set is not found
+
 		if (!addedInDevMode) {
-			String devRootFolder = System.getProperty("uiFramework.development." + key);
+			String devRootFolder = getRuntimeOrSystemProperty("uiFramework.development." + key);
 			if (devRootFolder != null) {
 				addedInDevMode = addPossibleDevFolder(devRootFolder, key, provider);
 				if (!addedInDevMode) {
@@ -569,4 +595,14 @@ public class UiFrameworkUtil {
 		return false;
 	}
 
+	/**
+	 * @return the property value with the given key from the OpenMRS runtime properties, of if not found, from a system property
+	 */
+	private static String getRuntimeOrSystemProperty(String key) {
+		String ret = Context.getRuntimeProperties().getProperty(key);
+		if (ret == null) {
+			ret = System.getProperty(key);
+		}
+		return ret;
+	}
 }
