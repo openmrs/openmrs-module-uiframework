@@ -1,20 +1,15 @@
 package org.openmrs.ui.framework.page;
 
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.Transformer;
 import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.ProviderAndName;
-import org.openmrs.ui.framework.ResourceIncluder;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.UiFrameworkUtil;
 import org.openmrs.ui.framework.UiUtils;
-import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.interceptor.PageRequestInterceptor;
-import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -27,11 +22,8 @@ import org.springframework.core.convert.ConversionService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -329,33 +321,16 @@ public class PageFactory {
 	}
 	
 	/**
-	 * Registers a Controller Provider.
-	 * 
-	 * If a system property exists called "uiFramework.development.${ key }", and the controller provider has
-	 * a "developmentFolder" property, the value of "${systemProperty}/omod/target/classes" will be set
-	 * for that property 
-	 * 
-	 * @param key
-	 * @param provider
+	 * Registers a Page Controller Provider.
+	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
 	 */
 	public void addControllerProvider(String key, PageControllerProvider provider) {
-		if (controllerProviders == null)
+		if (controllerProviders == null) {
 			controllerProviders = new LinkedHashMap<String, PageControllerProvider>();
-		
-		String devRootFolder = System.getProperty("uiFramework.development." + key);
-		if (devRootFolder != null) {
-			File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "target" + File.separator + "classes");
-			if (devFolder.exists() && devFolder.isDirectory()) {
-				try {
-					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
-				} catch (Exception ex) {
-					// pass
-				}
-			} else {
-				log.warn("Failed to set development mode for PageControllerProvider " + key + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
-			}
 		}
-		
+
+		UiFrameworkUtil.checkAndSetDevelopmentModeForProvider(key, provider);
+
 		controllerProviders.put(key, provider);
 	}
 	
@@ -387,30 +362,15 @@ public class PageFactory {
 			
 		
 	/**
-	 * If a system property exists called "uiFramework.development.${ key }", and the view provider has
-	 * a "developmentFolder" property, the value of "${systemProperty}/omod/src/main/webapp/pages" will be set
-	 * for that property 
-	 * 
-	 * @param key
-	 * @param provider
+	 * Registers a Page View Provider
+	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
 	 */
 	public void addViewProvider(String key, PageViewProvider provider) {
-		if (viewProviders == null)
+		if (viewProviders == null) {
 			viewProviders = new LinkedHashMap<String, PageViewProvider>();
-		
-		String devRootFolder = System.getProperty("uiFramework.development." + key);
-		if (devRootFolder != null) {
-			File devFolder = new File(devRootFolder + File.separator + "omod" + File.separator + "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages");
-			if (devFolder.exists() && devFolder.isDirectory()) {
-				try {
-					PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
-				} catch (Exception ex) {
-					// pass
-				}
-			} else {
-				log.warn("Failed to set development mode for PageViewProvider " + key + " because " + devFolder.getAbsolutePath() + " does not exist or is not a directory");
-			}
 		}
+
+		UiFrameworkUtil.checkAndSetDevelopmentModeForProvider(key, provider);
 		
 		viewProviders.put(key, provider);
 	}

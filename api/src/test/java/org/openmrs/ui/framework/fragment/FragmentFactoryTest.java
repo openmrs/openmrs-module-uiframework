@@ -27,6 +27,7 @@ import org.springframework.mock.web.MockHttpSession;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -42,6 +43,7 @@ public class FragmentFactoryTest {
 
         mockStatic(Context.class);
         when(Context.getAdministrationService()).thenReturn(null);
+		when(Context.getRuntimeProperties()).thenReturn(new Properties());
 
 		factory = new FragmentFactory();
         factory.setSessionFactory(new SessionFactory());
