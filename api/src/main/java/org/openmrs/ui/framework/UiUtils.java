@@ -1,14 +1,5 @@
 package org.openmrs.ui.framework;
 
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -26,6 +17,15 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
+
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Utility methods that should be available in view technologies for pages and fragments
@@ -384,6 +384,9 @@ public abstract class UiUtils {
 	}
 	
 	public String escapeJs(String input) {
+		if (input == null) {
+			return null;
+		}
 		input = input.replaceAll("\n", "\\\\n");
 		input = input.replaceAll("'", "\\\\'");
 		input = input.replaceAll("\"", "\\\\\"");
@@ -391,11 +394,17 @@ public abstract class UiUtils {
 	}
 	
 	public String escapeAttribute(String input) {
+		if (input == null) {
+			return null;
+		}
 		input = input.replaceAll("\"", "&quot;");
 		return input;
 	}
 	
 	public String escapeHtml(String input) {
+		if (input == null) {
+			return null;
+		}
 		input = input.replaceAll("<", "&lt;");
 		input = input.replaceAll(">", "&gt;");
 		return input;
