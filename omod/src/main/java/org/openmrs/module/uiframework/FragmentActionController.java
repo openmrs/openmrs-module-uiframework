@@ -13,8 +13,15 @@
  */
 package org.openmrs.module.uiframework;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.StringTokenizer;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
@@ -23,7 +30,6 @@ import org.openmrs.ui.framework.FormatterImpl;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.UiFrameworkUtil;
-import org.openmrs.ui.framework.ViewException;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
@@ -42,14 +48,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.StringWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.StringTokenizer;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Lets clients access pages via:
@@ -77,7 +76,7 @@ public class FragmentActionController {
     AdministrationService administrationService;
 
     @RequestMapping("/action/**")
-    public String handleUrlStartingWithAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
+    public @ResponseBody Object handleUrlStartingWithAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
                                               @RequestParam(value = "successUrl", required = false) String successUrl,
                                               @RequestParam(value = "failureUrl", required = false) String failureUrl,
                                               HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
@@ -88,7 +87,7 @@ public class FragmentActionController {
     }
 
     @RequestMapping("**/*.action")
-    public String handleUrlWithDotAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
+    public @ResponseBody Object handleUrlWithDotAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
                                          @RequestParam(value = "successUrl", required = false) String successUrl,
                                          @RequestParam(value = "failureUrl", required = false) String failureUrl,
                                          HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
@@ -109,7 +108,7 @@ public class FragmentActionController {
      * @return
      * @throws Exception
      */
-	public String handlePath(String path, String returnFormat, String successUrl, String failureUrl,
+	public Object handlePath(String path, String returnFormat, String successUrl, String failureUrl,
 	                           HttpServletRequest request, Model model, HttpServletResponse response) throws Exception {
         // handle the case where the url has two slashes, e.g. host/openmrs//emr/radiology/order.action
         if (path.startsWith("/")) {
@@ -178,17 +177,7 @@ public class FragmentActionController {
                 resultObject = ((ObjectResult) resultObject).getWrapped();
             }
 
-			// Convert result to JSON or plain text depending on requested format
-            Object result;
-            if (returnFormat.equals("json")) {
-                result = toJson(resultObject);
-            } else {
-                result = resultObject.toString();
-            }
-
-            model.addAttribute("html", result);
-
-            return SHOW_HTML_VIEW;
+            return resultObject;
 
         } else {
             // this is a regular post, so we will return a page
@@ -299,21 +288,5 @@ public class FragmentActionController {
         } else {
 			return successUrl;
         }
-	}
-	
-	private String toJson(Object object) {
-		try {
-			if (object instanceof ObjectResult) {
-				object = ((ObjectResult) object).getWrapped();
-			}
-			ObjectMapper mapper = new ObjectMapper();
-			StringWriter sw = new StringWriter();
-			mapper.writeValue(sw, object);
-			return sw.toString();
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			throw new ViewException("Error generating JSON", ex);
-		}
 	}
 }
