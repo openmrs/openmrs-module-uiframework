@@ -177,7 +177,13 @@ public class FragmentActionController {
                 resultObject = ((ObjectResult) resultObject).getWrapped();
             }
 
-            return resultObject;
+            if (returnFormat.equals("json")) {
+            	return resultObject;
+            }
+            else {
+            	model.addAttribute("html", returnFormat.toString());
+            	return SHOW_HTML_VIEW;
+            }
 
         } else {
             // this is a regular post, so we will return a page
