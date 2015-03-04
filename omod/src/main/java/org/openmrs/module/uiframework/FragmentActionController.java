@@ -181,7 +181,7 @@ public class FragmentActionController {
             	return resultObject;
             }
             else {
-            	model.addAttribute("html", returnFormat.toString());
+            	model.addAttribute("html", resultObject.toString());
             	return SHOW_HTML_VIEW;
             }
 
