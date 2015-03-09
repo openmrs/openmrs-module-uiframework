@@ -19,6 +19,7 @@ import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.ui.framework.FormatterImpl;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiFrameworkException;
@@ -30,6 +31,7 @@ import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.ObjectResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
 import org.openmrs.ui.util.ExceptionUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -181,7 +184,12 @@ public class FragmentActionController {
 			// Convert result to JSON or plain text depending on requested format
             Object result;
             if (returnFormat.equals("json")) {
-                result = toJson(resultObject);
+            	if (ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, "1.11.0") >= 0) {
+            		result = resultObject;
+            	}
+            	else {
+            		result = toJson(resultObject);
+            	}
             } else {
                 result = resultObject.toString();
             }
