@@ -184,6 +184,9 @@ public class FragmentActionController {
 			// Convert result to JSON or plain text depending on requested format
             Object result;
             if (returnFormat.equals("json")) {
+            	//If running OpenMRS 1.11 and above, do not convert the object to json.
+            	//This is because the newer versions of spring in 1.11 and above, will
+            	//take care of converting the resulting object to json. See UIFR-154
             	if (ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, "1.11.0") >= 0) {
             		result = resultObject;
             	}
