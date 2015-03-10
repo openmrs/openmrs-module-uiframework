@@ -61,6 +61,8 @@
 	<bean class="org.openmrs.ui.framework.converter.StringToEncounterTypeConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToRelationshipTypeConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToUserConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToOrderConverter"/>
+	<bean class="org.openmrs.ui.framework.converter.StringToDrugOrderConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToPatientConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToPersonConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToDateConverter"/>
