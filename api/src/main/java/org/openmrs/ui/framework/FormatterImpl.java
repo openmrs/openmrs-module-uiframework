@@ -24,6 +24,7 @@ import org.openmrs.ui.framework.formatter.FormatterFactory;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
 
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -181,43 +182,19 @@ public class FormatterImpl implements Formatter {
         // format via name template if available
         else if (NameSupport.getInstance().getDefaultLayoutTemplate() != null) {
 
-            List<String> personNameLines = new ArrayList<String>();
             NameTemplate nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
-            List<List<Map<String, String>>> lines = nameTemplate.getLines();
-            String layoutToken = nameTemplate.getLayoutToken();
 
             try {
-                for (List<Map<String, String>> line : lines) {
-                    String addressLine = "";
-                    Boolean hasToken = false;
-                    for (Map<String, String> lineToken : line) {
-                        if (lineToken.get("isToken").equals(layoutToken)) {
-                            String tokenValue = BeanUtils.getProperty(n, lineToken.get("codeName"));
-                            if (StringUtils.isNotBlank(tokenValue)) {
-                                hasToken = true;
-                                addressLine += tokenValue;
-                            }
-                        }
-                        else {
-                            addressLine += lineToken.get("displayText");
-                        }
-                    }
-                    // only display a line if there's at least one token within it we've been able to resolve
-                    if (StringUtils.isNotBlank(addressLine) && hasToken) {
-                        personNameLines.add(addressLine);
-                    }
-                }
-                // bit of hack, but we ignore the "line-by-line" format and just delimit a "line" with blank space
-                return StringUtils.join(personNameLines, " ");
+                // need to use reflection since the format method was not added until later versions of openmrs
+                Method format = NameTemplate.class.getDeclaredMethod("format", PersonName.class);
+                return (String) format.invoke(nameTemplate, n);
             }
             catch (Exception e) {
-                // fall through to just returning full name
+                    // fall through to just returning full name if no format method found or format fails
             }
-
         }
 	    // otherwise, just return full name
         return n.getFullName();
-
 	}
 
 	private String format(User u, Locale locale) {
