@@ -192,12 +192,11 @@ public class FormatterImpl implements Formatter {
                             String tokenValue = BeanUtils.getProperty(n, lineToken.get("codeName"));
                             if (StringUtils.isNotBlank(tokenValue)) {
                                 hasToken = true;
-                                addressLine += (addressLine.length() > 0 ? " " + tokenValue : tokenValue);
+                                addressLine += tokenValue;
                             }
                         }
                         else {
-                            addressLine += (addressLine.length() > 0 ? " " + lineToken.get("displayText")
-                                    : lineToken.get("displayText"));
+                            addressLine += lineToken.get("displayText");
                         }
                     }
                     // only display a line if there's at least one token within it we've been able to resolve
