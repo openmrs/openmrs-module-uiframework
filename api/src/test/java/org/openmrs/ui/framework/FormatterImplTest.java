@@ -39,12 +39,14 @@ public class FormatterImplTest {
 
     AdministrationService administrationService;
     MockMessageSource messageSource;
+
     FormatterImpl formatter;
 
     @Before
     public void setUp() {
         administrationService = mock(AdministrationService.class);
         messageSource = new MockMessageSource();
+
         formatter = new FormatterImpl(messageSource, administrationService);
     }
 

@@ -18,6 +18,8 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.layout.web.name.NameSupport;
+import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.ui.framework.formatter.FormatterFactory;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
@@ -162,10 +164,58 @@ public class FormatterImpl implements Formatter {
 	}
 
 	private String format(Person p, Locale locale) {
-		if (p == null)
-			return null;
-		PersonName n = p.getPersonName();
-		return n == null ? messageSource.getMessage("uiframework.formatter.noNamePerson", null, locale) : n.getFullName();
+
+		if (p == null) {
+            return null;
+        }
+
+        PersonName n = p.getPersonName();
+
+        // no name, return message
+        if (n == null) {
+            return messageSource.getMessage("uiframework.formatter.noNamePerson", null, locale);
+        }
+        // format via name template if available
+        else if (NameSupport.getInstance().getDefaultLayoutTemplate() != null) {
+
+            List<String> personNameLines = new ArrayList<String>();
+            NameTemplate nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
+            List<List<Map<String, String>>> lines = nameTemplate.getLines();
+            String layoutToken = nameTemplate.getLayoutToken();
+
+            try {
+                for (List<Map<String, String>> line : lines) {
+                    String addressLine = "";
+                    Boolean hasToken = false;
+                    for (Map<String, String> lineToken : line) {
+                        if (lineToken.get("isToken").equals(layoutToken)) {
+                            String tokenValue = BeanUtils.getProperty(n, lineToken.get("codeName"));
+                            if (StringUtils.isNotBlank(tokenValue)) {
+                                hasToken = true;
+                                addressLine += (addressLine.length() > 0 ? " " + tokenValue : tokenValue);
+                            }
+                        }
+                        else {
+                            addressLine += (addressLine.length() > 0 ? " " + lineToken.get("displayText")
+                                    : lineToken.get("displayText"));
+                        }
+                    }
+                    // only display a line if there's at least one token within it we've been able to resolve
+                    if (StringUtils.isNotBlank(addressLine) && hasToken) {
+                        personNameLines.add(addressLine);
+                    }
+                }
+                // bit of hack, but we ignore the "line-by-line" format and just delimit a "line" with blank space
+                return StringUtils.join(personNameLines, " ");
+            }
+            catch (Exception e) {
+                // fall through to just returning full name
+            }
+
+        }
+	    // otherwise, just return full name
+        return n.getFullName();
+
 	}
 
 	private String format(User u, Locale locale) {

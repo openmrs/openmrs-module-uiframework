@@ -22,7 +22,15 @@
 			<groupId>org.openmrs.api</groupId>
 			<artifactId>openmrs-api</artifactId>
 			<type>jar</type>
+            <scope>provided</scope>
 		</dependency>
+
+        <dependency>
+            <groupId>org.openmrs.web</groupId>
+            <artifactId>openmrs-web</artifactId>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
 
 		<dependency>
 			<groupId>org.openmrs.api</groupId>

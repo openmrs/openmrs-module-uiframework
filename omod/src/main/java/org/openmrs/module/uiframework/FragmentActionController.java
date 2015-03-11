@@ -20,12 +20,12 @@ import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.api.context.ContextAuthenticationException;
 import org.openmrs.module.ModuleUtil;
-import org.openmrs.ui.framework.FormatterImpl;
 import org.openmrs.ui.framework.SimpleObject;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.UiFrameworkUtil;
 import org.openmrs.ui.framework.ViewException;
 import org.openmrs.ui.framework.WebConstants;
+import org.openmrs.ui.framework.formatter.FormatterService;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.fragment.action.ObjectResult;
@@ -45,14 +45,13 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.StringTokenizer;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Lets clients access pages via:
@@ -71,6 +70,9 @@ public class FragmentActionController {
 	@Autowired
 	@Qualifier("coreFragmentFactory")
 	FragmentFactory fragmentFactory;
+
+    @Autowired
+    FormatterService formatterService;
 
     @Autowired
     MessageSource messageSource;
@@ -242,7 +244,7 @@ public class FragmentActionController {
                 return redirectHelper(failureUrl, model);
             } else if (resultObject instanceof ObjectResult) {
                 // the best we can do is just display a formatted version of the wrapped object
-                String formatted = new FormatterImpl(messageSource, administrationService).format(((ObjectResult) resultObject).getWrapped(), Context.getLocale());
+                String formatted = formatterService.getFormatter().format(((ObjectResult) resultObject).getWrapped(), Context.getLocale());
                 model.addAttribute("html", formatted);
                 return SHOW_HTML_VIEW;
 
