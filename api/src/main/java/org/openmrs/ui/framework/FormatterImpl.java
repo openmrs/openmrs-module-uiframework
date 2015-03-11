@@ -82,7 +82,9 @@ public class FormatterImpl implements Formatter {
 			return format((Obs) o, locale);
 		} else if (o instanceof PatientIdentifier) {
 			return format((PatientIdentifier) o, locale);
-		} else if (o instanceof PersonAddress) {
+		} else if (o instanceof PersonName) {
+            return format((PersonName) o, locale);
+        } else if (o instanceof PersonAddress) {
             return format((PersonAddress) o, locale);
         } else if (o instanceof Number) {
             return format((Number) o, locale);
@@ -163,14 +165,15 @@ public class FormatterImpl implements Formatter {
 		return override != null ? override : c.getName(locale).getName();
 	}
 
-	private String format(Person p, Locale locale) {
-
-		if (p == null) {
+    private String format(Person p, Locale locale) {
+        if (p == null) {
             return null;
         }
 
-        PersonName n = p.getPersonName();
+        return format(p.getPersonName(), locale);
+    }
 
+	private String format(PersonName n, Locale locale) {
         // no name, return message
         if (n == null) {
             return messageSource.getMessage("uiframework.formatter.noNamePerson", null, locale);
