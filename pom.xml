@@ -23,8 +23,8 @@
     </organization>
 
     <scm>
-        <connection>scm:git:https://github.com/openmrs/openmrs-module-uiframework.git</connection>
-        <developerConnection>scm:git:https://github.com/openmrs/openmrs-module-uiframework.git</developerConnection>
+        <connection>scm:git:git@github.com:openmrs/openmrs-module-uiframework.git</connection>
+        <developerConnection>scm:git:git@github.com:openmrs/openmrs-module-uiframework.git</developerConnection>
         <url>https://github.com/openmrs/openmrs-module-uiframework</url>
         <tag>HEAD</tag>
     </scm>
@@ -182,6 +182,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>2.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.9.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
