@@ -60,7 +60,8 @@ public class FormatterImpl implements Formatter {
 		if (o == null)
 			return "";
 
-        Formatter classFormatter = classFormatters.get(o.getClass().getName());
+        String className = o.getClass().getName();
+        Formatter classFormatter = classFormatters.get(getCleanClassName(className));
         if (classFormatter != null) {
             return classFormatter.format(o, locale);
         } else if (o instanceof Date) {
@@ -144,13 +145,8 @@ public class FormatterImpl implements Formatter {
         if (messageSource == null) {
             return null;
         }
+        shortClassName = getCleanClassName(shortClassName);
 
-        // in case this is a hibernate proxy, strip off anything after an underscore
-        // ie: EncounterType_$$_javassist_26 needs to be converted to EncounterType
-        int underscoreIndex = shortClassName.indexOf("_$");
-        if (underscoreIndex > 0) {
-            shortClassName = shortClassName.substring(0, underscoreIndex);
-        }
 
         String code = "ui.i18n." + shortClassName + ".name." + uuid;
         String localization = messageSource.getMessage(code, null, locale);
@@ -161,7 +157,17 @@ public class FormatterImpl implements Formatter {
         }
     }
 
-	private String format(Concept c, Locale locale) {
+    private String getCleanClassName(String shortClassName) {
+        // in case this is a hibernate proxy, strip off anything after an underscore
+        // ie: EncounterType_$$_javassist_26 needs to be converted to EncounterType
+        int underscoreIndex = shortClassName.indexOf("_$");
+        if (underscoreIndex > 0) {
+            shortClassName = shortClassName.substring(0, underscoreIndex);
+        }
+        return shortClassName;
+    }
+
+    private String format(Concept c, Locale locale) {
 		String override = getLocalization(locale, "Concept", c.getUuid());
 		return override != null ? override : c.getName(locale).getName();
 	}

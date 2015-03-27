@@ -16,12 +16,14 @@ package org.openmrs.ui.framework;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Role;
 import org.openmrs.api.AdministrationService;
+import org.openmrs.ui.framework.formatter.FormatterFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +32,7 @@ import java.util.Locale;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -92,6 +95,19 @@ public class FormatterImplTest {
         String output = formatter.format(encounterType, locale);
 
         assertThat(output, is(displayName));
+    }
+
+    @Test
+    public void testFormattingProxiedObjectWithCustomFormatter() throws Exception {
+        Locale locale = Locale.ENGLISH;
+        Formatter customFormatter = mock(Formatter.class);
+        formatter.registerClassFormatter(CustomClass.class.getName(), customFormatter);
+
+        CustomClass_$$_javassist_26 instance = new CustomClass_$$_javassist_26();
+
+        formatter.format(instance, locale);
+
+        verify(customFormatter).format(instance, locale);
     }
 
     @Test
@@ -205,4 +221,11 @@ public class FormatterImplTest {
 
     }
 
+    private class CustomClass {
+
+    }
+
+    private class CustomClass_$$_javassist_26 extends CustomClass {
+
+    }
 }
