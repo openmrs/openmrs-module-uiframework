@@ -261,8 +261,11 @@ public class FormatterImpl implements Formatter {
                     if (lineToken.get("isToken").equals(layoutToken)) {
                         String tokenValue = BeanUtils.getProperty(personAddress, lineToken.get("codeName"));
                         if (StringUtils.isNotBlank(tokenValue)) {
-                            addressLine += (addressLine.length() > 0 ? " " + tokenValue : tokenValue);
+                            addressLine += tokenValue;
                         }
+                    }
+                    else if (StringUtils.isNotBlank(lineToken.get("displayText"))) {
+                        addressLine += lineToken.get("displayText");
                     }
                 }
                 if (StringUtils.isNotBlank(addressLine)) {
