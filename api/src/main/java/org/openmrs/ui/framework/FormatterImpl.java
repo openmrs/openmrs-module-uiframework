@@ -257,18 +257,20 @@ public class FormatterImpl implements Formatter {
             String layoutToken = (String) MethodUtils.invokeExactMethod(addressTemplate, "getLayoutToken", null);
             for (List<Map<String, String>> line : lines) {
                 String addressLine = "";
+                Boolean hasToken = false;
                 for (Map<String, String> lineToken : line) {
                     if (lineToken.get("isToken").equals(layoutToken)) {
                         String tokenValue = BeanUtils.getProperty(personAddress, lineToken.get("codeName"));
                         if (StringUtils.isNotBlank(tokenValue)) {
                             addressLine += tokenValue;
+                            hasToken = true;
                         }
                     }
                     else if (StringUtils.isNotBlank(lineToken.get("displayText"))) {
                         addressLine += lineToken.get("displayText");
                     }
                 }
-                if (StringUtils.isNotBlank(addressLine)) {
+                if (StringUtils.isNotBlank(addressLine) && hasToken) {
                     personAddressLines.add(addressLine);
                 }
             }
