@@ -25,6 +25,8 @@ import org.openmrs.ui.framework.page.Redirect;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
 import org.openmrs.ui.util.ExceptionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -50,6 +53,8 @@ public class PageController {
 
 	public final static String SHOW_HTML_VIEW = "/module/uiframework/showHtml";
 	
+	protected final Logger log = LoggerFactory.getLogger(getClass());
+
 	@Autowired
 	SessionFactory sessionFactory;
 	
@@ -137,10 +142,13 @@ public class PageController {
             if (authEx != null) {
                 throw authEx;
             }
+            
 
             // The following should go in an @ExceptionHandler. I tried this, and it isn't getting invoked for some reason.
             // And it's not worth debugging that.
 
+            log.error(ex.getMessage(),ex);
+            
             StringWriter sw = new StringWriter();
             ex.printStackTrace(new PrintWriter(sw));
             model.addAttribute("fullStacktrace", sw.toString());
