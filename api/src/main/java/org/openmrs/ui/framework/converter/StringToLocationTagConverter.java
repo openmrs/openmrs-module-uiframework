@@ -10,25 +10,29 @@
 package org.openmrs.ui.framework.converter;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.Privilege;
-import org.openmrs.api.UserService;
+import org.openmrs.LocationTag;
+import org.openmrs.api.LocationService;
+import org.openmrs.ui.framework.converter.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StringToPrivilegeConverter implements Converter<String, Privilege> {
-	
-	@Autowired
-	@Qualifier("userService")
-	public UserService service;
-	
-	@Override
-	public Privilege convert(String source) {
-		if (StringUtils.isBlank(source)) {
-			return null;
-		}
-		return service.getPrivilege(source);
-	}
+public class StringToLocationTagConverter implements Converter<String, LocationTag> {
+
+    @Autowired
+    @Qualifier("locationService")
+    public LocationService service;
+
+    @Override
+    public LocationTag convert(String source) {
+        if (StringUtils.isBlank(source)) {
+            return null;
+        } else if (ConversionUtil.onlyDigits(source)) {
+            return service.getLocationTag(Integer.valueOf(source));
+        } else {
+            return service.getLocationTagByUuid(source);
+        }
+    }
 }
