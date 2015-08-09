@@ -14,4 +14,8 @@ import java.util.List;
 public interface MissingPrivilegesHandler {
 	
 	void handle(PageContext pageContext, List<String> requiredPrivileges);
+	
+	String getRedirectViewProvider();
+	
+	String getRedirectView();
 }

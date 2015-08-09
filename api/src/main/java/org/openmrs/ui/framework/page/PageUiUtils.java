@@ -56,6 +56,13 @@ public class PageUiUtils extends UiUtils {
 	}
 	
 	/**
+	 * @see {@link #requirePrivileges(List, String, String, String)}
+	 */
+	public void requirePrivilege(String privilege, String handler) throws Redirect {
+		requirePrivileges(Collections.singletonList(privilege), null, null, handler);
+	}
+	
+	/**
 	 * Checks if the user has all the specified privileges, if they are don't have any of the
 	 * privileges, they get redirected to the specified view, if a handler is specified, it gets
 	 * invoked when the privilege check fails. The handler should be the spring bean id of a
@@ -73,19 +80,32 @@ public class PageUiUtils extends UiUtils {
 		if (CollectionUtils.isEmpty(privileges)) {
 			throw new ViewException("At least one privilege is required");
 		}
-		if (StringUtils.isBlank(redirectViewProvider)) {
-			throw new ViewException("redirectViewProvider cannot be blank");
+		
+		MissingPrivilegesHandler preferredHandler = null;
+		if (StringUtils.isNotBlank(handler)) {
+			//TODO: when openmrs version is set to 1.9.4+ we can user the method that
+			//gets a component the handler which is a bean id
+			preferredHandler = Context.getRegisteredComponents(MissingPrivilegesHandler.class).get(0);
+			if (StringUtils.isBlank(redirectViewProvider)) {
+				redirectViewProvider = preferredHandler.getRedirectViewProvider();
+			}
+			if (StringUtils.isBlank(redirectView)) {
+				redirectView = preferredHandler.getRedirectView();
+			}
 		}
+		
+		if (StringUtils.isBlank(redirectViewProvider)) {
+			throw new ViewException(
+			        "You must specify a redirectViewProvider or a handler that provides a redirect view provider");
+		}
+		
 		if (StringUtils.isBlank(redirectView)) {
-			throw new ViewException("redirectView cannot be blank");
+			throw new ViewException("You must specify a redirectView or a handler that provides a redirect view");
 		}
 		
 		for (String privilege : privileges) {
 			if (!Context.hasPrivilege(privilege)) {
-				if (StringUtils.isNotBlank(handler)) {
-					MissingPrivilegesHandler preferredHandler = Context.getRegisteredComponent(handler,
-					    MissingPrivilegesHandler.class);
-					
+				if (preferredHandler != null) {
 					try {
 						preferredHandler.handle(pageContext, privileges);
 					}
@@ -93,6 +113,7 @@ public class PageUiUtils extends UiUtils {
 						log.error("An error occurred while invoking the missing privilege handler", e);
 						break;
 					}
+					
 				}
 				
 				throw new Redirect(redirectViewProvider, redirectView, null);
