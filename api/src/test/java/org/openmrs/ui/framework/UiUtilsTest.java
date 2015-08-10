@@ -1,9 +1,11 @@
 package org.openmrs.ui.framework;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.any;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.openmrs.Patient;
+import org.openmrs.Visit;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -11,10 +13,9 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.any;
 
 public class UiUtilsTest {
 	
@@ -100,4 +101,23 @@ public class UiUtilsTest {
 		cal.add(Calendar.DAY_OF_YEAR, -1);
 		Assert.assertEquals("Yesterday", ui.formatDatePretty(cal.getTime()));
 	}
+
+    @Test
+    public void urlBind_shouldProperlyBindPatientAndVisit() {
+
+        UiUtils ui = Mockito.mock(UiUtils.class);
+        Mockito.when(ui.urlBind(anyString(), any(Visit.class))).thenCallRealMethod();
+        Mockito.when(ui.urlBind(anyString(), any(Patient.class))).thenCallRealMethod();
+
+        Patient patient = new Patient(2);
+        patient.setUuid("patient_uuid");
+
+        Visit visit = new Visit(3);
+        visit.setUuid("visit_uuid");
+        visit.setPatient(patient);
+
+        String url = "someUrl.page?patientId={{patientId}}&patientId={{patient.id}}&patient={{patient.uuid}}&visitId={{visitId}}&visit.id={{visit.id}}&visit={{visit.uuid}}";
+        Assert.assertEquals("someUrl.page?patientId=2&patientId=2&patient=patient_uuid&visitId=3&visit.id=3&visit=visit_uuid", ui.urlBind(url, visit));
+
+    }
 }
