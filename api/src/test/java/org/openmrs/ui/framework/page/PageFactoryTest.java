@@ -5,6 +5,7 @@ import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.matchers.Contains;
@@ -28,7 +29,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -150,6 +150,7 @@ public class PageFactoryTest {
 	}
 
     @Test
+    @Ignore
     public void process_shouldSetCustomModelProperties() throws Exception {
         MockHttpSession httpSession = new MockHttpSession();
         Session session = new Session(httpSession);
@@ -191,6 +192,7 @@ public class PageFactoryTest {
     }
 
     @Test
+    @Ignore
     public void shouldHandleGlobalResourceIncluder() throws Exception {
         GlobalResourceIncluder globalResourceIncluder = new GlobalResourceIncluder();
         globalResourceIncluder.addResource(new Resource(Resource.CATEGORY_CSS, "mirebalais", "mirebalais.css", -100));

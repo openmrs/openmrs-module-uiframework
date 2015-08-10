@@ -16,14 +16,12 @@ package org.openmrs.ui.framework;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.openmrs.ConceptDatatype;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Role;
 import org.openmrs.api.AdministrationService;
-import org.openmrs.ui.framework.formatter.FormatterFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -170,6 +168,7 @@ public class FormatterImplTest {
         ConceptDatatype numericDatatype = new ConceptDatatype();
         numericDatatype.setHl7Abbreviation("NM");
         conceptNumeric.setDatatype(numericDatatype);
+        conceptNumeric.setPrecise(true);
 
         Obs numericObs = new Obs();
         numericObs.setConcept(conceptNumeric);
@@ -189,6 +188,7 @@ public class FormatterImplTest {
         ConceptDatatype numericDatatype = new ConceptDatatype();
         numericDatatype.setHl7Abbreviation("NM");
         conceptNumeric.setDatatype(numericDatatype);
+        conceptNumeric.setPrecise(true);
 
         Obs numericObs = new Obs();
         numericObs.setConcept(conceptNumeric);

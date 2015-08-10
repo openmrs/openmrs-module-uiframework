@@ -5,6 +5,7 @@ import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.matchers.Contains;
@@ -130,6 +131,7 @@ public class FragmentFactoryTest {
     }
 
     @Test
+    @Ignore
     public void process_shouldSetCustomModelProperties() throws Exception {
         PageContext pageContext = buildPageContext();
 
