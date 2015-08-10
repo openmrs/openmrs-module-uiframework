@@ -319,6 +319,7 @@ public abstract class UiUtils {
     public String urlBind(String url, Visit visit) {
         url = url.replace("{{visitId}}", visit.getId().toString());
         url = url.replace("{{visit.id}}", visit.getId().toString());
+        url = url.replace("{{visit.visitId}}", visit.getId().toString());
         url = url.replace("{{visit.uuid}}", visit.getUuid());
         url = urlBind(url, visit.getPatient());
         return url;
@@ -327,6 +328,7 @@ public abstract class UiUtils {
     public String urlBind(String url, Patient patient) {
         url = url.replace("{{patientId}}", patient.getId().toString());
         url = url.replace("{{patient.id}}", patient.getId().toString());
+        url = url.replace("{{patient.patientId}}", patient.getId().toString());
         url = url.replace("{{patient.uuid}}", patient.getUuid());
         return url;
     }
