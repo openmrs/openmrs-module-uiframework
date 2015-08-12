@@ -220,7 +220,7 @@ public class FragmentActionController {
                     if (result.getMessage() != null)
                         request.getSession().setAttribute(WebConstants.OPENMRS_MSG_ATTR, result.getMessage());
                 }
-                return "redirect:/" + successUrl;
+                return "redirect:" + (!successUrl.startsWith("/") ? "/" : "") + successUrl;
             } else if (resultObject instanceof FailureResult) {
                 // TODO harmonize this with the return-type version
                 FailureResult failureResult = (FailureResult) resultObject;
