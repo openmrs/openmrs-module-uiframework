@@ -11,11 +11,24 @@ package org.openmrs.ui.framework;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.page.PageRequest;
 
 public class DefaultFailedAuthenticationHandler implements FailedAuthenticationHandler {
 	
-	public String handle(PageRequest pageRequest, List<String> requiredPrivileges) {
+	public String handle(PageRequest pageRequest, List<String> requiredPrivileges, String redirectUrl) {
+		if (StringUtils.isNotBlank(redirectUrl)) {
+			//Currently there is no action required on our part
+			return null;
+		}
+		
+		if (Context.isAuthenticated()) {
+			//Logout the user so that they can log in with another account
+			Context.logout();
+			pageRequest.getRequest().getSession().invalidate();
+		}
+		
 		return getRedirectUrl();
 	}
 	

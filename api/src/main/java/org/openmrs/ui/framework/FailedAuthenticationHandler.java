@@ -16,11 +16,13 @@ import org.openmrs.ui.framework.page.PageRequest;
 public interface FailedAuthenticationHandler {
 	
 	/**
-	 * The return value is the url to send the user to because of the failed privilege check
+	 * The return value is the url to send the user to because of the failed privilege check, note
+	 * that the returned url from this method will be ignored if the caller already specified one
 	 * 
 	 * @param pageRequest PageContext object
 	 * @param requiredPrivileges The privileges that are required to access the resource
-	 * @return the redirect url
+	 * @param redirectUrl The redirect url the caller specified if any
+	 * @return the redirect url that was specified by the caller
 	 */
-	String handle(PageRequest pageRequest, List<String> requiredPrivileges);
+	String handle(PageRequest pageRequest, List<String> requiredPrivileges, String redirectUrl);
 }

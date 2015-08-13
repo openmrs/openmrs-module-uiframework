@@ -70,7 +70,7 @@ public class UiUtilsTest {
 		
 		static final String REDIRECT_URL = "/some_module/some.page";
 		
-		public String handle(PageRequest pageRequest, List<String> requiredPrivileges) {
+		public String handle(PageRequest pageRequest, List<String> requiredPrivileges, String redirectUrl) {
 			//For testing purposes
 			if (pageRequest != null) {
 				pageRequest.getRequest().setAttribute(ATTRUBUTE_NAME, ATTRUBUTE_VALUE);
@@ -199,7 +199,7 @@ public class UiUtilsTest {
 		String privilege = "some privilege";
 		assertFalse(Context.hasPrivilege(privilege));
 		FailedAuthenticationHandler handler = mock(FailedAuthenticationHandler.class);
-		doThrow(APIException.class).when(handler).handle(any(PageRequest.class), anyList());
+		doThrow(APIException.class).when(handler).handle(any(PageRequest.class), anyList(), anyString());
 		String beanId = "some bean";
 		when(Context.getRegisteredComponent(eq(beanId), eq(FailedAuthenticationHandler.class))).thenReturn(handler);
 		expectedException.expect(ViewException.class);
@@ -344,7 +344,7 @@ public class UiUtilsTest {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		TestHandler handler = mock(TestHandler.class);
 		when(handler.getRedirectUrl()).thenReturn("");
-		when(handler.handle(any(PageRequest.class), anyList())).thenCallRealMethod();
+		when(handler.handle(any(PageRequest.class), anyList(), anyString())).thenCallRealMethod();
 		ui.pageContext = new PageContext(new PageRequest(null, null, request, null, null));
 		when(Context.getRegisteredComponent(eq(beanId), eq(FailedAuthenticationHandler.class))).thenReturn(handler);
 		String actualUrl = null;

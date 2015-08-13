@@ -591,9 +591,15 @@ public abstract class UiUtils {
 					preferredHandler = defaultHandler;
 				}
 				
+				Redirect callerRedirect = null;
+				if (StringUtils.isNotBlank(redirectViewProvider) && StringUtils.isNotBlank(redirectView)) {
+					callerRedirect = new Redirect(redirectViewProvider, redirectView, null);
+				}
+				
 				String redirectUrlFromHandler;
 				try {
-					redirectUrlFromHandler = preferredHandler.handle(pageContext.getRequest(), privileges);
+					String callRedirectUrl = (callerRedirect != null) ? callerRedirect.getUrl() : null;
+					redirectUrlFromHandler = preferredHandler.handle(pageContext.getRequest(), privileges, callRedirectUrl);
 					if (StringUtils.isBlank(redirectUrlFromHandler)) {
 						redirectUrlFromHandler = defaultHandler.getRedirectUrl();
 					}
@@ -602,8 +608,8 @@ public abstract class UiUtils {
 					throw new ViewException("An error occurred while invoking the failed authentication handler", e);
 				}
 				
-				if (StringUtils.isNotBlank(redirectViewProvider) && StringUtils.isNotBlank(redirectView)) {
-					throw new Redirect(redirectViewProvider, redirectView, null);
+				if (callerRedirect != null) {
+					throw callerRedirect;
 				}
 				
 				throw new Redirect(redirectUrlFromHandler);
