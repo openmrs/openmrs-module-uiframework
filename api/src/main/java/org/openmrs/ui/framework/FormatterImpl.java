@@ -13,6 +13,7 @@ import org.openmrs.Person;
 import org.openmrs.PersonAddress;
 import org.openmrs.PersonAttribute;
 import org.openmrs.PersonName;
+import org.openmrs.Provider;
 import org.openmrs.Role;
 import org.openmrs.User;
 import org.openmrs.api.APIException;
@@ -25,7 +26,7 @@ import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
 
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -73,8 +74,10 @@ public class FormatterImpl implements Formatter {
 		} else if (o instanceof Person) {
 			return format((Person) o, locale);
 		} else if (o instanceof User) {
-			return format((User) o, locale);
-		} else if (o instanceof PatientIdentifierType) {
+            return format((User) o, locale);
+        } else if (o instanceof Provider) {
+            return format((Provider) o, locale);
+        } else if (o instanceof PatientIdentifierType) {
 			return format((PatientIdentifierType) o, locale);
         } else if (o instanceof PersonAttribute) {
             return format((PersonAttribute) o, locale);
@@ -110,19 +113,13 @@ public class FormatterImpl implements Formatter {
     }
 
     private String format(Date d, Locale locale) {
-        if (administrationService != null) {
-            if (hasTimeComponent(d)) {
-                return new SimpleDateFormat(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT), locale).format(d);
-            } else {
-                return new SimpleDateFormat(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT), locale).format(d);
-            }
+        DateFormat df;
+        if (hasTimeComponent(d)) {
+            df = UiFrameworkUtil.getDateTimeFormat(administrationService, locale);
         } else {
-            if (hasTimeComponent(d)) {
-                return new SimpleDateFormat("dd.MMM.yyyy, HH:mm:ss", locale).format(d);
-            } else {
-                return new SimpleDateFormat("dd.MMM.yyyy", locale).format(d);
-            }
+            df = UiFrameworkUtil.getDateFormat(administrationService, locale);
         }
+        return df.format(d);
     }
 
     private boolean hasTimeComponent(Date d) {

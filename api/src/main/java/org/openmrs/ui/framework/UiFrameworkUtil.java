@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
@@ -43,8 +44,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 
 public class UiFrameworkUtil {
@@ -605,4 +609,22 @@ public class UiFrameworkUtil {
 		}
 		return ret;
 	}
+
+    public static DateFormat getDateFormat(AdministrationService administrationService, Locale locale) {
+        if (administrationService != null) {
+            return new SimpleDateFormat(
+                    administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT), locale);
+        } else {
+            return new SimpleDateFormat("dd.MMM.yyyy", locale);
+        }
+    }
+
+    public static DateFormat getDateTimeFormat(AdministrationService administrationService, Locale locale) {
+        if (administrationService != null) {
+            return new SimpleDateFormat(
+                    administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT), locale);
+        } else {
+            return new SimpleDateFormat("dd.MMM.yyyy, HH:mm:ss", locale);
+        }
+    }
 }

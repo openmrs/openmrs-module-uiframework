@@ -20,19 +20,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class StringToLocationTagConverter implements Converter<String, LocationTag> {
-
-    @Autowired
-    @Qualifier("locationService")
-    public LocationService service;
-
-    @Override
-    public LocationTag convert(String source) {
-        if (StringUtils.isBlank(source)) {
-            return null;
-        } else if (ConversionUtil.onlyDigits(source)) {
-            return service.getLocationTag(Integer.valueOf(source));
-        } else {
-            return service.getLocationTagByUuid(source);
-        }
-    }
+	
+	@Autowired
+	@Qualifier("locationService")
+	public LocationService service;
+	
+	@Override
+	public LocationTag convert(String source) {
+		if (StringUtils.isBlank(source)) {
+			return null;
+		} else if (ConversionUtil.onlyDigits(source)) {
+			return service.getLocationTag(Integer.valueOf(source));
+		}
+		return service.getLocationTagByUuid(source);
+	}
 }

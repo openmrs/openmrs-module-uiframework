@@ -20,19 +20,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class StringToLocationAttributeTypeConverter implements Converter<String, LocationAttributeType> {
-
-    @Autowired
-    @Qualifier("locationService")
-    public LocationService service;
-
-    @Override
-    public LocationAttributeType convert(String source) {
-        if (StringUtils.isBlank(source)) {
-            return null;
-        } else if (ConversionUtil.onlyDigits(source)) {
-            return service.getLocationAttributeType(Integer.valueOf(source));
-        } else {
-            return service.getLocationAttributeTypeByUuid(source);
-        }
-    }
+	
+	@Autowired
+	@Qualifier("locationService")
+	public LocationService service;
+	
+	@Override
+	public LocationAttributeType convert(String source) {
+		if (StringUtils.isBlank(source)) {
+			return null;
+		} else if (ConversionUtil.onlyDigits(source)) {
+			return service.getLocationAttributeType(Integer.valueOf(source));
+		}
+		return service.getLocationAttributeTypeByUuid(source);
+	}
 }

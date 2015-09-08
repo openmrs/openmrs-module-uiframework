@@ -14,10 +14,12 @@ import org.openmrs.Role;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component("uiframeworkStringToRoleConverter")
+@Order(50)
 public class StringToRoleConverter implements Converter<String, Role> {
 	
 	@Autowired
