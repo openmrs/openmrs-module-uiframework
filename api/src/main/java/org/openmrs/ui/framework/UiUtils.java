@@ -346,6 +346,13 @@ public abstract class UiUtils {
 		return new SimpleDateFormat(WebConstants.DATE_FORMAT_TIMESTAMP).format(date);
 	}
 
+    /**
+     * Formats the specified date as a string using ISO 8601 format ("2014-04-25T01:32:21.196+06:00");
+     * this is a "Javascript-friendly" format, good for when you want to render a Date in Groovy to be parsed by Javascript
+     *
+     * @param date date to format
+     * @return string version of date formatted as ("2014-04-25T01:32:21.196+0600").
+     */
     public String dateToISOString(Date date) {
         return new SimpleDateFormat(WebConstants.DATE_FORMAT_ISO).format(date);
     }
