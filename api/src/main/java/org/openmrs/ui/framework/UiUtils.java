@@ -345,7 +345,11 @@ public abstract class UiUtils {
 	public String dateToString(Date date) {
 		return new SimpleDateFormat(WebConstants.DATE_FORMAT_TIMESTAMP).format(date);
 	}
-	
+
+    public String dateToISOString(Date date) {
+        return new SimpleDateFormat(WebConstants.DATE_FORMAT_ISO).format(date);
+    }
+
 	/**
 	 * Formats the specified date to a string using the specified format and drops the time
 	 * component, the text 'Today' is returned, if the date matches the previous date or the text
