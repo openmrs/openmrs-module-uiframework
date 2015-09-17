@@ -11,10 +11,11 @@
  *
  * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
  */
+
 package org.openmrs.ui.framework.converter;
 
 import org.apache.commons.lang.StringUtils;
-import org.openmrs.Provider;
+import org.openmrs.ProviderAttributeType;
 import org.openmrs.api.ProviderService;
 import org.openmrs.ui.framework.converter.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,28 +23,23 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-/**
- * Convert from {@link String} to {@link org.openmrs.Provider}, interpreting it as a
- * Provider.providerId
- */
 @Component
-public class StringToProviderConverter implements Converter<String, Provider> {
+public class StringToProviderAttributeTypeConverter implements Converter<String, ProviderAttributeType> {
 	
 	@Autowired
-	@Qualifier("providerService")       
+	@Qualifier("providerService")
 	ProviderService service;
 	
 	/**
 	 * @see Converter#convert(Object)
 	 */
 	@Override
-	public Provider convert(String source) {
+	public ProviderAttributeType convert(String source) {
 		if (StringUtils.isBlank(source)) {
 			return null;
 		} else if (ConversionUtil.onlyDigits(source)) {
-			return service.getProvider(Integer.valueOf(source));
+			return service.getProviderAttributeType(Integer.valueOf(source));
 		}
-		return service.getProviderByUuid(source);
+		return service.getProviderAttributeTypeByUuid(source);
 	}
-	
 }
