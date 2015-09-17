@@ -6,9 +6,7 @@ import groovy.text.Template;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.internal.matchers.Contains;
-import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
@@ -18,7 +16,6 @@ import org.openmrs.ui.framework.page.PageFactory;
 import org.openmrs.ui.framework.page.PageRequest;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -27,9 +24,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-@RunWith(PowerMockRunner.class)
 public class FragmentFactoryTest {
 	
 	FragmentFactory factory;
@@ -37,9 +31,7 @@ public class FragmentFactoryTest {
 	@Before
 	public void beforeEachTest() throws Exception {
 
-        mockStatic(Context.class);
-
-		factory = new FragmentFactory();
+        factory = new FragmentFactory();
         factory.setSessionFactory(new SessionFactory());
 
 		Map<String, FragmentControllerProvider> cps = new HashMap<String, FragmentControllerProvider>();
