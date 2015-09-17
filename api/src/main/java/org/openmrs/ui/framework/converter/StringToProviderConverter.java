@@ -18,6 +18,7 @@ import org.openmrs.Provider;
 import org.openmrs.api.ProviderService;
 import org.openmrs.ui.framework.converter.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component;
 public class StringToProviderConverter implements Converter<String, Provider> {
 	
 	@Autowired
+	@Qualifier("providerService")       
 	ProviderService service;
 	
 	/**

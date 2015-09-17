@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.openmrs.Role;
 import org.openmrs.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
 public class StringToRoleConverter implements Converter<String, Role> {
 	
 	@Autowired
+	@Qualifier("userService")
 	UserService service;
 	
 	/**

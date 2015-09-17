@@ -18,6 +18,7 @@ import org.openmrs.VisitType;
 import org.openmrs.api.VisitService;
 import org.openmrs.ui.framework.converter.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 public class StringToVisitTypeConverter implements Converter<String, VisitType> {
 	
 	@Autowired
+	@Qualifier("visitService")
 	private VisitService visitService;
 	
 	/**
