@@ -5,7 +5,6 @@ import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.matchers.Contains;
@@ -19,7 +18,6 @@ import org.openmrs.ui.framework.page.PageFactory;
 import org.openmrs.ui.framework.page.PageRequest;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -28,13 +26,10 @@ import org.springframework.mock.web.MockHttpSession;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
 public class FragmentFactoryTest {
 	
 	FragmentFactory factory;
@@ -43,8 +38,6 @@ public class FragmentFactoryTest {
 	public void beforeEachTest() throws Exception {
 
         mockStatic(Context.class);
-        when(Context.getAdministrationService()).thenReturn(null);
-		when(Context.getRuntimeProperties()).thenReturn(new Properties());
 
 		factory = new FragmentFactory();
         factory.setSessionFactory(new SessionFactory());
@@ -131,7 +124,6 @@ public class FragmentFactoryTest {
     }
 
     @Test
-    @Ignore
     public void process_shouldSetCustomModelProperties() throws Exception {
         PageContext pageContext = buildPageContext();
 

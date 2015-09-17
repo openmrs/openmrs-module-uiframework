@@ -5,7 +5,6 @@ import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.internal.matchers.Contains;
@@ -15,7 +14,6 @@ import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.interceptor.PageRequestInterceptor;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.session.Session;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -26,15 +24,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(Context.class)
 public class PageFactoryTest {
 	
 	PageFactory factory;
@@ -43,8 +38,6 @@ public class PageFactoryTest {
 	public void beforeEachTest() throws Exception {
 
 		mockStatic(Context.class);
-		when(Context.getAdministrationService()).thenReturn(null);
-		when(Context.getRuntimeProperties()).thenReturn(new Properties());
 
 		factory = new PageFactory();
 
@@ -150,7 +143,6 @@ public class PageFactoryTest {
 	}
 
     @Test
-    @Ignore
     public void process_shouldSetCustomModelProperties() throws Exception {
         MockHttpSession httpSession = new MockHttpSession();
         Session session = new Session(httpSession);
@@ -192,7 +184,6 @@ public class PageFactoryTest {
     }
 
     @Test
-    @Ignore
     public void shouldHandleGlobalResourceIncluder() throws Exception {
         GlobalResourceIncluder globalResourceIncluder = new GlobalResourceIncluder();
         globalResourceIncluder.addResource(new Resource(Resource.CATEGORY_CSS, "mirebalais", "mirebalais.css", -100));
