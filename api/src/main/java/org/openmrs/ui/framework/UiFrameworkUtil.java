@@ -567,8 +567,26 @@ public class UiFrameworkUtil {
 	 */
 	private static boolean addPossibleDevFolder(String baseFolder, String key, Object provider) {
 
+		// Allow a developer to specify the modules directory e.g omod_1.x, mod_2.x.
+		// The default directory is still "omod"
+		String moduleDir = "omod";
+		if (StringUtils.isNotEmpty(baseFolder)) {
+			String fSeparator = File.separator;
+			if (baseFolder.endsWith(fSeparator))
+				baseFolder = baseFolder.substring(0, baseFolder.length() - 1);
+
+			String[] pathSubs = baseFolder.split(fSeparator);
+			if (pathSubs != null && pathSubs.length > 0) {
+				int len = pathSubs.length;
+				String mod = pathSubs[len - 1];
+				if (!mod.contains(key)) {
+					moduleDir = "";
+				}
+			}
+		}
+
 		// Get the appropriate folderPath to check, given the type of provider passed in
-		String folderPath = baseFolder + File.separator + "omod" + File.separator;
+		String folderPath = baseFolder;
 		if (provider instanceof ResourceProvider) {
 			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
 		}
