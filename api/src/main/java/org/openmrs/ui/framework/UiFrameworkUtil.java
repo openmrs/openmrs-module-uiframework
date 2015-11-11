@@ -570,8 +570,8 @@ public class UiFrameworkUtil {
 		// Allow a developer to specify the modules directory e.g omod_1.x, mod_2.x.
 		// The default directory is still "omod"
 		String moduleDir = "omod";
+		String fSeparator = File.separator;
 		if (StringUtils.isNotEmpty(baseFolder)) {
-			String fSeparator = File.separator;
 			if (baseFolder.endsWith(fSeparator))
 				baseFolder = baseFolder.substring(0, baseFolder.length() - 1);
 
@@ -588,20 +588,20 @@ public class UiFrameworkUtil {
 		// Get the appropriate folderPath to check, given the type of provider passed in
 		String folderPath = baseFolder;
 		if(StringUtils.isNotEmpty(moduleDir))
-			folderPath += File.separator + moduleDir;
-		folderPath += File.separator;
+			folderPath += fSeparator + moduleDir;
+		folderPath += fSeparator;
 		
 		if (provider instanceof ResourceProvider) {
-			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
+			folderPath += "src" + fSeparator + "main" + fSeparator + "webapp" + fSeparator + "resources";
 		}
 		else if (provider instanceof PageViewProvider) {
-			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages";
+			folderPath += "src" + fSeparator + "main" + fSeparator + "webapp" + fSeparator + "pages";
 		}
 		else if (provider instanceof FragmentViewProvider) {
-			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "fragments";
+			folderPath += "src" + fSeparator + "main" + fSeparator + "webapp" + fSeparator + "fragments";
 		}
 		else if (provider instanceof PageControllerProvider || provider instanceof FragmentControllerProvider) {
-			folderPath += "target" + File.separator + "classes";
+			folderPath += "target" + fSeparator + "classes";
 		}
 		else {
 			throw new IllegalArgumentException("Provider is not of an expected type.  Found: " + provider.getClass());
