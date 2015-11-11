@@ -587,6 +587,10 @@ public class UiFrameworkUtil {
 
 		// Get the appropriate folderPath to check, given the type of provider passed in
 		String folderPath = baseFolder;
+		if(StringUtils.isNotEmpty(moduleDir))
+			folderPath += File.separator + moduleDir;
+		folderPath += File.separator;
+		
 		if (provider instanceof ResourceProvider) {
 			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
 		}
