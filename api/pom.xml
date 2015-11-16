@@ -15,6 +15,18 @@
 	<dependencies>
 		<!-- Add other dependencies from parent's pom: <dependency> <groupId>org.other.library</groupId> 
 			<artifactId>library-name</artifactId> </dependency> -->
+			
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>${project.parent.artifactId}-api-1.0</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>${project.parent.artifactId}-api-2.0</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 
 		<!-- Begin OpenMRS core -->
 
