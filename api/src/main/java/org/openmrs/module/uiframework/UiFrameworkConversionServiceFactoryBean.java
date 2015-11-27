@@ -18,6 +18,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.GenericConversionService;
 
 
 /**
@@ -39,4 +41,18 @@ public class UiFrameworkConversionServiceFactoryBean extends ConversionServiceFa
 	    super.afterPropertiesSet();
 	}
 	
+	/*
+	public ConversionService getObject() {
+		// add converter manually because not supported by later versions of OpenMRS Platform
+		GenericConversionService conversionService = (GenericConversionService) super.getObject();
+		try {
+			Class<?> clazz = Class.forName("org.openmrs.ui.framework.converter.StringToPatientProblemConverte");
+			conversionService.addConverter((Converter<?,?>)clazz.newInstance());			
+		}
+		catch (Exception ex) {
+			// do nothing
+		}
+		return conversionService;
+	}
+	*/
 }

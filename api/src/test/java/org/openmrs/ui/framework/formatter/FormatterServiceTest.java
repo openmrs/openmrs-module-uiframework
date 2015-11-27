@@ -1,6 +1,7 @@
 package org.openmrs.ui.framework.formatter;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.openmrs.Location;
 import org.openmrs.Obs;
 import org.openmrs.api.context.Context;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import java.util.Locale;
 
@@ -18,13 +20,14 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+//@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+//@Ignore("@DirtiesContext causes tests to fail")
 public class FormatterServiceTest extends BaseModuleContextSensitiveTest {
 
     @Autowired
     private FormatterService formatterService;
 
     @Test
-    @DirtiesContext
     public void testFormatting() throws Exception {
         HandlebarsFormatterFactory classFormatter = new HandlebarsFormatterFactory();
         classFormatter.setForClass("org.openmrs.Obs");
@@ -48,7 +51,6 @@ public class FormatterServiceTest extends BaseModuleContextSensitiveTest {
     }
 
     @Test
-    @DirtiesContext
     public void testMessage() throws Exception {
         MessageSource messageSource = mock(MessageSource.class);
 
@@ -66,7 +68,6 @@ public class FormatterServiceTest extends BaseModuleContextSensitiveTest {
     }
 
     @Test
-    @DirtiesContext
     public void testOrder() throws Exception {
         HandlebarsFormatterFactory wrongFormatter1 = new HandlebarsFormatterFactory();
         wrongFormatter1.setForClass("org.openmrs.Obs");

@@ -71,7 +71,7 @@
 	<bean class="org.openmrs.ui.framework.converter.StringToPatientProgramConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToConceptConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToConceptNameConverter"/>
-	<bean class="org.openmrs.ui.framework.converter.StringToPatientProblemConverter"/>
+	<!-- <bean class="org.openmrs.ui.framework.converter.StringToPatientProblemConverter"/> -->
 	<bean class="org.openmrs.ui.framework.converter.StringToGlobalPropertyConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToObjectNodeConverter"/>
 	<bean class="org.openmrs.ui.framework.converter.StringToArrayNodeConverter"/>
