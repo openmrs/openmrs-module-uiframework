@@ -568,7 +568,7 @@ public class UiFrameworkUtil {
 	private static boolean addPossibleDevFolder(String baseFolder, String key, Object provider) {
 
 		// Get the appropriate folderPath to check, given the type of provider passed in
-		String folderPath = baseFolder + File.separator + "omod" + File.separator;
+		String folderPath = constructFolderPath(baseFolder, key, provider);
 		if (provider instanceof ResourceProvider) {
 			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
 		}
@@ -599,6 +599,43 @@ public class UiFrameworkUtil {
 		return false;
 	}
 
+	/**
+	 * Constructs the development folder path. It checks to see if the full path
+	 * to "omod" directory has been passed. If not, it appends the "omod"
+	 * directory name.
+	 * 
+	 * @return folderPath
+	 */
+	private static String constructFolderPath(String baseFolder, String key, Object provider) {
+		String moduleDir = "omod";
+		if (StringUtils.isNotEmpty(baseFolder)) {
+			if (baseFolder.endsWith(File.separator)) {
+				// remove the separator
+				baseFolder = baseFolder.substring(0, baseFolder.length() - 1);
+			}
+
+			// retrieve directory names in the path.
+			String[] pathSubs = baseFolder.split(File.separator);
+			if (pathSubs != null && pathSubs.length > 0) {
+				int len = pathSubs.length;
+				// get the last directory name in the path
+				String mod = pathSubs[len - 1];
+				// compare the directory name to the module directory name (key)
+				if (!mod.contains(key)) {
+					moduleDir = "";
+				}
+			}
+		}
+
+		String folderPath = baseFolder;
+		// append the module directory to the base directory path
+		if (StringUtils.isNotEmpty(moduleDir))
+			folderPath += File.separator + moduleDir;
+		folderPath += File.separator;
+
+		return folderPath;
+	}
+	
 	/**
 	 * @return the property value with the given key from the OpenMRS runtime properties, of if not found, from a system property
 	 */
