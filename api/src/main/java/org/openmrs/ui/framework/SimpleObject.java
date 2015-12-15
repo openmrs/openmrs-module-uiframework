@@ -89,14 +89,29 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 	private static Map<String, Set<String>> splitIntoLevels(String[] propertiesToInclude) {
 		Map<String, Set<String>> ret = new LinkedHashMap<String, Set<String>>();
 		for (String prop : propertiesToInclude) {
+			prop = convertBracketNotationToDotNotation(prop);
 			String[] components = prop.split("\\.");
+			trimAnyLeadingOrTrailingQuotes(components);
 			for (int i = 0; i < components.length; ++i) {
 				splitIntoLevelsHelper(ret, Arrays.asList(components), i);
 			}
 		}
 		return ret;
 	}
-	
+
+	private static String convertBracketNotationToDotNotation(String prop) {
+		prop = prop.replaceAll("\\[",".");
+		prop = prop.replaceAll("\\]","");
+		return prop;
+	}
+
+	private static void trimAnyLeadingOrTrailingQuotes(String[] components) {
+		for (int i = 0; i < components.length; ++i) {
+			components[i] = components[i].replaceAll("^\"|\"$", "");
+			components[i] = components[i].replaceAll("^\'|\'$", "");
+		}
+	}
+
 	private static void splitIntoLevelsHelper(Map<String, Set<String>> ret, List<String> components, int index) {
 		String level = OpenmrsUtil.join(components.subList(0, index), ".");
 		Set<String> atLevel = ret.get(level);
@@ -106,7 +121,8 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 		}
 		atLevel.add(components.get(index));
 	}
-	
+
+
 	private static Object fromObjectHelper(Object obj, UiUtils ui, String currentLevel,
 	        Map<String, Set<String>> propertiesByLevel) {
 		if (obj instanceof Collection<?>) {

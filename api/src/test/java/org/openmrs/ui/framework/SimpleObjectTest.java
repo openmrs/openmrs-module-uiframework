@@ -63,7 +63,7 @@ public class SimpleObjectTest {
         name.setPreferred(true);
         person.addName(name);
 
-        String [] properties = {"personId", "gender", "personName.givenName", "personName.middleName", "personName.familyName", "personName.preferred"};
+        String [] properties = {"personId", "gender", "personName.givenName", "personName.middleName", "personName.familyName", "personName['preferred']"};
         SimpleObject simplePerson = SimpleObject.fromObject(person, ui, properties);
 
 		Assert.assertEquals(new Integer(123), simplePerson.get("personId"));
