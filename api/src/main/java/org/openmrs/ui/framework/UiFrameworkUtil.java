@@ -569,6 +569,12 @@ public class UiFrameworkUtil {
 
 		// Get the appropriate folderPath to check, given the type of provider passed in
 		String folderPath = baseFolder + File.separator + "omod" + File.separator;
+		
+		//Check if we have full path to the source
+		if (new File(baseFolder + File.separator + "src").exists()) {
+			folderPath = baseFolder + File.separator;
+		}
+		
 		if (provider instanceof ResourceProvider) {
 			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
 		}
