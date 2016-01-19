@@ -571,6 +571,14 @@ public class UiFrameworkUtil {
 		String folderPath = baseFolder + File.separator + "omod" + File.separator;
 		
 		//Check if we have full path to the source
+		//Some modules have different folders to support multiple versions of openmrs
+		//For such cases, it is not enough to always assume that the source will be
+		//in the omod folder. The module developer will then specify the full path
+		//to the source, taking into consideration the platform version that they are
+		//running for development mode. An example is the allergyui module which has
+		//the web-1.9 and web-2.0 to support versions of the platform below and above 2.0
+		//The path when running a platform below 2.0 will be like ../modulebasefolder/web-1.9
+		//while when running from 2.0 and above it will be ../modulebasefolder/web-2.0
 		if (new File(baseFolder + File.separator + "src").exists()) {
 			folderPath = baseFolder + File.separator;
 		}
