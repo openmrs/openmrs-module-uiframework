@@ -1,8 +1,6 @@
 package org.openmrs.ui.framework.fragment;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.DevelopmentClassLoader;
@@ -10,16 +8,14 @@ import org.openmrs.ui.framework.DevelopmentClassLoader;
 public class ConventionBasedClasspathFragmentControllerProvider implements FragmentControllerProvider {
 	
 	private String basePackage;
-
-	private Map<String, String> classDirectoryMap;
 	
-	private List<File> classDirectories;
+	private File developmentFolder;
 	
 	@Override
 	public Object getController(String fragmentName) {
 		StringBuilder className = new StringBuilder();
 		className.append(basePackage).append('.').append(fragmentName.replaceAll("/", ".")).append("FragmentController");
-		if (classDirectories == null)
+		if (developmentFolder == null)
 			return getClassIfExistsInProductionMode(capitalizeClassName(className).toString());
 		else
 			return getClassIfExistsInDevelopmentMode(capitalizeClassName(className).toString());
@@ -42,7 +38,7 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	
 	private Object getClassIfExistsInDevelopmentMode(String className) {
 		try {
-			Class<?> clazz = new DevelopmentClassLoader(classDirectories, basePackage).loadClass(className);
+			Class<?> clazz = new DevelopmentClassLoader(developmentFolder, basePackage).loadClass(className);
 			return clazz.newInstance();
 		}
 		catch (ClassNotFoundException ex) {
@@ -72,20 +68,19 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	public void setBasePackage(String basePackage) {
 		this.basePackage = basePackage;
 	}
-
-	public Map<String, String> getClassDirectoryMap() {
-		return classDirectoryMap;
-	}
 	
-	public void setClassDirectoryMap(Map<String, String> classDirectoryMap) {
-		this.classDirectoryMap = classDirectoryMap;
-	}
-	
-	public List<File> getClassDirectories() {
-		return classDirectories;
-	}
+    /**
+     * @return the developmentFolder
+     */
+    public File getDevelopmentFolder() {
+    	return developmentFolder;
+    }
 
-	public void setClassDirectories(List<File> classDirectories) {
-		this.classDirectories = classDirectories;
-	}
+    /**
+     * @param developmentFolder the developmentFolder to set
+     */
+    public void setDevelopmentFolder(File developmentFolder) {
+    	this.developmentFolder = developmentFolder;
+    }
+	
 }

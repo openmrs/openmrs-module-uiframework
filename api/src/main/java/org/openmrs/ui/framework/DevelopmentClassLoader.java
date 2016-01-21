@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 
 import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
@@ -19,17 +18,17 @@ public class DevelopmentClassLoader extends ClassLoader {
 	
 	String reloadablePackage;
 	
-	List<File> classDirectories;
+	File classDirectory;
 	
 	/**
 	 * Constructs a class loader that will automatically load classes from one specific
 	 * package from the given location on disk, and delegate to the regular OpenmrsClassLoader
 	 * for all other classes
-	 * @param classDirectories
+	 * @param classDirectory
 	 * @param reloadablePackage
 	 */
-	public DevelopmentClassLoader(List<File> classDirectories, String reloadablePackage) {
-		this.classDirectories = classDirectories;
+	public DevelopmentClassLoader(File classDirectory, String reloadablePackage) {
+		this.classDirectory = classDirectory;
 		this.reloadablePackage = reloadablePackage;
 		this.parent = OpenmrsClassLoader.getInstance();
 	}
@@ -39,17 +38,14 @@ public class DevelopmentClassLoader extends ClassLoader {
 		if (!name.startsWith(reloadablePackage))
 			return parent.loadClass(name);
 		
-		for (File classDirectory : classDirectories) {
-			File classFile = new File(classDirectory, File.separator + name.replace('.', File.separatorChar) + ".class");
-			try {
-				if (classFile.exists()) {
-					byte[] bytes = getBytes(classFile);
-					return defineClass(name, bytes, 0, bytes.length);
-				}
+		File classFile = new File(classDirectory, File.separator + name.replace('.', File.separatorChar) + ".class");
+		try {
+			if (classFile.exists()) {
+				byte[] bytes = getBytes(classFile);
+				return defineClass(name, bytes, 0, bytes.length);
 			}
-			catch (IOException ex) {}
 		}
-		
+		catch (IOException ex) {}
 		throw new ClassNotFoundException();
 	}
 	
