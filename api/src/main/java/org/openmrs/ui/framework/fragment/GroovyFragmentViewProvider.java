@@ -1,19 +1,20 @@
 package org.openmrs.ui.framework.fragment;
 
-import groovy.text.SimpleTemplateEngine;
-import groovy.text.Template;
-import groovy.text.TemplateEngine;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.util.OpenmrsUtil;
+
+import groovy.text.SimpleTemplateEngine;
+import groovy.text.Template;
+import groovy.text.TemplateEngine;
 
 public class GroovyFragmentViewProvider implements FragmentViewProvider {
 	
@@ -22,7 +23,10 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 	//config properties
 	private ClassLoader viewClassLoader;
 	private String resourcePrefix = "web/module/fragments/";
-	private File developmentFolder;
+
+	private Map<String, String> fragmentDirectoryMap;
+	
+	private List<File> fragmentDirectories;
 	
 	// internal data
 	TemplateEngine engine = new SimpleTemplateEngine(getClass().getClassLoader());
@@ -37,7 +41,7 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 			if (gsp == null)
 				return null;
 
-			if (developmentFolder != null) {
+			if (fragmentDirectories != null) {
 				// we are in development mode, so we do not cache view templates
 				Template template = engine.createTemplate(gsp);
 				GroovyFragmentView view = new GroovyFragmentView(name, template);
@@ -70,12 +74,15 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
      * @throws Exception
      */
     public String getViewContents(String name) throws Exception {
-    	if (developmentFolder != null) {
-    		// we're in development mode, and we want to dynamically reload views from this filesystem directory
-			File file = new File(developmentFolder, name + ".gsp");
-			if (!file.exists())
-				return null;
-			return OpenmrsUtil.getFileAsString(file);
+    	if (fragmentDirectories != null) {
+    		for (File fragmentDirectory : fragmentDirectories) {
+    			// we're in development mode, and we want to dynamically reload views from this filesystem directory
+				File file = new File(fragmentDirectory, name + ".gsp");
+				if (file.exists()) {
+					return OpenmrsUtil.getFileAsString(file);
+				}
+    		}
+    		return null;
     	}
     	else {
 			URL resource = (viewClassLoader != null ? viewClassLoader : getClass().getClassLoader()).getResource(resourcePrefix + name + ".gsp");
@@ -107,22 +114,6 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
     	this.resourcePrefix = resourcePrefix;
     }
 
-	
-    /**
-     * @return the developmentFolder
-     */
-    public File getDevelopmentFolder() {
-    	return developmentFolder;
-    }
-
-	
-    /**
-     * @param developmentFolder the developmentFolder to set
-     */
-    public void setDevelopmentFolder(File developmentFolder) {
-    	this.developmentFolder = developmentFolder;
-    }
-
     /**
      * @return the viewClassLoader
      */
@@ -137,4 +128,19 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
     	this.viewClassLoader = viewClassLoader;
     }
     
+    public Map<String, String> getFragmentDirectoryMap() {
+		return fragmentDirectoryMap;
+	}
+
+	public void setFragmentDirectoryMap(Map<String, String> fragmentDirectoryMap) {
+		this.fragmentDirectoryMap = fragmentDirectoryMap;
+	}
+    
+    public List<File> getFragmentDirectories() {
+		return fragmentDirectories;
+	}
+	
+	public void setFragmentDirectories(List<File> fragmentDirectories) {
+		this.fragmentDirectories = fragmentDirectories;
+	}
 }

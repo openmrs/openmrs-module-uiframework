@@ -1,5 +1,21 @@
 package org.openmrs.ui.framework;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -7,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
+import org.openmrs.module.ModuleUtil;
 import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.annotation.FragmentParam;
 import org.openmrs.ui.framework.annotation.InjectBeans;
@@ -22,6 +39,7 @@ import org.openmrs.ui.framework.page.PageRequest;
 import org.openmrs.ui.framework.page.PageViewProvider;
 import org.openmrs.ui.framework.resource.ResourceProvider;
 import org.openmrs.util.HandlerUtil;
+import org.openmrs.util.OpenmrsConstants;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -39,17 +57,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
 
 public class UiFrameworkUtil {
 	
@@ -567,29 +574,47 @@ public class UiFrameworkUtil {
 	 */
 	private static boolean addPossibleDevFolder(String baseFolder, String key, Object provider) {
 
-		// Get the appropriate folderPath to check, given the type of provider passed in
-		String folderPath = baseFolder + File.separator + "omod" + File.separator;
-		if (provider instanceof ResourceProvider) {
-			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
+		List<File> directories = new ArrayList<File>();
+		
+		List<String> folderNames = new ArrayList<String>();
+		Map<String, String> directoryMap = getDirectoryMap(provider);
+		for (Entry<String, String> entry : directoryMap.entrySet()) {
+			if (ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, entry.getValue())) {
+				folderNames.add(entry.getKey());
+			}
 		}
-		else if (provider instanceof PageViewProvider) {
-			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages";
+		
+		if (folderNames.isEmpty()) {
+			folderNames.add("omod");
 		}
-		else if (provider instanceof FragmentViewProvider) {
-			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "fragments";
+		
+		for (String folderName : folderNames) {
+			// Get the appropriate folderPath to check, given the type of provider passed in
+			String folderPath = baseFolder + File.separator + folderName + File.separator;
+			if (provider instanceof ResourceProvider) {
+				folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
+			}
+			else if (provider instanceof PageViewProvider) {
+				folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages";
+			}
+			else if (provider instanceof FragmentViewProvider) {
+				folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "fragments";
+			}
+			else if (provider instanceof PageControllerProvider || provider instanceof FragmentControllerProvider) {
+				folderPath += "target" + File.separator + "classes";
+			}
+			else {
+				throw new IllegalArgumentException("Provider is not of an expected type.  Found: " + provider.getClass());
+			}
+	
+			File devFolder = new File(folderPath);
+			directories.add(devFolder);
 		}
-		else if (provider instanceof PageControllerProvider || provider instanceof FragmentControllerProvider) {
-			folderPath += "target" + File.separator + "classes";
-		}
-		else {
-			throw new IllegalArgumentException("Provider is not of an expected type.  Found: " + provider.getClass());
-		}
-
-		File devFolder = new File(folderPath);
-		if (devFolder.exists() && devFolder.isDirectory()) {
+		
+		if (directoryExists(directories)) {
 			try {
-				PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
-				log.warn("Folder " + devFolder.getAbsolutePath() + " successfully set as developmentFolder mode folder for provider " + key);
+				PropertyUtils.setProperty(provider, getDirectoryListPropertyName(provider), directories);
+				log.warn("Folders " + directories + " successfully set as developmentFolder mode folders for provider " + key);
 				return true;
 			}
 			catch (Exception ex) {
@@ -597,6 +622,63 @@ public class UiFrameworkUtil {
 			}
 		}
 		return false;
+	}
+	
+	private static boolean directoryExists(List<File> directories) {
+		for (File file : directories) {
+			if (file.exists() && file.isDirectory()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static String getDirectoryListPropertyName(Object provider) {
+		if (provider instanceof ResourceProvider) {
+			return "resourceDirectories";
+		}
+		else if (provider instanceof PageViewProvider) {
+			return "pageDirectories";
+		}
+		else if (provider instanceof FragmentViewProvider) {
+			return "fragmentDirectories";
+		}
+		else if (provider instanceof PageControllerProvider || provider instanceof FragmentControllerProvider) {
+			return "classDirectories";
+		}
+		else {
+			throw new IllegalArgumentException("Provider is not of an expected type.  Found: " + provider.getClass());
+		}
+	}
+	
+	private static Map<String, String> getDirectoryMap(Object provider) {
+		String property = null;
+		if (provider instanceof ResourceProvider) {
+			property = "resourceDirectoryMap";
+		}
+		else if (provider instanceof PageViewProvider) {
+			property = "pageDirectoryMap";
+		}
+		else if (provider instanceof FragmentViewProvider) {
+			property = "fragmentDirectoryMap";
+		}
+		else if (provider instanceof PageControllerProvider || provider instanceof FragmentControllerProvider) {
+			property = "classDirectoryMap";
+		}
+		else {
+			throw new IllegalArgumentException("Provider is not of an expected type.  Found: " + provider.getClass());
+		}
+		
+		try {
+			Map<String, String> map = (Map<String, String>)PropertyUtils.getProperty(provider, property);
+			if (map == null) {
+				map = new HashMap<String, String>();
+			}
+			return map;
+		}
+		catch (Exception ex) {
+			throw new RuntimeException("Directory map property not found for Provider: " + provider.getClass());
+		}
 	}
 
 	/**
