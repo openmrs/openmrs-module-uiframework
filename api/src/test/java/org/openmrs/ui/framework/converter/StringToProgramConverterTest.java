@@ -7,9 +7,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.openmrs.Program;
 import org.openmrs.api.ProgramWorkflowService;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 import static org.mockito.Mockito.verify;
 
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+//@Ignore("@DirtiesContext causes tests to fail")
 public class StringToProgramConverterTest {
 
     public static final String UUID = "abc-123";

@@ -210,4 +210,138 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		
+		<profile>
+			<id>openmrs-1.9</id>
+
+			<properties>
+				<openMRSVersion>1.9.9</openMRSVersion>
+				<openMRSMinorVersion>1.9</openMRSMinorVersion>
+		        <springVersion>3.0.5.RELEASE</springVersion>
+		        <handlebarsVersion>1.3.1</handlebarsVersion>
+			</properties>
+			
+			<dependencyManagement>
+				<dependencies>	
+
+		            <dependency>
+		                <groupId>org.openmrs.api</groupId>
+		                <artifactId>openmrs-api</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>jar</type>
+		                <scope>provided</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.openmrs.web</groupId>
+		                <artifactId>openmrs-web</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>jar</type>
+		                <scope>provided</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.openmrs.api</groupId>
+		                <artifactId>openmrs-api</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>test-jar</type>
+		                <scope>test</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.openmrs.web</groupId>
+		                <artifactId>openmrs-web</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>test-jar</type>
+		                <scope>test</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.openmrs.test</groupId>
+		                <artifactId>openmrs-test</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>pom</type>
+		                <scope>test</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.springframework</groupId>
+		                <artifactId>spring-webmvc</artifactId>
+		                <version>${springVersion}</version>
+		                <scope>provided</scope>
+		            </dependency>
+		            
+				</dependencies>
+			</dependencyManagement>
+
+
+		</profile>
+		
+		<profile>
+			<id>openmrs-2.0</id>
+
+			<properties>
+				<openMRSVersion>2.0.0-SNAPSHOT</openMRSVersion>
+				<openMRSMinorVersion>2.0</openMRSMinorVersion>
+		        <springVersion>4.1.4.RELEASE</springVersion>
+		        <handlebarsVersion>1.3.1</handlebarsVersion>
+			</properties>
+			
+			<dependencyManagement>
+				<dependencies>	
+
+		            <dependency>
+		                <groupId>org.openmrs.api</groupId>
+		                <artifactId>openmrs-api</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>jar</type>
+		                <scope>provided</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.openmrs.web</groupId>
+		                <artifactId>openmrs-web</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>jar</type>
+		                <scope>provided</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.openmrs.api</groupId>
+		                <artifactId>openmrs-api</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>test-jar</type>
+		                <scope>test</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.openmrs.web</groupId>
+		                <artifactId>openmrs-web</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>test-jar</type>
+		                <scope>test</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.openmrs.test</groupId>
+		                <artifactId>openmrs-test</artifactId>
+		                <version>${openMRSVersion}</version>
+		                <type>pom</type>
+		                <scope>test</scope>
+		            </dependency>
+		
+		            <dependency>
+		                <groupId>org.springframework</groupId>
+		                <artifactId>spring-webmvc</artifactId>
+		                <version>${springVersion}</version>
+		                <scope>provided</scope>
+		            </dependency>
+
+				</dependencies>
+			</dependencyManagement>
+		</profile>
+
+	</profiles>
+
 </project>
