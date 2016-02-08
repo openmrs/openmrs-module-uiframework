@@ -1,10 +1,25 @@
 package org.openmrs.ui.framework;
 
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.openmrs.Patient;
 import org.openmrs.Visit;
+import org.openmrs.api.APIException;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.uiframework.UiFrameworkActivator;
 import org.openmrs.ui.framework.extension.ExtensionManager;
@@ -13,6 +28,7 @@ import org.openmrs.ui.framework.fragment.FragmentRequest;
 import org.openmrs.ui.framework.fragment.action.ObjectResult;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
+import org.openmrs.ui.framework.page.Redirect;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.util.DateExt;
 import org.springframework.core.convert.ConversionService;
@@ -20,19 +36,12 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
 
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-
 /**
  * Utility methods that should be available in view technologies for pages and fragments
  */
 public abstract class UiUtils {
+	
+	protected final Log log = LogFactory.getLog(getClass());
 	
 	protected Locale locale;
 	
@@ -190,7 +199,7 @@ public abstract class UiUtils {
 	}
 	
 	public String decorate(String providerName, String decoratorName, Map<String, Object> decoratorConfig, String contents)
-	        throws PageAction {
+	    throws PageAction {
 		if (decoratorConfig == null)
 			decoratorConfig = new HashMap<String, Object>();
 		decoratorConfig.put("content", contents);
@@ -315,25 +324,25 @@ public abstract class UiUtils {
 		// TODO fix this
 		return java.net.URLEncoder.encode(string.toString());
 	}
-
-    public String urlBind(String url, Visit visit) {
-        url = url.replace("{{visitId}}", visit.getId().toString());
-        url = url.replace("{{visit.id}}", visit.getId().toString());
-        url = url.replace("{{visit.visitId}}", visit.getId().toString());
-        url = url.replace("{{visit.uuid}}", visit.getUuid());
-        url = urlBind(url, visit.getPatient());
-        return url;
-    }
-
-    public String urlBind(String url, Patient patient) {
-        url = url.replace("{{patientId}}", patient.getId().toString());
-        url = url.replace("{{patient.id}}", patient.getId().toString());
-        url = url.replace("{{patient.patientId}}", patient.getId().toString());
-        url = url.replace("{{patient.uuid}}", patient.getUuid());
-        return url;
-    }
-
-    public String urlBind(String url, Map<String, Object> bindings) {
+	
+	public String urlBind(String url, Visit visit) {
+		url = url.replace("{{visitId}}", visit.getId().toString());
+		url = url.replace("{{visit.id}}", visit.getId().toString());
+		url = url.replace("{{visit.visitId}}", visit.getId().toString());
+		url = url.replace("{{visit.uuid}}", visit.getUuid());
+		url = urlBind(url, visit.getPatient());
+		return url;
+	}
+	
+	public String urlBind(String url, Patient patient) {
+		url = url.replace("{{patientId}}", patient.getId().toString());
+		url = url.replace("{{patient.id}}", patient.getId().toString());
+		url = url.replace("{{patient.patientId}}", patient.getId().toString());
+		url = url.replace("{{patient.uuid}}", patient.getUuid());
+		return url;
+	}
+	
+	public String urlBind(String url, Map<String, Object> bindings) {
 		for (Map.Entry<String, Object> binding : bindings.entrySet()) {
 			String key = binding.getKey().replace(" ", "");
 			url = url.replace("{{" + key + "}}", "" + binding.getValue());
@@ -513,5 +522,109 @@ public abstract class UiUtils {
 	
 	public void setLocale(Locale locale) {
 		this.locale = locale;
+	}
+	
+	/**
+	 * @see {@link #requirePrivileges(List, String, String, String)}
+	 */
+	public void requirePrivilege(String privilege) throws Redirect {
+		requirePrivilege(privilege, null, null);
+	}
+	
+	/**
+	 * @see {@link #requirePrivileges(List, String, String, String)}
+	 */
+	public void requirePrivilege(String privilege, String redirectViewProvider, String redirectView) throws Redirect {
+		requirePrivileges(Collections.singletonList(privilege), redirectViewProvider, redirectView, null);
+	}
+	
+	/**
+	 * @see {@link #requirePrivileges(List, String, String, String)}
+	 */
+	public void requirePrivilege(String privilege, String handler) throws Redirect {
+		requirePrivileges(Collections.singletonList(privilege), null, null, handler);
+	}
+	
+	/**
+	 * Checks if the user has all the specified privileges, if they are don't have any of the
+	 * privileges, they get redirected to the specified view, if a handler is specified, it gets
+	 * invoked when the privilege check fails. The handler should be the spring bean id of a
+	 * subclass of FailedAuthenticationHandler.
+	 *
+	 * @param privileges The privileges to check for
+	 * @param redirectViewProvider The view provider for the page to redirect the user to in case
+	 *            they don't have the privilege
+	 * @param redirectView The view to redirect the user to in case they don't have the privilege
+	 * @param handler The spring bean id of the handler to invoke
+	 * @should fail if no privilege is specified
+	 * @should fail if the preferred handler throws an exception
+	 * @should redirect the user to the specified redirect view
+	 * @should always pass if the user has the privileges
+	 * @should use the specified handler
+	 * @should use the default handler if none is registered
+	 * @should use the default handler if none is specified
+	 * @should use any handler if none is specified and only one has been registered
+	 * @should use the default handler url if the preferred handler returns none
+	 */
+	public void requirePrivileges(List<String> privileges, String redirectViewProvider, String redirectView, String handler)
+	    throws Redirect {
+		
+		if (CollectionUtils.isEmpty(privileges)) {
+			//TODO check that there at least one none-blank privilege is specified
+			throw new ViewException("At least one privilege is required");
+		}
+		
+		for (String privilege : privileges) {
+			if (!Context.hasPrivilege(privilege)) {
+				DefaultFailedAuthenticationHandler defaultHandler = new DefaultFailedAuthenticationHandler();
+				FailedAuthenticationHandler preferredHandler = null;
+				if (StringUtils.isNotBlank(handler)) {
+					try {
+						preferredHandler = Context.getRegisteredComponent(handler, FailedAuthenticationHandler.class);
+					}
+					catch (APIException e) {}
+					
+					if (preferredHandler == null) {
+						log.warn("No FailedAuthenticationHandler was found with bean id:" + handler + ", using the default");
+					}
+				}
+				
+				//If there exactly one other registered handler besides the default, use that
+				if (preferredHandler == null) {
+					List<FailedAuthenticationHandler> handlers = Context
+					        .getRegisteredComponents(FailedAuthenticationHandler.class);
+					if (handlers.size() == 1) {
+						preferredHandler = handlers.get(0);
+					}
+				}
+				
+				if (preferredHandler == null) {
+					preferredHandler = defaultHandler;
+				}
+				
+				Redirect callerRedirect = null;
+				if (StringUtils.isNotBlank(redirectViewProvider) && StringUtils.isNotBlank(redirectView)) {
+					callerRedirect = new Redirect(redirectViewProvider, redirectView, null);
+				}
+				
+				String redirectUrlFromHandler;
+				try {
+					String callRedirectUrl = (callerRedirect != null) ? callerRedirect.getUrl() : null;
+					redirectUrlFromHandler = preferredHandler.handle(pageContext.getRequest(), privileges, callRedirectUrl);
+					if (StringUtils.isBlank(redirectUrlFromHandler)) {
+						redirectUrlFromHandler = defaultHandler.getRedirectUrl();
+					}
+				}
+				catch (Exception e) {
+					throw new ViewException("An error occurred while invoking the failed authentication handler", e);
+				}
+				
+				if (callerRedirect != null) {
+					throw callerRedirect;
+				}
+				
+				throw new Redirect(redirectUrlFromHandler);
+			}
+		}
 	}
 }

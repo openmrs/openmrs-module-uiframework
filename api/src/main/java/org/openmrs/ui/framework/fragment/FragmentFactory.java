@@ -1,6 +1,7 @@
 package org.openmrs.ui.framework.fragment;
 
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.ui.framework.FragmentException;
 import org.openmrs.ui.framework.RequestValidationException;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.UiFrameworkUtil;
@@ -182,10 +183,19 @@ public class FragmentFactory {
 		if (view == null) {
 			return "";
 		}
-		
-		// render the output
-		String output = view.render(context);
-		return output;
+
+        // render the output
+        try {
+            String output = view.render(context);
+            return output;
+        }
+        catch (FragmentException ex) {
+            Redirect redirectEx = ExceptionUtil.findExceptionInChain(ex, Redirect.class);
+            if (redirectEx != null) {
+                throw redirectEx;
+            }
+            throw ex;
+        }
 	}
 	
 	/**

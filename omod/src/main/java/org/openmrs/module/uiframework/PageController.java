@@ -15,6 +15,8 @@ package org.openmrs.module.uiframework;
 
 import org.apache.commons.io.IOUtils;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.ui.framework.DefaultFailedAuthenticationHandler;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.page.FileDownload;
@@ -89,6 +91,7 @@ public class PageController {
      * @param model
      * @param httpSession
      * @return
+     * @should return the login url if not authenticated
      */
     public String handlePath(String path, HttpServletRequest request, HttpServletResponse response, Model model, HttpSession httpSession) {
         // handle the case where the url has two slashes, e.g. host/openmrs//emr/patient.page
@@ -115,7 +118,11 @@ public class PageController {
             String html = pageFactory.handle(pageRequest);
             model.addAttribute("html", html);
             return SHOW_HTML_VIEW;
-        } catch (Redirect redirect) {
+        }
+        catch (ContextAuthenticationException ex) {
+            return "redirect:" + new DefaultFailedAuthenticationHandler().getRedirectUrl();
+        }
+        catch (Redirect redirect) {
             String ret = "";
             if (!redirect.getUrl().startsWith("/"))
                 ret += "/";
