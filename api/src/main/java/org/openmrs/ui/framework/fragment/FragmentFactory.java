@@ -97,7 +97,6 @@ public class FragmentFactory {
 
 		applyDefaultConfiguration(context);
         configureModel(context);
-
 		// it's possible someone has pre-requested that this fragment be decorated
 		if (context.getRequest().getConfiguration().containsKey("decorator")) {
 			String decoratorProvider = (String) context.getRequest().getConfiguration().get("decoratorProvider");
@@ -271,7 +270,7 @@ public class FragmentFactory {
 		FragmentRequest request = new FragmentRequest(providerName, fragmentName);
 		return getController(request);
 	}
-
+	
 	/**
 	 * Allow modules to override fragment handling via {@link FragmentRequestMapper}s.
 	 * Sets this internal fragment provider and fragmentId on request
@@ -289,7 +288,7 @@ public class FragmentFactory {
 
 		return request;
 	}
-	
+
 	/**
 	 * TODO cache the results in production mode?
 	 * 
