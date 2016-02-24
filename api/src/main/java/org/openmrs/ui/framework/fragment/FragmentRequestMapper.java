@@ -1,9 +1,8 @@
 package org.openmrs.ui.framework.fragment;
 
 /**
- * Maps a fragment request to an internal fragment name, e.g. you might map the request
- * for the 'patient' fragment to 'clinicianPatientDashboard' if the user is logged in as a
- * Clinician.
+ * Maps a request to a fragment e.g. you might map the request
+ * for the 'header' fragment in the 'appui' to a different fragment 'myheader' in 'mymodule'
  */
 public interface FragmentRequestMapper {
 	
