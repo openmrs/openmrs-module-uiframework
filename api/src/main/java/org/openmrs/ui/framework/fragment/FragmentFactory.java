@@ -590,4 +590,12 @@ public class FragmentFactory {
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
+
+	public List<FragmentRequestMapper> getRequestMappers() {
+		return requestMappers;
+	}
+
+	public void setRequestMappers(List<FragmentRequestMapper> requestMappers) {
+		this.requestMappers = requestMappers;
+	}
 }
