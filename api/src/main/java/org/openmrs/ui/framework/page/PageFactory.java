@@ -1,14 +1,11 @@
 package org.openmrs.ui.framework.page;
 
-import org.openmrs.ui.framework.Model;
-import org.openmrs.ui.framework.ProviderAndName;
-import org.openmrs.ui.framework.UiFrameworkException;
-import org.openmrs.ui.framework.UiFrameworkUtil;
-import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.*;
 import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.fragment.FragmentRequest;
+import org.openmrs.ui.framework.fragment.FragmentRequestMapper;
 import org.openmrs.ui.framework.interceptor.PageRequestInterceptor;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.util.OpenmrsUtil;
@@ -43,6 +40,8 @@ public class PageFactory {
 	
 	@Autowired(required=false)
 	List<PageRequestMapper> requestMappers;
+	@Autowired(required=false)
+	List<FragmentRequestMapper> fragmentRequestMappers;
 	
 	@Autowired
 	ExtensionManager extensionManager;

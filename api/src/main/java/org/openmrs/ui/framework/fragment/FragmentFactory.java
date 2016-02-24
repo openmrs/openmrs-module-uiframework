@@ -9,11 +9,7 @@ import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.interceptor.FragmentActionInterceptor;
-import org.openmrs.ui.framework.page.PageAction;
-import org.openmrs.ui.framework.page.PageContext;
-import org.openmrs.ui.framework.page.PageModel;
-import org.openmrs.ui.framework.page.PageRequest;
-import org.openmrs.ui.framework.page.Redirect;
+import org.openmrs.ui.framework.page.*;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
 import org.openmrs.ui.util.ExceptionUtil;
@@ -29,11 +25,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Handles FragmentRequests
@@ -66,6 +58,9 @@ public class FragmentFactory {
 	@Autowired(required = false)
 	List<FragmentActionInterceptor> fragmentActionInterceptors;
 
+	@Autowired(required=false)
+	List<FragmentRequestMapper> requestMappers;
+
     @Autowired(required = false)
     List<FragmentModelConfigurator> modelConfigurators;
 
@@ -97,8 +92,12 @@ public class FragmentFactory {
 		if (log.isDebugEnabled()) {
 			log.debug("processing " + context.getRequest());
 		}
+		// before using the fragment request, apply any fragment mappers
+		context.setRequest(mapInternalFragmentId(context.getRequest()));
+
 		applyDefaultConfiguration(context);
         configureModel(context);
+
 		// it's possible someone has pre-requested that this fragment be decorated
 		if (context.getRequest().getConfiguration().containsKey("decorator")) {
 			String decoratorProvider = (String) context.getRequest().getConfiguration().get("decoratorProvider");
@@ -174,7 +173,7 @@ public class FragmentFactory {
 		context.setView(view);
 		
 		if (context.getController().equals(emptyController) && context.getView() == null) {
-			throw new RuntimeException("Cannot find controller or view for fragment: " + context.getRequest().getFragmentId());
+			throw new RuntimeException("Cannot find controller or view for fragment: " + context.getRequest().getMappedFragmentId());
 		}
 		
 		// Fragments are allowed to have no view (their controller can still affect the shared
@@ -242,14 +241,14 @@ public class FragmentFactory {
 	 */
 	FragmentView getView(FragmentRequest request, String viewName) {
 		if (viewName == null)
-			viewName = request.getFragmentId();
-		String providerAndFragmentId = request.getProviderName() + ":" + viewName;
+			viewName = request.getMappedFragmentId();
+		String providerAndFragmentId = request.getMappedProviderName() + ":" + viewName;
 		if (!isDevelopmentMode()) {
 			if (viewCache.containsKey(providerAndFragmentId)) {
 				return viewCache.get(providerAndFragmentId);
 			}
 		}
-		if ("*".equals(request.getProviderName())) {
+		if ("*".equals(request.getMappedProviderName())) {
 			for (FragmentViewProvider p : viewProviders.values()) {
 				FragmentView ret = p.getView(viewName);
 				if (ret != null) {
@@ -259,9 +258,9 @@ public class FragmentFactory {
 				}
 			}
 		} else {
-			FragmentViewProvider provider = viewProviders.get(request.getProviderName());
+			FragmentViewProvider provider = viewProviders.get(request.getMappedProviderName());
 			if (provider == null) {
-				throw new UiFrameworkException("No view provider: " + request.getProviderName());
+				throw new UiFrameworkException("No view provider: " + request.getMappedProviderName());
 			}
 			return provider.getView(viewName);
 		}
@@ -271,6 +270,24 @@ public class FragmentFactory {
 	public Object getController(String providerName, String fragmentName) {
 		FragmentRequest request = new FragmentRequest(providerName, fragmentName);
 		return getController(request);
+	}
+
+	/**
+	 * Allow modules to override fragment handling via {@link FragmentRequestMapper}s.
+	 * Sets this internal fragment provider and fragmentId on request
+	 * @param request
+	 */
+	private FragmentRequest mapInternalFragmentId(FragmentRequest request) {
+		if (requestMappers != null) {
+			for (FragmentRequestMapper mapper : requestMappers) {
+				boolean mapped = mapper.mapRequest(request);
+				if (mapped) {
+					break;
+				}
+			}
+		}
+
+		return request;
 	}
 	
 	/**
@@ -284,18 +301,18 @@ public class FragmentFactory {
 	 */
 	Object getController(FragmentRequest request) {
 		if (controllerProviders != null) {
-			if ("*".equals(request.getProviderName())) {
+			if ("*".equals(request.getMappedProviderName())) {
 				for (FragmentControllerProvider p : controllerProviders.values()) {
-					Object ret = p.getController(request.getFragmentId());
+					Object ret = p.getController(request.getMappedFragmentId());
 					if (ret != null)
 						return ret;
 				}
 			} else {
-				FragmentControllerProvider provider = controllerProviders.get(request.getProviderName());
+				FragmentControllerProvider provider = controllerProviders.get(request.getMappedProviderName());
 				if (provider == null) {
-					throw new UiFrameworkException("No controller provider: " + request.getProviderName());
+					throw new UiFrameworkException("No controller provider: " + request.getMappedProviderName());
 				}
-				return provider.getController(request.getFragmentId());
+				return provider.getController(request.getMappedFragmentId());
 			}
 		}
 		return null;
