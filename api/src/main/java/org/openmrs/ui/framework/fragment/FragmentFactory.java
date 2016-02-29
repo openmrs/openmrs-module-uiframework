@@ -71,11 +71,11 @@ public class FragmentFactory {
 	@Autowired(required = false)
 	List<FragmentActionInterceptor> fragmentActionInterceptors;
 
-	@Autowired(required=false)
+	@Autowired(required = false)
 	List<FragmentRequestMapper> requestMappers;
 
-    @Autowired(required = false)
-    List<FragmentModelConfigurator> modelConfigurators;
+	@Autowired(required = false)
+	List<FragmentModelConfigurator> modelConfigurators;
 
 	@Autowired(required = false)
 	List<PossibleFragmentControllerArgumentProvider> possibleFragmentControllerArgumentProviders;
@@ -95,8 +95,9 @@ public class FragmentFactory {
 	}
 	
 	public String process(FragmentContext context) throws PageAction {
-		if (context.getRequestDepth() > 100)
+		if (context.getRequestDepth() > 100) {
 			throw new UiFrameworkException("Fragment inclusion > 100 levels deep. Check your code for infinite loops.");
+		}
 		long startTime = System.currentTimeMillis();
 		if (log.isDebugEnabled()) {
 			log.debug("processing " + context.getRequest());
@@ -121,8 +122,9 @@ public class FragmentFactory {
 			context.setDecorateWith(decorator);
 		}
 		String result = processThisFragment(context);
-		if (context.getDecorateWith() == null)
+		if (context.getDecorateWith() == null) {
 			return result;
+		}
 		FragmentRequest decoratorRequest = context.getDecorateWith();
 		decoratorRequest.getConfiguration().put("content", result);
 		decoratorRequest.getConfiguration().put("contentFragmentId", context.getRequest().getConfiguration().get("id"));
@@ -144,15 +146,17 @@ public class FragmentFactory {
 
 	private void applyDefaultConfiguration(FragmentContext context) {
 		FragmentConfiguration config = context.getRequest().getConfiguration();
-		if (!config.containsKey("id"))
+		if (!config.containsKey("id")) {
 			config.put("id", UiUtils.randomId("fr"));
+		}
 	}
 	
 	private String processThisFragment(FragmentContext context) throws PageAction {
 		// determine what controller to use
 		Object controller = getController(context.getRequest());
-		if (controller == null)
+		if (controller == null) {
 			controller = emptyController;
+		}
 		context.setController(controller);
 		
 		// let the controller handle the request
@@ -181,7 +185,8 @@ public class FragmentFactory {
 		context.setView(view);
 		
 		if (context.getController().equals(emptyController) && context.getView() == null) {
-			throw new RuntimeException("Cannot find controller or view for fragment: " + context.getRequest().getMappedFragmentId());
+			throw new RuntimeException(
+					"Cannot find controller or view for fragment: " + context.getRequest().getMappedFragmentId());
 		}
 		
 		// Fragments are allowed to have no view (their controller can still affect the shared
@@ -200,7 +205,7 @@ public class FragmentFactory {
 	 * a new FragmentRequest) and the FragmentRequest that it returns includes exactly the same
 	 * configuration as the original request, we need to remove the "decorator" attribute from the
 	 * replacement configuration because the fragmework is already applying that decoration.
-	 * 
+	 *
 	 * @param replacement
 	 * @param original
 	 */
@@ -249,8 +254,9 @@ public class FragmentFactory {
 	 * @should fail if an invalid provider name is specified
 	 */
 	FragmentView getView(FragmentRequest request, String viewName) {
-		if (viewName == null)
+		if (viewName == null) {
 			viewName = request.getMappedFragmentId();
+		}
 		String providerAndFragmentId = request.getMappedProviderName() + ":" + viewName;
 		if (!isDevelopmentMode()) {
 			if (viewCache.containsKey(providerAndFragmentId)) {
@@ -261,8 +267,9 @@ public class FragmentFactory {
 			for (FragmentViewProvider p : viewProviders.values()) {
 				FragmentView ret = p.getView(viewName);
 				if (ret != null) {
-					if (!isDevelopmentMode())
+					if (!isDevelopmentMode()) {
 						viewCache.put(providerAndFragmentId, ret);
+					}
 					return ret;
 				}
 			}
@@ -302,7 +309,7 @@ public class FragmentFactory {
 
 	/**
 	 * TODO cache the results in production mode?
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 * @should get a controller from the specified provider
@@ -314,8 +321,9 @@ public class FragmentFactory {
 			if ("*".equals(request.getMappedProviderName())) {
 				for (FragmentControllerProvider p : controllerProviders.values()) {
 					Object ret = p.getController(request.getMappedFragmentId());
-					if (ret != null)
+					if (ret != null) {
 						return ret;
+					}
 				}
 			} else {
 				FragmentControllerProvider provider = controllerProviders.get(request.getMappedProviderName());
@@ -358,7 +366,7 @@ public class FragmentFactory {
 	
 	/**
 	 * Adds the given controller providers to the existing ones. (I.e. this is not a proper setter.)
-	 * 
+	 *
 	 * @param additional
 	 * @see #addControllerProvider(String, FragmentControllerProvider)
 	 */
@@ -370,6 +378,7 @@ public class FragmentFactory {
 	
 	/**
 	 * Registers a Fragment Controller Provider
+	 *
 	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
 	 */
 	public void addControllerProvider(String key, FragmentControllerProvider provider) {
@@ -398,7 +407,7 @@ public class FragmentFactory {
 	
 	/**
 	 * Adds the given view providers to the existing ones. (I.e. this is not a proper setter.)
-	 * 
+	 *
 	 * @param additional
 	 * @see #addViewProvider(String, FragmentViewProvider)
 	 */
@@ -410,6 +419,7 @@ public class FragmentFactory {
 	
 	/**
 	 * Registers a Fragment View Provider
+	 *
 	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
 	 */
 	public void addViewProvider(String key, FragmentViewProvider provider) {
@@ -422,12 +432,13 @@ public class FragmentFactory {
 		viewProviders.put(key, provider);
 	}
 	
-	public Object invokeFragmentAction(String providerName, String fragmentName, String action, HttpServletRequest httpRequest) {
+	public Object invokeFragmentAction(String providerName, String fragmentName, String action,
+	                                   HttpServletRequest httpRequest) {
 		log.info("Invoking " + providerName + ":" + fragmentName + " . " + action);
-        if ("controller".equals(action)) {
-            throw new UiFrameworkException("Illegal to access fragment controller() method as an action");
-        }
-        FragmentActionRequest request = new FragmentActionRequest(this, httpRequest);
+		if ("controller".equals(action)) {
+			throw new UiFrameworkException("Illegal to access fragment controller() method as an action");
+		}
+		FragmentActionRequest request = new FragmentActionRequest(this, httpRequest);
 		
 		// try to find the requested fragment controller
 		Object controller = getController(providerName, fragmentName);
@@ -446,9 +457,9 @@ public class FragmentFactory {
 		if (method == null) {
 			throw new UiFrameworkException("Error getting " + controller.getClass() + "." + action + " method");
 		}
-        if (method.getDeclaringClass().equals(Object.class)) {
-            throw new UiFrameworkException("Cannot invoke methods from Object as fragment actions");
-        }
+		if (method.getDeclaringClass().equals(Object.class)) {
+			throw new UiFrameworkException("Cannot invoke methods from Object as fragment actions");
+		}
 
 		// invoke all fragment action interceptors
 		if (fragmentActionInterceptors != null) {
@@ -479,16 +490,19 @@ public class FragmentFactory {
 		}
 		catch (RequestValidationException ex) {
 			// this means we caught something via a @Validate annotation
-			for (String errorCode : ex.getGlobalErrorCodes())
+			for (String errorCode : ex.getGlobalErrorCodes()) {
 				request.getErrors().reject(errorCode);
+			}
 			for (Map.Entry<String, List<String>> e : ex.getFieldErrorCodes().entrySet()) {
-				for (String errorCode : e.getValue())
+				for (String errorCode : e.getValue()) {
 					request.getErrors().rejectValue(e.getKey(), errorCode);
+				}
 			}
 		}
 
-		if (request.hasErrors())
+		if (request.hasErrors()) {
 			return new FailureResult(request.getErrors());
+		}
 		
 		// invoke method
 		Object result;
@@ -498,13 +512,16 @@ public class FragmentFactory {
 		catch (Exception ex) {
 			// if this error is a RequestValidationException (likely wrapped in an InvocationTargetException), the action
 			// a validation exception (as opposed to this happen via a @Validate annotation, caught above)
-			RequestValidationException validationEx = ExceptionUtil.findExceptionInChain(ex, RequestValidationException.class);
+			RequestValidationException validationEx = ExceptionUtil.findExceptionInChain(ex,
+					RequestValidationException.class);
 			if (validationEx != null) {
-				for (String errorCode : validationEx.getGlobalErrorCodes())
+				for (String errorCode : validationEx.getGlobalErrorCodes()) {
 					request.getErrors().reject(errorCode);
+				}
 				for (Map.Entry<String, List<String>> e : validationEx.getFieldErrorCodes().entrySet()) {
-					for (String errorCode : e.getValue())
+					for (String errorCode : e.getValue()) {
 						request.getErrors().rejectValue(e.getKey(), errorCode);
+					}
 				}
 				return new FailureResult(request.getErrors());
 			}
