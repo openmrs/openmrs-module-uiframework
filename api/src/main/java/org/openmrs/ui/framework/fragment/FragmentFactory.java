@@ -1,5 +1,16 @@
 package org.openmrs.ui.framework.fragment;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.ui.framework.RequestValidationException;
 import org.openmrs.ui.framework.UiFrameworkException;
@@ -25,21 +36,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Handles FragmentRequests
  */
 public class FragmentFactory {
 	
+	private static Map<String, FragmentControllerProvider> controllerProviders;
+
+	private static Map<String, FragmentViewProvider> viewProviders;
+
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
@@ -66,6 +71,9 @@ public class FragmentFactory {
 	@Autowired(required = false)
 	List<FragmentActionInterceptor> fragmentActionInterceptors;
 
+	@Autowired(required = false)
+	List<FragmentRequestMapper> requestMappers;
+
     @Autowired(required = false)
     List<FragmentModelConfigurator> modelConfigurators;
 
@@ -76,11 +84,7 @@ public class FragmentFactory {
     List<PossibleFragmentActionArgumentProvider> possibleFragmentActionArgumentProviders;
 
 	private boolean developmentMode = false;
-	
-	private static Map<String, FragmentControllerProvider> controllerProviders;
-	
-	private static Map<String, FragmentViewProvider> viewProviders;
-	
+
 	// a cache of views for production mode
 	private Map<String, FragmentView> viewCache = new HashMap<String, FragmentView>();
 	
@@ -97,6 +101,9 @@ public class FragmentFactory {
 		if (log.isDebugEnabled()) {
 			log.debug("processing " + context.getRequest());
 		}
+		// before using the fragment request, apply any fragment mappers
+		context.setRequest(mapFragmentProviderAndId(context.getRequest()));
+
 		applyDefaultConfiguration(context);
         configureModel(context);
 		// it's possible someone has pre-requested that this fragment be decorated
@@ -241,15 +248,16 @@ public class FragmentFactory {
 	 * @should fail if an invalid provider name is specified
 	 */
 	FragmentView getView(FragmentRequest request, String viewName) {
-		if (viewName == null)
-			viewName = request.getFragmentId();
-		String providerAndFragmentId = request.getProviderName() + ":" + viewName;
+		if (viewName == null) {
+			viewName = request.getMappedFragmentId();
+		}
+		String providerAndFragmentId = request.getMappedProviderName() + ":" + viewName;
 		if (!isDevelopmentMode()) {
 			if (viewCache.containsKey(providerAndFragmentId)) {
 				return viewCache.get(providerAndFragmentId);
 			}
 		}
-		if ("*".equals(request.getProviderName())) {
+		if ("*".equals(request.getMappedProviderName())) {
 			for (FragmentViewProvider p : viewProviders.values()) {
 				FragmentView ret = p.getView(viewName);
 				if (ret != null) {
@@ -259,9 +267,9 @@ public class FragmentFactory {
 				}
 			}
 		} else {
-			FragmentViewProvider provider = viewProviders.get(request.getProviderName());
+			FragmentViewProvider provider = viewProviders.get(request.getMappedProviderName());
 			if (provider == null) {
-				throw new UiFrameworkException("No view provider: " + request.getProviderName());
+				throw new UiFrameworkException("No view provider: " + request.getMappedProviderName());
 			}
 			return provider.getView(viewName);
 		}
@@ -274,6 +282,25 @@ public class FragmentFactory {
 	}
 	
 	/**
+	 * Allow modules to override fragment handling via {@link FragmentRequestMapper}s.
+	 * Sets this internal fragment provider and fragmentId on request
+	 *
+	 * @param request
+	 */
+	private FragmentRequest mapFragmentProviderAndId(FragmentRequest request) {
+		if (requestMappers != null) {
+			for (FragmentRequestMapper mapper : requestMappers) {
+				boolean mapped = mapper.mapRequest(request);
+				if (mapped) {
+					break;
+				}
+			}
+		}
+
+		return request;
+	}
+
+	/**
 	 * TODO cache the results in production mode?
 	 * 
 	 * @param request
@@ -284,18 +311,18 @@ public class FragmentFactory {
 	 */
 	Object getController(FragmentRequest request) {
 		if (controllerProviders != null) {
-			if ("*".equals(request.getProviderName())) {
+			if ("*".equals(request.getMappedProviderName())) {
 				for (FragmentControllerProvider p : controllerProviders.values()) {
-					Object ret = p.getController(request.getFragmentId());
+					Object ret = p.getController(request.getMappedFragmentId());
 					if (ret != null)
 						return ret;
 				}
 			} else {
-				FragmentControllerProvider provider = controllerProviders.get(request.getProviderName());
+				FragmentControllerProvider provider = controllerProviders.get(request.getMappedProviderName());
 				if (provider == null) {
-					throw new UiFrameworkException("No controller provider: " + request.getProviderName());
+					throw new UiFrameworkException("No controller provider: " + request.getMappedProviderName());
 				}
-				return provider.getController(request.getFragmentId());
+				return provider.getController(request.getMappedFragmentId());
 			}
 		}
 		return null;
@@ -554,12 +581,12 @@ public class FragmentFactory {
 		return servletContext;
 	}
 
+	public List<FragmentModelConfigurator> getModelConfigurators() {
+		return modelConfigurators;
+	}
+
     public void setModelConfigurators(List<FragmentModelConfigurator> modelConfigurators) {
         this.modelConfigurators = modelConfigurators;
-    }
-
-    public List<FragmentModelConfigurator> getModelConfigurators() {
-        return modelConfigurators;
     }
 
     public void setPossibleFragmentControllerArgumentProviders(List<PossibleFragmentControllerArgumentProvider> possibleFragmentControllerArgumentProviders) {
@@ -573,4 +600,12 @@ public class FragmentFactory {
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
+
+	public List<FragmentRequestMapper> getRequestMappers() {
+		return requestMappers;
+	}
+
+	public void setRequestMappers(List<FragmentRequestMapper> requestMappers) {
+		this.requestMappers = requestMappers;
+	}
 }
