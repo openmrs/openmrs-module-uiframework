@@ -74,7 +74,7 @@ public class PageFactory {
         context.setPageFactory(this);
         context.setFragmentFactory(fragmentFactory);
         context.setExtensionManager(extensionManager);
-        mapInternalPageName(request);
+        overridePageProviderAndName(request);
         if (modelConfigurators != null) {
             for (PageModelConfigurator pageModelConfigurator : modelConfigurators) {
                 pageModelConfigurator.configureModel(context);
@@ -99,7 +99,7 @@ public class PageFactory {
 	 * Sets this internal page provider and name on request
 	 * @param request
 	 */
-	private void mapInternalPageName(PageRequest request) {
+	private void overridePageProviderAndName(PageRequest request) {
 		if (requestMappers != null) {
 			for (PageRequestMapper mapper : requestMappers) {
 				boolean mapped = mapper.mapRequest(request);
