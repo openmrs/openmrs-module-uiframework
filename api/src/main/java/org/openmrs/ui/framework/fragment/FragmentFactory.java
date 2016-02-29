@@ -9,7 +9,11 @@ import org.openmrs.ui.framework.extension.ExtensionManager;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.openmrs.ui.framework.fragment.action.FailureResult;
 import org.openmrs.ui.framework.interceptor.FragmentActionInterceptor;
-import org.openmrs.ui.framework.page.*;
+import org.openmrs.ui.framework.page.PageAction;
+import org.openmrs.ui.framework.page.PageContext;
+import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.ui.framework.page.PageRequest;
+import org.openmrs.ui.framework.page.Redirect;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
 import org.openmrs.ui.util.ExceptionUtil;
@@ -25,7 +29,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Handles FragmentRequests
@@ -93,7 +101,7 @@ public class FragmentFactory {
 			log.debug("processing " + context.getRequest());
 		}
 		// before using the fragment request, apply any fragment mappers
-		context.setRequest(mapInternalFragmentId(context.getRequest()));
+		context.setRequest(mapFragmentProviderAndId(context.getRequest()));
 
 		applyDefaultConfiguration(context);
         configureModel(context);
@@ -276,7 +284,7 @@ public class FragmentFactory {
 	 * Sets this internal fragment provider and fragmentId on request
 	 * @param request
 	 */
-	private FragmentRequest mapInternalFragmentId(FragmentRequest request) {
+	private FragmentRequest mapFragmentProviderAndId(FragmentRequest request) {
 		if (requestMappers != null) {
 			for (FragmentRequestMapper mapper : requestMappers) {
 				boolean mapped = mapper.mapRequest(request);
