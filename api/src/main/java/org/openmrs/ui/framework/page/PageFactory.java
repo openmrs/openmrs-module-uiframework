@@ -1,5 +1,13 @@
 package org.openmrs.ui.framework.page;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.UiFrameworkException;
@@ -20,14 +28,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 public class PageFactory {
+	
+	private static Map<String, PageControllerProvider> controllerProviders;
+	
+	private static Map<String, PageViewProvider> viewProviders;
 	
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -43,25 +48,21 @@ public class PageFactory {
 	
 	@Autowired(required=false)
 	List<PageRequestMapper> requestMappers;
-	
+
 	@Autowired
 	ExtensionManager extensionManager;
-	
+
 	@Autowired
 	ConversionService conversionService;
 
 	@Autowired(required = false)
 	List<PageRequestInterceptor> pageRequestInterceptors;
-
-    @Autowired(required = false)
-    List<PageModelConfigurator> modelConfigurators;
-
-    @Autowired(required = false)
-    List<PossiblePageControllerArgumentProvider> possiblePageControllerArgumentProviders;
 	
-	private static Map<String, PageControllerProvider> controllerProviders;
+	@Autowired(required = false)
+	List<PageModelConfigurator> modelConfigurators;
 	
-	private static Map<String, PageViewProvider> viewProviders;
+	@Autowired(required = false)
+	List<PossiblePageControllerArgumentProvider> possiblePageControllerArgumentProviders;
 	
 	// a singleton one of these that can be reused
 	private EmptyPageController emptyController = new EmptyPageController();
@@ -74,8 +75,8 @@ public class PageFactory {
         context.setPageFactory(this);
         context.setFragmentFactory(fragmentFactory);
         context.setExtensionManager(extensionManager);
-        mapInternalPageName(request);
-        if (modelConfigurators != null) {
+		overridePageProviderAndName(request);
+		if (modelConfigurators != null) {
             for (PageModelConfigurator pageModelConfigurator : modelConfigurators) {
                 pageModelConfigurator.configureModel(context);
             }
@@ -99,7 +100,7 @@ public class PageFactory {
 	 * Sets this internal page provider and name on request
 	 * @param request
 	 */
-	private void mapInternalPageName(PageRequest request) {
+	private void overridePageProviderAndName(PageRequest request) {
 		if (requestMappers != null) {
 			for (PageRequestMapper mapper : requestMappers) {
 				boolean mapped = mapper.mapRequest(request);
