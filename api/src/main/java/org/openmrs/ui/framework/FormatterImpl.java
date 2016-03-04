@@ -1,5 +1,14 @@
 package org.openmrs.ui.framework;
 
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang.StringUtils;
@@ -19,21 +28,9 @@ import org.openmrs.User;
 import org.openmrs.api.APIException;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
-import org.openmrs.layout.web.name.NameSupport;
-import org.openmrs.layout.web.name.NameTemplate;
 import org.openmrs.ui.framework.formatter.FormatterFactory;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
-
-import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * Contains default formatting for most OpenMRS classes, which can be override with {@link FormatterFactory} instances.
@@ -183,18 +180,8 @@ public class FormatterImpl implements Formatter {
             return messageSource.getMessage("uiframework.formatter.noNamePerson", null, locale);
         }
         // format via name template if available
-        else if (NameSupport.getInstance().getDefaultLayoutTemplate() != null) {
-
-            NameTemplate nameTemplate = NameSupport.getInstance().getDefaultLayoutTemplate();
-
-            try {
-                // need to use reflection since the format method was not added until later versions of openmrs
-                Method format = NameTemplate.class.getDeclaredMethod("format", PersonName.class);
-                return (String) format.invoke(nameTemplate, n);
-            }
-            catch (Exception e) {
-                    // fall through to just returning full name if no format method found or format fails
-            }
+        else if (NameSupportCompatibility.hasDefaultLayoutTemplate()) {
+        	return NameSupportCompatibility.format(n);
         }
 	    // otherwise, just return full name
         return n.getFullName();
@@ -233,7 +220,14 @@ public class FormatterImpl implements Formatter {
     private String format(PersonAddress personAddress, Locale locale) {
         List<String> personAddressLines = new ArrayList<String>();
         try {
-            Class<?> addressSupportClass = Context.loadClass("org.openmrs.layout.web.address.AddressSupport");
+            Class<?> addressSupportClass = null;
+            try {
+            	addressSupportClass = Context.loadClass("org.openmrs.layout.web.address.AddressSupport");
+            }
+            catch (ClassNotFoundException ex) {
+            	addressSupportClass = Context.loadClass("org.openmrs.layout.address.AddressSupport");
+            }
+            
             Object addressSupport = addressSupportClass.getMethod("getInstance").invoke(null);
             Object addressTemplate = null;
             if (isOneNineOrLater()) {
