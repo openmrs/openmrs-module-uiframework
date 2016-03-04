@@ -2,11 +2,15 @@ package org.openmrs.ui.framework;
 
 import java.lang.reflect.Method;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonName;
 import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.util.OpenmrsClassLoader;
 
 public class NameSupportCompatibility {
+	
+	private static Log log = LogFactory.getLog(NameSupportCompatibility.class);
 	
 	public static boolean hasDefaultLayoutTemplate() {
 		return getLayoutTemplate() != null;
@@ -42,7 +46,7 @@ public class NameSupportCompatibility {
 				return method.invoke(nameSupportInstance, null);
 			}
 			catch (Exception ex) {
-				ex.printStackTrace();
+				log.error(ex.getMessage(), ex);
 			}
 		}
 		
