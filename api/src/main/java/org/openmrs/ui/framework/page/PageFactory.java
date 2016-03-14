@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.openmrs.ui.framework.Model;
@@ -204,6 +205,7 @@ public class PageFactory {
 		possibleArguments.put(PageRequest.class, context.getRequest());
 		possibleArguments.put(HttpServletRequest.class, context.getRequest().getRequest());
         possibleArguments.put(HttpSession.class, context.getRequest().getRequest().getSession());
+		possibleArguments.put(HttpServletResponse.class, context.getRequest().getResponse());
 		possibleArguments.put(Session.class, context.getRequest().getSession());
 		possibleArguments.put(ApplicationContext.class, applicationContext);
 		possibleArguments.put(UiUtils.class, new PageUiUtils(context));
