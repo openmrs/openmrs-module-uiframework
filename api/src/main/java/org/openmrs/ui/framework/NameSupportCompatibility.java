@@ -1,12 +1,12 @@
 package org.openmrs.ui.framework;
 
-import java.lang.reflect.Method;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonName;
 import org.openmrs.layout.web.name.NameSupport;
 import org.openmrs.util.OpenmrsClassLoader;
+
+import java.lang.reflect.Method;
 
 public class NameSupportCompatibility {
 	
@@ -35,7 +35,7 @@ public class NameSupportCompatibility {
 	private static Object getLayoutTemplate() {
 		
 		try {
-			return NameSupport.getInstance().getDefaultLayoutTemplate() != null;
+			return NameSupport.getInstance().getDefaultLayoutTemplate();
 		}
 		catch (NoClassDefFoundError e) {
 			try {
