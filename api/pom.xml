@@ -74,6 +74,12 @@
             <groupId>com.github.jknack</groupId>
             <artifactId>handlebars</artifactId>
         </dependency>
+        
+        <dependency>
+           <groupId>org.owasp.encoder</groupId>
+           <artifactId>encoder</artifactId>
+           <version>1.2</version>
+        </dependency>
 
 	</dependencies>
 

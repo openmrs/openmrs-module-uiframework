@@ -1,5 +1,14 @@
 package org.openmrs.ui.framework;
 
+import java.io.StringWriter;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -15,19 +24,11 @@ import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.util.DateExt;
+import org.owasp.encoder.Encode;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
-
-import java.io.StringWriter;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
 
 /**
  * Utility methods that should be available in view technologies for pages and fragments
@@ -417,10 +418,7 @@ public abstract class UiUtils {
 		if (input == null) {
 			return null;
 		}
-		input = input.replaceAll("\n", "\\\\n");
-		input = input.replaceAll("'", "\\\\'");
-		input = input.replaceAll("\"", "\\\\\"");
-		return input;
+		return Encode.forHtml(input);
 	}
 	
 	public String escapeAttribute(String input) {
