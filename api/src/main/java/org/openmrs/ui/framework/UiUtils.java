@@ -418,6 +418,13 @@ public abstract class UiUtils {
 		if (input == null) {
 			return null;
 		}
+		input = input.replaceAll("\n", "\\\\n");
+		input = input.replaceAll("'", "\\\\'");
+		input = input.replaceAll("\"", "\\\\\"");
+		return input;
+	}
+	
+	public String encodeForHtml(String input) {
 		return Encode.forHtml(input);
 	}
 	
