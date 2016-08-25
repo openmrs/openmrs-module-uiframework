@@ -421,7 +421,7 @@ public abstract class UiUtils {
 		input = input.replaceAll("\n", "\\\\n");
 		input = input.replaceAll("'", "\\\\'");
 		input = input.replaceAll("\"", "\\\\\"");
-		return input;
+		return encodeForHtml(input);
 	}
 	
 	public String encodeForHtml(String input) {
