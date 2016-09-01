@@ -414,6 +414,12 @@ public abstract class UiUtils {
 		return prefix + new Random().nextInt(10000);
 	}
 	
+	/**
+	 * Used to make sure that a value can safely compile and be used inside a JavaScript string
+	 * 
+	 * @param input the input text which may have characters that JavaScript requires to escape
+	 * @return text that is fit to be used as a JavaScript string
+	 */
 	public String escapeJs(String input) {
 		if (input == null) {
 			return null;
@@ -421,10 +427,27 @@ public abstract class UiUtils {
 		input = input.replaceAll("\n", "\\\\n");
 		input = input.replaceAll("'", "\\\\'");
 		input = input.replaceAll("\"", "\\\\\"");
-		return encodeForHtml(input);
+		return input;
 	}
 	
-	public String encodeForHtml(String input) {
+	/**
+	 * @see org.owasp.encoder.Encode#forHtmlContent(java.lang.String)
+	 */
+	public String encodeHtmlContent(String input) {
+		return Encode.forHtmlContent(input);
+	}
+	
+	/**
+	 * @see org.owasp.encoder.Encode#forHtmlAttribute(java.lang.String)
+	 */
+	public String encodeHtmlAttribute(String input) {
+		return Encode.forHtmlAttribute(input);
+	}
+	
+	/**
+	 * @see org.owasp.encoder.Encode#forHtml(java.lang.String)
+	 */
+	public String encodeHtml(String input) {
 		return Encode.forHtml(input);
 	}
 	
