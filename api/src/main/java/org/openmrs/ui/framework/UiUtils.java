@@ -431,6 +431,34 @@ public abstract class UiUtils {
 	}
 	
 	/**
+	 * @see org.owasp.encoder.Encode#forJavaScriptAttribute(java.lang.String)
+	 */
+	public String encodeJavaScriptAttribute(String input) {
+		return Encode.forJavaScriptAttribute(input);
+	}
+	
+	/**
+	 * @see org.owasp.encoder.Encode#forJavaScript(java.lang.String)
+	 */
+	public String encodeJavaScript(String input) {
+		return Encode.forJavaScript(input);
+	}
+	
+	/**
+	 * @see org.owasp.encoder.Encode#forJavaScriptBlock(java.lang.String)
+	 */
+	public String encodeJavaScriptBlock(String input) {
+		return Encode.forJavaScriptBlock(input);
+	}
+	
+	/**
+	 * @see org.owasp.encoder.Encode#forJavaScriptSource(java.lang.String)
+	 */
+	public String encodeJavaScriptSource(String input) {
+		return Encode.forJavaScriptSource(input);
+	}
+	
+	/**
 	 * @see org.owasp.encoder.Encode#forHtmlContent(java.lang.String)
 	 */
 	public String encodeHtmlContent(String input) {
