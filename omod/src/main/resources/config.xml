@@ -21,6 +21,7 @@
 	<!-- Maps hibernate files, if present -->
 	<mappingFiles>
 		UserDefinedPageView.hbm.xml
+		PageOverride.hbm.xml
 	</mappingFiles>
 
 	<!-- Internationalization -->

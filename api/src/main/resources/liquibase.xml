@@ -22,5 +22,23 @@
 			<column name="date_created" type="DATETIME"><constraints nullable="false"/></column>
 		</createTable>
  	</changeSet>
+
+	<changeSet id="uiframework-20160919" author="pgutkowski">
+		<preConditions>
+			<not><tableExists tableName="uiframework_page_override"/></not>
+		</preConditions>
+		<comment>Adding uiframework_page_override table</comment>
+		<createTable tableName="uiframework_page_override">
+			<column name="page_override_id" type="int" autoIncrement="true">
+				<constraints nullable="false" primaryKey="true"/>
+			</column>
+			<column name="page_name" type="varchar(100)"><constraints nullable="false"/></column>
+			<column name="provider_name" type="varchar(100)"><constraints nullable="false"/></column>
+			<column name="overridden_page_name" type="varchar(100)"><constraints nullable="false"/></column>
+			<column name="overridden_provider_name" type="varchar(100)"><constraints nullable="false"/></column>
+			<column name="active" type="boolean"/>
+			<column name="uuid" type="varchar(38)"><constraints nullable="false" unique="true"/></column>
+		</createTable>
+	</changeSet>
  
 </databaseChangeLog>

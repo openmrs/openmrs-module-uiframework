@@ -5,6 +5,7 @@
 
 <hibernate-configuration>
     <session-factory>
-      <mapping resource="UserDefinedPageView.hbm.xml" />
+        <mapping resource="UserDefinedPageView.hbm.xml"/>
+        <mapping resource="PageOverride.hbm.xml" />
     </session-factory>
 </hibernate-configuration>

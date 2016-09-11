@@ -21,9 +21,12 @@ import org.openmrs.ui.framework.fragment.GroovyFragmentViewProvider;
 import org.openmrs.ui.framework.page.ConventionBasedClasspathPageControllerProvider;
 import org.openmrs.ui.framework.page.GroovyPageViewProvider;
 import org.openmrs.ui.framework.page.PageFactory;
+import org.openmrs.ui.framework.page.PageOverrideRequest;
 import org.openmrs.ui.framework.resource.ModuleResourceProvider;
 import org.openmrs.ui.framework.resource.ResourceFactory;
+import org.openmrs.ui.framework.util.ConventionBasedOverrideScanner;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -113,6 +116,11 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 			rp.setResourceShortcuts(resourceShortcuts);
 			resourceFactory.addResourceProvider(moduleId, rp);
 		}
+
+		// register overrides
+		{
+			List<PageOverrideRequest> pageOverrides = ConventionBasedOverrideScanner.getInstance().getPageOverrideIdentifiersToOrderMap(moduleId);
+			pageFactory.addAllPageOverrides(pageOverrides);
+		}
 	}
-	
 }

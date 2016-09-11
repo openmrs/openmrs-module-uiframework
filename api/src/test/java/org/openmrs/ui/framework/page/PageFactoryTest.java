@@ -33,6 +33,7 @@ public class PageFactoryTest {
 	public void beforeEachTest() throws Exception {
 
 		factory = new PageFactory();
+		factory.pageOverrideHandler = new PageOverrideHandlerImpl();
 
 		Map<String, PageControllerProvider> cps = new HashMap<String, PageControllerProvider>();
 		cps.put("somemodule", new MockControllerProvider("somepage"));
