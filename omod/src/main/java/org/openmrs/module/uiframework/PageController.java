@@ -140,6 +140,7 @@ public class PageController {
             // special-case if this is due to the user not being logged in
             APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
             if (authEx != null) {
+                httpSession.setAttribute("_REFERENCE_APPLICATION_REDIRECT_URL_", request.getRequestURL());
                 throw authEx;
             }
             
