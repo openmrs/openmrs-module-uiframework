@@ -14,6 +14,7 @@
 package org.openmrs.module.uiframework;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.WebConstants;
@@ -140,7 +141,12 @@ public class PageController {
             // special-case if this is due to the user not being logged in
             APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
             if (authEx != null) {
-                httpSession.setAttribute("_REFERENCE_APPLICATION_REDIRECT_URL_", request.getRequestURL());
+            	StringBuffer url = request.getRequestURL();
+            	String queryStr = request.getQueryString();
+            	if (StringUtils.isNotBlank(queryStr)) {
+            		url = url.append("?").append(queryStr);
+            	}
+                httpSession.setAttribute("_REFERENCE_APPLICATION_REDIRECT_URL_", url);
                 throw authEx;
             }
             
