@@ -14,7 +14,7 @@
 package org.openmrs.module.uiframework;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIAuthenticationException;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.WebConstants;
