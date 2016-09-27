@@ -247,7 +247,16 @@ public class FragmentActionController {
                 String formatted = formatterService.getFormatter().format(((ObjectResult) resultObject).getWrapped(), Context.getLocale());
                 model.addAttribute("html", formatted);
                 return SHOW_HTML_VIEW;
-
+            } else if (resultObject instanceof SimpleObject) {
+            	Object result;
+            	if (ModuleUtil.compareVersion(OpenmrsConstants.OPENMRS_VERSION_SHORT, "1.11.0") >= 0) {
+            		result = resultObject;
+            	}
+            	else {
+            		result = toJson(resultObject);
+            	}
+                model.addAttribute("html", result);
+                return SHOW_HTML_VIEW;
             } else {
                 throw new RuntimeException("Don't know how to handle fragment action result type: "
                         + resultObject.getClass());
