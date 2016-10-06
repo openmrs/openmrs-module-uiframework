@@ -124,6 +124,9 @@ public class PageController {
             if (ret.startsWith("/" + WebConstants.CONTEXT_PATH + "/")) {
                 ret = ret.substring(WebConstants.CONTEXT_PATH.length() + 1);
             }
+            
+            setRedirectUrl(request);
+            
             return "redirect:" + ret;
         } catch (FileDownload download) {
             response.setContentType(download.getContentType());
@@ -141,12 +144,7 @@ public class PageController {
             // special-case if this is due to the user not being logged in
             APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
             if (authEx != null) {
-            	StringBuffer url = request.getRequestURL();
-            	String queryStr = request.getQueryString();
-            	if (StringUtils.isNotBlank(queryStr)) {
-            		url = url.append("?").append(queryStr);
-            	}
-                httpSession.setAttribute("_REFERENCE_APPLICATION_REDIRECT_URL_", url);
+            	setRedirectUrl(request);
                 throw authEx;
             }
             
@@ -169,6 +167,15 @@ public class PageController {
 
             return "/module/uiframework/uiError";
         }
+    }
+    
+    private void setRedirectUrl(HttpServletRequest request) {
+    	StringBuffer url = request.getRequestURL();
+    	String queryStr = request.getQueryString();
+    	if (StringUtils.isNotBlank(queryStr)) {
+    		url = url.append("?").append(queryStr);
+    	}
+        request.getSession().setAttribute("_REFERENCE_APPLICATION_REDIRECT_URL_", url);
     }
 
     /**
