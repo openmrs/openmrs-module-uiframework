@@ -13,12 +13,10 @@ public class ConventionBasedClasspathPageControllerProvider implements PageContr
 	
 	@Override
 	public Object getController(String pageName) {
-		StringBuilder className = new StringBuilder();
-		className.append(basePackage).append('.').append(pageName.replaceAll("/", ".")).append("PageController");
 		if (developmentFolder == null)
-			return getClassIfExistsInProductionMode(capitalizeClassName(className).toString());
+			return getClassIfExistsInProductionMode(PageControllerNamingConvention.toControllerName(basePackage, pageName));
 		else
-			return getClassIfExistsInDevelopmentMode(capitalizeClassName(className).toString());
+			return getClassIfExistsInDevelopmentMode(PageControllerNamingConvention.toControllerName(basePackage, pageName));
 	}
 	
 	private Object getClassIfExistsInProductionMode(String className) {

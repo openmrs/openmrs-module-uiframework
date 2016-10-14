@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <uiframework_page_override
+            page_override_id="1"
+            uuid="e5237ef2-03be-47e8-9bbd-7a33d9c9fe7c"
+            page_name = "home"
+            provider_name = "awesomemodule"
+            overridden_page_name = "home"
+            overridden_provider_name = "referenceapplication"
+            active = "false"
+    />
+
+    <uiframework_page_override
+            page_override_id="2"
+            uuid="c261b897-6298-44b7-bc50-f304b6a47560"
+            page_name = "dashboard"
+            provider_name = "awesomemodule"
+            overridden_page_name = "dashboard"
+            overridden_provider_name = "referenceapplication"
+            active = "true"
+    />
+
+    <uiframework_page_override
+            page_override_id="3"
+            uuid="f8237ef2-03be-47e8-9bbd-7a33d9c9fe7c"
+            page_name = "admin"
+            provider_name = "othermodule"
+            overridden_page_name = "admin"
+            overridden_provider_name = "referenceapplication"
+            active = "false"
+    />
+</dataset>

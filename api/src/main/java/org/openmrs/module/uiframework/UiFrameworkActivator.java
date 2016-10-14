@@ -90,6 +90,7 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 				log.error("Error in UiContextRefreshedCallback: " + callback, ex);
 			}
 		}
+		pageFactory.initializePageOverrideHandler();
 	}
 	
 	

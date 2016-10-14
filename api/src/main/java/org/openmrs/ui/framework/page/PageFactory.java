@@ -1,14 +1,5 @@
 package org.openmrs.ui.framework.page;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.openmrs.ui.framework.Model;
 import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.UiFrameworkException;
@@ -28,6 +19,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.convert.ConversionService;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PageFactory {
 	
@@ -64,10 +63,14 @@ public class PageFactory {
 	
 	@Autowired(required = false)
 	List<PossiblePageControllerArgumentProvider> possiblePageControllerArgumentProviders;
-	
+
+	//registry of all loaded overrides
+	@Autowired
+	PageOverrideHandler pageOverrideHandler;
+
 	// a singleton one of these that can be reused
 	private EmptyPageController emptyController = new EmptyPageController();
-	
+
 	public String handle(PageRequest request) throws PageAction {
 		long startTime = System.currentTimeMillis();
 		// create a context for processing this page
@@ -95,35 +98,40 @@ public class PageFactory {
 
         return result;
 	}
-	
+
 	/**
 	 * Allow modules to override page handling via {@link PageRequestMapper}s.
 	 * Sets this internal page provider and name on request
 	 * @param request
 	 */
 	private void overridePageProviderAndName(PageRequest request) {
+		boolean mapped = false;
 		if (requestMappers != null) {
 			for (PageRequestMapper mapper : requestMappers) {
-				boolean mapped = mapper.mapRequest(request);
+				mapped = mapper.mapRequest(request);
 				if (mapped) {
 					break;
 				}
 			}
 		}
+
+		if(!mapped){
+			pageOverrideHandler.overrideRequest(request);
+		}
 	}
-	
+
 	public String process(PageContext context) throws PageAction {
 		String result = processThisFragment(context);
 		if (context.getDecorateWith() == null)
 			return result;
-		
+
 		FragmentRequest decoratorRequest = context.getDecorateWith();
 		decoratorRequest.getConfiguration().put("content", result);
 		FragmentContext decoratorContext = new FragmentContext(decoratorRequest, context);
 		result = fragmentFactory.process(decoratorContext);
 		return result;
 	}
-	
+
 	private String processThisFragment(PageContext context) throws PageAction {
 		// determine what controller to use
 		Object controller = getController(context.getRequest());
@@ -138,7 +146,7 @@ public class PageFactory {
 				}
 			}
 			catch (Exception ex) {
-				// this probably means we didn't find a view. Pass now to fail later 
+				// this probably means we didn't find a view. Pass now to fail later
 			}
 			// TODO determine the controller from the view
 			if (controller == null) {
@@ -154,36 +162,36 @@ public class PageFactory {
 				interceptor.beforeHandleRequest(context);
 			}
 		}
-		
+
 		// let the controller handle the request
 		// TODO: refactor because fragment controllers can now also return a FragmentRequest
 		Object resultObject = handleRequestWithController(context);
-		
+
 		if (resultObject instanceof PageAction) {
 			throw (PageAction) resultObject;
 		}
-		
+
 		String result = (String) resultObject;
-		
+
 		// check if there was redirect (other than via a thrown PageAction)
 		if (result != null && result.startsWith("redirect:")) {
 			String toApplicationUrl = result.substring("redirect:".length());
 			throw new Redirect(toApplicationUrl);
 		}
-		
+
 		// If the controller returns a simple string, we interpret that as a view in the requested provider.
 		// The controller should return "*:viewName" to search all providers.
 		if (result != null && result.indexOf(':') <= 0) {
 			result = context.getRequest().getMappedProviderName() + ":" + result;
 		}
-		
+
 		// determine what view to use
 		// (if the controller requests the default view, and we have it from earlier, we use that)
 		if (result != null || view == null) {
 			view = getView(result, context.getRequest());
 		}
 		context.setView(view);
-		
+
 		String output = view.render(context);
 		return output;
 	}
@@ -228,7 +236,7 @@ public class PageFactory {
 	Object getController(PageRequest request) {
 		return getController(request.getMappedProviderName(), request.getMappedPageName());
 	}
-	
+
 	private Object getController(String providerName, String pageName) {
 		if (controllerProviders == null) {
 			return null;
@@ -248,7 +256,7 @@ public class PageFactory {
 			return provider.getController(pageName);
 		}
 	}
-	
+
 	/**
 	 * @param viewProviderAndName null indicates we should use the default view for request,
 	 *            otherwise this should be "providerName:viewName"
@@ -297,21 +305,21 @@ public class PageFactory {
 			return ret;
 		}
 	}
-	
+
 	/**
 	 * @return the controllerProviders
 	 */
 	public Map<String, PageControllerProvider> getControllerProviders() {
 		return controllerProviders;
 	}
-	
+
 	/**
 	 * @param newControllerProviders the controllerProviders to set
 	 */
 	public void setControllerProviders(Map<String, PageControllerProvider> newControllerProviders) {
 		controllerProviders = newControllerProviders;
 	}
-	
+
 	/**
 	 * Adds the given controller providers to the existing ones. (I.e. this is not a proper setter.)
 	 * @param additional
@@ -322,7 +330,7 @@ public class PageFactory {
 			addControllerProvider(e.getKey(), e.getValue());
 		}
 	}
-	
+
 	/**
 	 * Registers a Page Controller Provider.
 	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
@@ -336,22 +344,21 @@ public class PageFactory {
 
 		controllerProviders.put(key, provider);
 	}
-	
+
 	/**
 	 * @return the viewProviders
 	 */
 	public Map<String, PageViewProvider> getViewProviders() {
 		return viewProviders;
 	}
-	
+
 	/**
 	 * @param newViewProviders the viewProviders to set
 	 */
 	public void setViewProviders(Map<String, PageViewProvider> newViewProviders) {
 		viewProviders = newViewProviders;
 	}
-	
-	
+
 	/**
 	 * Adds the given view providers to the existing ones. (I.e. this is not a proper setter.)
 	 * @param additional
@@ -362,8 +369,8 @@ public class PageFactory {
 			addViewProvider(e.getKey(), e.getValue());
 		}
 	}
-			
-		
+
+
 	/**
 	 * Registers a Page View Provider
 	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
@@ -374,24 +381,33 @@ public class PageFactory {
 		}
 
 		UiFrameworkUtil.checkAndSetDevelopmentModeForProvider(key, provider);
-		
+
 		viewProviders.put(key, provider);
 	}
-	
+
+
+	public void addPageOverride(PageOverrideRequest request) {
+		pageOverrideHandler.requestPageOverride(request);
+	}
+
+	public void addAllPageOverrides(List<PageOverrideRequest> c) {
+		pageOverrideHandler.requestPageOverrides(c);
+	}
+
 	/**
 	 * @return the requestMappers
 	 */
 	public List<PageRequestMapper> getRequestMappers() {
 		return requestMappers;
 	}
-	
+
 	/**
 	 * @param requestMappers the requestMappers to set
 	 */
 	public void setRequestMappers(List<PageRequestMapper> requestMappers) {
 		this.requestMappers = requestMappers;
 	}
-	
+
 	public ConversionService getConversionService() {
 		return conversionService;
 	}
@@ -422,5 +438,9 @@ public class PageFactory {
 	 */
 	public void setPageRequestInterceptors(List<PageRequestInterceptor> pageRequestInterceptors) {
 		this.pageRequestInterceptors = pageRequestInterceptors;
+	}
+
+	public void initializePageOverrideHandler(){
+		pageOverrideHandler.initialize();
 	}
 }
