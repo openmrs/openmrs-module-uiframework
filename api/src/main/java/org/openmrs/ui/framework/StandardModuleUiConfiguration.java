@@ -13,6 +13,8 @@
  */
 package org.openmrs.ui.framework;
 
+import java.util.Map;
+
 import org.openmrs.module.ModuleClassLoader;
 import org.openmrs.module.ModuleFactory;
 import org.openmrs.ui.framework.fragment.ConventionBasedClasspathFragmentControllerProvider;
@@ -24,8 +26,6 @@ import org.openmrs.ui.framework.page.PageFactory;
 import org.openmrs.ui.framework.resource.ModuleResourceProvider;
 import org.openmrs.ui.framework.resource.ResourceFactory;
 
-import java.util.Map;
-
 /**
  *
  */
@@ -33,6 +33,11 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 	
 	private String moduleId;
 	private Map<String, String> resourceShortcuts;
+	
+	private Map<String, String> fragmentDirectoryMap;
+	private Map<String, String> pageDirectoryMap;
+	private Map<String, String> resourceDirectoryMap;
+	private Map<String, String> classDirectoryMap;
 
     @Override
     public String toString() {
@@ -67,6 +72,38 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
     	this.resourceShortcuts = resourceShortcuts;
     }
 
+	public Map<String, String> getFragmentDirectoryMap() {
+		return fragmentDirectoryMap;
+	}
+	
+	public void setFragmentDirectoryMap(Map<String, String> fragmentDirectoryMap) {
+		this.fragmentDirectoryMap = fragmentDirectoryMap;
+	}
+	
+	public Map<String, String> getPageDirectoryMap() {
+		return pageDirectoryMap;
+	}
+
+	public void setPageDirectoryMap(Map<String, String> pageDirectoryMap) {
+		this.pageDirectoryMap = pageDirectoryMap;
+	}
+
+	public Map<String, String> getResourceDirectoryMap() {
+		return resourceDirectoryMap;
+	}
+
+	public void setResourceDirectoryMap(Map<String, String> resourceDirectoryMap) {
+		this.resourceDirectoryMap = resourceDirectoryMap;
+	}
+
+	public Map<String, String> getClassDirectoryMap() {
+		return classDirectoryMap;
+	}
+
+	public void setClassDirectoryMap(Map<String, String> classDirectoryMap) {
+		this.classDirectoryMap = classDirectoryMap;
+	}
+
 	/**
 	 * @see org.openmrs.ui.framework.UiContextRefreshedCallback#afterContextRefreshed(org.openmrs.ui.framework.page.PageFactory,
 	 *      org.openmrs.ui.framework.fragment.FragmentFactory, ResourceFactory)
@@ -82,6 +119,7 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 		{
 			ConventionBasedClasspathPageControllerProvider pcp = new ConventionBasedClasspathPageControllerProvider();
 			pcp.setBasePackage("org.openmrs.module." + moduleId + ".page.controller");
+			pcp.setClassDirectoryMap(classDirectoryMap);
 			pageFactory.addControllerProvider(moduleId, pcp);
 		}
 		
@@ -89,6 +127,7 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 		{
 			GroovyPageViewProvider pvp = new GroovyPageViewProvider();
 			pvp.setViewClassLoader(moduleClassLoader);
+			pvp.setPageDirectoryMap(pageDirectoryMap);
 			pageFactory.addViewProvider(moduleId, pvp);
 		}
 		
@@ -96,6 +135,7 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 		{
 			ConventionBasedClasspathFragmentControllerProvider fcp = new ConventionBasedClasspathFragmentControllerProvider();
 			fcp.setBasePackage("org.openmrs.module." + moduleId + ".fragment.controller");
+			fcp.setClassDirectoryMap(classDirectoryMap);
 			fragmentFactory.addControllerProvider(moduleId, fcp);
 		}
 	
@@ -103,6 +143,7 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 		{
 			GroovyFragmentViewProvider fvp = new GroovyFragmentViewProvider();
 			fvp.setViewClassLoader(moduleClassLoader);
+			fvp.setFragmentDirectoryMap(fragmentDirectoryMap);
 			fragmentFactory.addViewProvider(moduleId, fvp);
 		}
 		
@@ -111,6 +152,7 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 			ModuleResourceProvider rp = new ModuleResourceProvider();
 			rp.setModuleClassLoader(moduleClassLoader);
 			rp.setResourceShortcuts(resourceShortcuts);
+			rp.setResourceDirectoryMap(resourceDirectoryMap);
 			resourceFactory.addResourceProvider(moduleId, rp);
 		}
 	}
