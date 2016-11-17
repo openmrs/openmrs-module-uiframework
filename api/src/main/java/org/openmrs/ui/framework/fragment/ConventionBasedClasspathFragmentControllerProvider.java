@@ -1,6 +1,7 @@
 package org.openmrs.ui.framework.fragment;
 
 import java.io.File;
+import java.util.List;
 
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.DevelopmentClassLoader;
@@ -9,13 +10,14 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	
 	private String basePackage;
 	
-	private File developmentFolder;
+	private List<File> developmentFolders;
+	private List<String> developmentFolderNames;
 	
 	@Override
 	public Object getController(String fragmentName) {
 		StringBuilder className = new StringBuilder();
 		className.append(basePackage).append('.').append(fragmentName.replaceAll("/", ".")).append("FragmentController");
-		if (developmentFolder == null)
+		if (developmentFolders == null)
 			return getClassIfExistsInProductionMode(capitalizeClassName(className).toString());
 		else
 			return getClassIfExistsInDevelopmentMode(capitalizeClassName(className).toString());
@@ -38,7 +40,7 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	
 	private Object getClassIfExistsInDevelopmentMode(String className) {
 		try {
-			Class<?> clazz = new DevelopmentClassLoader(developmentFolder, basePackage).loadClass(className);
+			Class<?> clazz = new DevelopmentClassLoader(developmentFolders, basePackage).loadClass(className);
 			return clazz.newInstance();
 		}
 		catch (ClassNotFoundException ex) {
@@ -68,19 +70,20 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	public void setBasePackage(String basePackage) {
 		this.basePackage = basePackage;
 	}
-	
-    /**
-     * @return the developmentFolder
-     */
-    public File getDevelopmentFolder() {
-    	return developmentFolder;
-    }
+    
+	public List<File> getDevelopmentFolders() {
+		return developmentFolders;
+	}
 
-    /**
-     * @param developmentFolder the developmentFolder to set
-     */
-    public void setDevelopmentFolder(File developmentFolder) {
-    	this.developmentFolder = developmentFolder;
-    }
+	public void setDevelopmentFolders(List<File> developmentFolders) {
+		this.developmentFolders = developmentFolders;
+	}
 	
+	public List<String> getDevelopmentFolderNames() {
+		return developmentFolderNames;
+	}
+
+	public void setDevelopmentFolderNames(List<String> developmentFolderNames) {
+		this.developmentFolderNames = developmentFolderNames;
+	}
 }

@@ -14,12 +14,10 @@
 package org.openmrs.ui.framework.resource;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import org.openmrs.module.ModuleClassLoader;
-import org.openmrs.ui.framework.UiFrameworkException;
 
 
 /**
@@ -27,7 +25,8 @@ import org.openmrs.ui.framework.UiFrameworkException;
  */
 public class ModuleResourceProvider implements ResourceProvider {
 	
-	private File developmentFolder;
+	private List<File> developmentFolders;
+	private List<String> developmentFolderNames;
 	private ModuleClassLoader moduleClassLoader;
 	private String resourcePrefix = "web/module/resources/";
 	private Map<String, String> resourceShortcuts;
@@ -40,10 +39,15 @@ public class ModuleResourceProvider implements ResourceProvider {
 		if (resourceShortcuts != null && resourceShortcuts.containsKey(path))
 			path = resourceShortcuts.get(path);
 		
-		if (developmentFolder != null) {
-    		// we're in development mode, and we want to dynamically reload resource from this filesystem directory
-			File file = new File(developmentFolder, path);
-			return file.exists() ? file : null;
+		if (developmentFolders != null) {
+			for (File developmentFolder : developmentFolders) {
+	    		// we're in development mode, and we want to dynamically reload resource from this filesystem directory
+				File file = new File(developmentFolder, path);
+				if (file.exists()) {
+					return file;
+				}
+			}
+			return null;
     	}
     	else {
     		ModuleClassLoader mcl = moduleClassLoader != null ? moduleClassLoader : (ModuleClassLoader) getClass().getClassLoader();
@@ -71,20 +75,22 @@ public class ModuleResourceProvider implements ResourceProvider {
     public void setModuleClassLoader(ModuleClassLoader moduleClassLoader) {
     	this.moduleClassLoader = moduleClassLoader;
     }
-	
-    /**
-     * @return the developmentFolder
-     */
-    public File getDevelopmentFolder() {
-    	return developmentFolder;
-    }
 
-    /**
-     * @param developmentFolder the developmentFolder to set
-     */
-    public void setDevelopmentFolder(File developmentFolder) {
-    	this.developmentFolder = developmentFolder;
-    }
+	public List<File> getDevelopmentFolders() {
+		return developmentFolders;
+	}
+
+	public void setDevelopmentFolders(List<File> developmentFolders) {
+		this.developmentFolders = developmentFolders;
+	}
+	
+	public List<String> getDevelopmentFolderNames() {
+		return developmentFolderNames;
+	}
+
+	public void setDevelopmentFolderNames(List<String> developmentFolderNames) {
+		this.developmentFolderNames = developmentFolderNames;
+	}
 
     /**
      * @param resourceShortcuts the resourceShortcuts to set

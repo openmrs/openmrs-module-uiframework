@@ -1,19 +1,21 @@
 package org.openmrs.ui.framework.page;
 
-import groovy.text.SimpleTemplateEngine;
-import groovy.text.Template;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.openmrs.util.OpenmrsUtil;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.openmrs.util.OpenmrsUtil;
+
+import groovy.text.SimpleTemplateEngine;
+import groovy.text.Template;
 
 /**
  * Generates views based on Groovy templates, stored in ".gsp" files.
@@ -28,7 +30,8 @@ public class GroovyPageViewProvider implements PageViewProvider {
 	//config properties
 	private ClassLoader viewClassLoader;
 	private String resourcePrefix = "web/module/pages/";
-	private File developmentFolder;
+	private List<File> developmentFolders;
+	private List<String> developmentFolderNames;
 	
 	// internal data
 	SimpleTemplateEngine engine = new SimpleTemplateEngine(getClass().getClassLoader());
@@ -56,7 +59,7 @@ public class GroovyPageViewProvider implements PageViewProvider {
 
             Template template = engine.createTemplate(gsp);
             GroovyPageView compiledView = new GroovyPageView(template, controllerProviderAndName);
-            if (developmentFolder == null) {
+            if (developmentFolders == null) {
                 // cache for performance, since compiling templates is expensive.
                 // Also we suspect that compiling groovy templates leaks permgen memory
                 cache.put(name, compiledView);
@@ -75,12 +78,15 @@ public class GroovyPageViewProvider implements PageViewProvider {
 	 * @throws Exception
 	 */
 	public String getViewContents(String name) throws Exception {
-		if (developmentFolder != null) {
-			// we're in development mode, and we want to dynamically reload views from this filesystem directory
-			File file = new File(developmentFolder, name + ".gsp");
-			if (!file.exists())
-				return null;
-			return OpenmrsUtil.getFileAsString(file);
+		if (developmentFolders != null) {
+			for (File developmentFolder : developmentFolders) {
+				// we're in development mode, and we want to dynamically reload views from this filesystem directory
+				File file = new File(developmentFolder, name + ".gsp");
+				if (file.exists()) {
+					return OpenmrsUtil.getFileAsString(file);
+				}
+			}
+			return null;
 		}
 		// we're not in development mode, so we get the view from the module's classpath 
 		else {
@@ -112,25 +118,24 @@ public class GroovyPageViewProvider implements PageViewProvider {
     public void setResourcePrefix(String resourcePrefix) {
     	this.resourcePrefix = resourcePrefix;
     }
-
-    
-    /**
-     * @return the developmentFolder
-     */
-    public File getDevelopmentFolder() {
-    	return developmentFolder;
-    }
 	
-    
-    /**
-     * @param developmentFolder the developmentFolder to set
-     */
-    public void setDevelopmentFolder(File developmentFolder) {
-    	this.developmentFolder = developmentFolder;
-    }
+	public List<File> getDevelopmentFolders() {
+		return developmentFolders;
+	}
 
+	public void setDevelopmentFolders(List<File> developmentFolders) {
+		this.developmentFolders = developmentFolders;
+	}
+
+	public List<String> getDevelopmentFolderNames() {
+		return developmentFolderNames;
+	}
+
+	public void setDevelopmentFolderNames(List<String> developmentFolderNames) {
+		this.developmentFolderNames = developmentFolderNames;
+	}
 	
-    /**
+	/**
      * @return the viewClassLoader
      */
     public ClassLoader getViewClassLoader() {

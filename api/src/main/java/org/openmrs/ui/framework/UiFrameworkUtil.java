@@ -1,5 +1,19 @@
 package org.openmrs.ui.framework;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -39,17 +53,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
 
 public class UiFrameworkUtil {
 	
@@ -567,29 +570,40 @@ public class UiFrameworkUtil {
 	 */
 	private static boolean addPossibleDevFolder(String baseFolder, String key, Object provider) {
 
-		// Get the appropriate folderPath to check, given the type of provider passed in
-		String folderPath = baseFolder + File.separator + "omod" + File.separator;
-		if (provider instanceof ResourceProvider) {
-			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
+		List<File> folders = new ArrayList<File>();
+		
+		List<String> folderNames = getDevelopmentFolderNames(provider);
+		if (folderNames.isEmpty()) {
+			folderNames.add("omod");
 		}
-		else if (provider instanceof PageViewProvider) {
-			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages";
+		
+		for (String folderName : folderNames) {
+			// Get the appropriate folderPath to check, given the type of provider passed in
+			String folderPath = baseFolder + File.separator + folderName + File.separator;
+			if (provider instanceof ResourceProvider) {
+				folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
+			}
+			else if (provider instanceof PageViewProvider) {
+				folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages";
+			}
+			else if (provider instanceof FragmentViewProvider) {
+				folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "fragments";
+			}
+			else if (provider instanceof PageControllerProvider || provider instanceof FragmentControllerProvider) {
+				folderPath += "target" + File.separator + "classes";
+			}
+			else {
+				throw new IllegalArgumentException("Provider is not of an expected type.  Found: " + provider.getClass());
+			}
+	
+			File devFolder = new File(folderPath);
+			folders.add(devFolder);
 		}
-		else if (provider instanceof FragmentViewProvider) {
-			folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "fragments";
-		}
-		else if (provider instanceof PageControllerProvider || provider instanceof FragmentControllerProvider) {
-			folderPath += "target" + File.separator + "classes";
-		}
-		else {
-			throw new IllegalArgumentException("Provider is not of an expected type.  Found: " + provider.getClass());
-		}
-
-		File devFolder = new File(folderPath);
-		if (devFolder.exists() && devFolder.isDirectory()) {
+		
+		if (folderExists(folders)) {
 			try {
-				PropertyUtils.setProperty(provider, "developmentFolder", devFolder);
-				log.warn("Folder " + devFolder.getAbsolutePath() + " successfully set as developmentFolder mode folder for provider " + key);
+				PropertyUtils.setProperty(provider, "developmentFolders", folders);
+				log.warn("Folders " + folders + " successfully set as developmentFolder mode folders for provider " + key);
 				return true;
 			}
 			catch (Exception ex) {
@@ -598,7 +612,29 @@ public class UiFrameworkUtil {
 		}
 		return false;
 	}
-
+	
+	private static boolean folderExists(List<File> folders) {
+		for (File file : folders) {
+			if (file.exists() && file.isDirectory()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private static List<String> getDevelopmentFolderNames(Object provider) {
+		try {
+			List<String> folders = (List<String>)PropertyUtils.getProperty(provider, "developmentFolderNames");
+			if (folders == null) {
+				folders = new ArrayList<String>();
+			}
+			return folders;
+		}
+		catch (Exception ex) {
+			throw new RuntimeException("developmentFolders property not found for Provider: " + provider.getClass());
+		}
+	}
+	
 	/**
 	 * @return the property value with the given key from the OpenMRS runtime properties, of if not found, from a system property
 	 */
