@@ -13,6 +13,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
+import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
 import org.openmrs.Obs;
 import org.openmrs.OpenmrsMetadata;
@@ -163,7 +164,12 @@ public class FormatterImpl implements Formatter {
 
     private String format(Concept c, Locale locale) {
 		String override = getLocalization(locale, "Concept", c.getUuid());
-		return override != null ? override : c.getName(locale).getName();
+		ConceptName conceptName = c.getName(locale);
+		if (conceptName == null) {
+			//just get name in any locale
+			conceptName = c.getName();
+		}
+		return override != null ? override : conceptName.getName();
 	}
 
     private String format(Person p, Locale locale) {
