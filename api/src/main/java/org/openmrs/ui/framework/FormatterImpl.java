@@ -164,12 +164,16 @@ public class FormatterImpl implements Formatter {
 
     private String format(Concept c, Locale locale) {
 		String override = getLocalization(locale, "Concept", c.getUuid());
+		if (override != null) {
+			return override;
+		}
+		
 		ConceptName conceptName = c.getName(locale);
 		if (conceptName == null) {
 			//just get name in any locale
 			conceptName = c.getName();
 		}
-		return override != null ? override : conceptName.getName();
+		return conceptName.getName();
 	}
 
     private String format(Person p, Locale locale) {
