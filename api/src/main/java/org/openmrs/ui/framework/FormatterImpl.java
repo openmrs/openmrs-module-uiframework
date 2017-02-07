@@ -219,7 +219,26 @@ public class FormatterImpl implements Formatter {
 		    return o.getValueAsString(locale) + (StringUtils.isNotBlank(units) ? " " + units : "");
         }
         else {
-            return o.getValueAsString(locale);
+        	if (o.hasGroupMembers()) {
+        		StringBuilder sb = new StringBuilder();
+    			for (Obs groupMember : o.getGroupMembers()) {
+    				if (sb.length() > 0) {
+    					sb.append(", ");
+    				}
+    				ConceptName conceptName = groupMember.getConcept().getName(locale);
+    				if (conceptName == null) {
+    					//just get available name in any locale
+    					conceptName = groupMember.getConcept().getName();
+    				}
+    				sb.append(conceptName.getName());
+    				sb.append(": ");
+    				sb.append(groupMember.getValueAsString(locale));
+    			}
+    			return sb.toString();
+        	}
+        	else {
+        		return o.getValueAsString(locale);
+        	}
         }
 	}
 
