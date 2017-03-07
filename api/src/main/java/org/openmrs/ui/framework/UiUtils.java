@@ -322,6 +322,7 @@ public abstract class UiUtils {
         url = url.replace("{{visit.id}}", visit.getId().toString());
         url = url.replace("{{visit.visitId}}", visit.getId().toString());
         url = url.replace("{{visit.uuid}}", visit.getUuid());
+        url = url.replace("{{visitUuid}}", visit.getUuid());
         url = urlBind(url, visit.getPatient());
         return url;
     }
@@ -331,6 +332,7 @@ public abstract class UiUtils {
         url = url.replace("{{patient.id}}", patient.getId().toString());
         url = url.replace("{{patient.patientId}}", patient.getId().toString());
         url = url.replace("{{patient.uuid}}", patient.getUuid());
+        url = url.replace("{{patientUuid}}", patient.getUuid());
         return url;
     }
 

@@ -116,8 +116,8 @@ public class UiUtilsTest {
         visit.setUuid("visit_uuid");
         visit.setPatient(patient);
 
-        String url = "someUrl.page?patientId={{patientId}}&patientId={{patient.id}}&patient={{patient.uuid}}&patientid={{patient.patientId}}&visitId={{visitId}}&visit.id={{visit.id}}&visit={{visit.uuid}}&visit={{visit.visitId}}";
-        Assert.assertEquals("someUrl.page?patientId=2&patientId=2&patient=patient_uuid&patientid=2&visitId=3&visit.id=3&visit=visit_uuid&visit=3", ui.urlBind(url, visit));
+        String url = "someUrl.page?patientId={{patientId}}&patientId={{patient.id}}&patient={{patient.uuid}}&patientUuid={{patientUuid}}&patientid={{patient.patientId}}&visitId={{visitId}}&visit.id={{visit.id}}&visit={{visit.uuid}}&visitUuid={{visitUuid}}&visit={{visit.visitId}}";
+        Assert.assertEquals("someUrl.page?patientId=2&patientId=2&patient=patient_uuid&patientUuid=patient_uuid&patientid=2&visitId=3&visit.id=3&visit=visit_uuid&visitUuid=visit_uuid&visit=3", ui.urlBind(url, visit));
 
     }
 }
