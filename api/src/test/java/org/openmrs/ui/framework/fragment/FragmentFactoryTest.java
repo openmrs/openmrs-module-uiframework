@@ -197,7 +197,8 @@ public class FragmentFactoryTest {
 
         MockHttpServletRequest httpRequest = new MockHttpServletRequest();
         httpRequest.setSession(new MockHttpSession());
-        factory.invokeFragmentAction("test", "test", "action", httpRequest);
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+        factory.invokeFragmentAction("test", "test", "action", httpRequest, httpResponse);
     }
 
     @Test(expected = UiFrameworkException.class)
@@ -211,7 +212,8 @@ public class FragmentFactoryTest {
 
         MockHttpServletRequest httpRequest = new MockHttpServletRequest();
         httpRequest.setSession(new MockHttpSession());
-        factory.invokeFragmentAction("test", "test", "hashCode", httpRequest);
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+        factory.invokeFragmentAction("test", "test", "hashCode", httpRequest, httpResponse);
     }
 
     @Test(expected = UiFrameworkException.class)
@@ -225,7 +227,8 @@ public class FragmentFactoryTest {
 
         MockHttpServletRequest httpRequest = new MockHttpServletRequest();
         httpRequest.setSession(new MockHttpSession());
-        factory.invokeFragmentAction("test", "test", "controller", httpRequest);
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+        factory.invokeFragmentAction("test", "test", "controller", httpRequest, httpResponse);
     }
 
 	class MockControllerProvider implements FragmentControllerProvider {
