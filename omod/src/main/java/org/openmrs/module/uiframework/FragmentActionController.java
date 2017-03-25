@@ -140,7 +140,7 @@ public class FragmentActionController {
 
 		Object resultObject;
 		try {
-			resultObject = fragmentFactory.invokeFragmentAction(providerName, fragmentName, action, request);
+			resultObject = fragmentFactory.invokeFragmentAction(providerName, fragmentName, action, request, response);
 
 			// Default status code for failures is 400 (BAD REQUEST), successes is 200 (OK)
 			response.setStatus((resultObject instanceof FailureResult) ? 400 : 200);

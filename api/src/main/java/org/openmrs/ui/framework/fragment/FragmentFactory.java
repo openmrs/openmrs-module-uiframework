@@ -424,7 +424,7 @@ public class FragmentFactory {
 		viewProviders.put(key, provider);
 	}
 	
-	public Object invokeFragmentAction(String providerName, String fragmentName, String action, HttpServletRequest httpRequest) {
+	public Object invokeFragmentAction(String providerName, String fragmentName, String action, HttpServletRequest httpRequest, HttpServletResponse httpServletResponse) {
 		log.info("Invoking " + providerName + ":" + fragmentName + " . " + action);
         if ("controller".equals(action)) {
             throw new UiFrameworkException("Illegal to access fragment controller() method as an action");
@@ -463,6 +463,7 @@ public class FragmentFactory {
 		Map<Class<?>, Object> possibleArguments = new LinkedHashMap<Class<?>, Object>();
 		possibleArguments.put(FragmentActionRequest.class, request);
 		possibleArguments.put(HttpServletRequest.class, httpRequest);
+		possibleArguments.put(HttpServletResponse.class, httpServletResponse);
 		possibleArguments.put(HttpSession.class, httpRequest.getSession());
 		possibleArguments.put(UiUtils.class, request.getUiUtils());
 		possibleArguments.put(Session.class, sessionFactory.getSession(httpRequest.getSession()));
