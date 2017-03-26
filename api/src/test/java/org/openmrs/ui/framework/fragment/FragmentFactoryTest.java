@@ -20,6 +20,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -197,7 +199,23 @@ public class FragmentFactoryTest {
 
         MockHttpServletRequest httpRequest = new MockHttpServletRequest();
         httpRequest.setSession(new MockHttpSession());
-        factory.invokeFragmentAction("test", "test", "action", httpRequest);
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+        factory.invokeFragmentAction("test", "test", "action", httpRequest, httpResponse);
+    }
+
+    @Test
+    public void shouldInjectRequestResponseInToFragmentActionMethod() {
+        factory.addControllerProvider("test", new FragmentControllerProvider() {
+            @Override
+            public Object getController(String id) {
+                return new ActionThatTakeServletRequestResponse();
+            }
+        });
+
+        MockHttpServletRequest httpRequest = new MockHttpServletRequest();
+        httpRequest.setSession(new MockHttpSession());
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+        factory.invokeFragmentAction("test", "test", "action", httpRequest, httpResponse);
     }
 
     @Test(expected = UiFrameworkException.class)
@@ -211,7 +229,8 @@ public class FragmentFactoryTest {
 
         MockHttpServletRequest httpRequest = new MockHttpServletRequest();
         httpRequest.setSession(new MockHttpSession());
-        factory.invokeFragmentAction("test", "test", "hashCode", httpRequest);
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+        factory.invokeFragmentAction("test", "test", "hashCode", httpRequest, httpResponse);
     }
 
     @Test(expected = UiFrameworkException.class)
@@ -225,7 +244,8 @@ public class FragmentFactoryTest {
 
         MockHttpServletRequest httpRequest = new MockHttpServletRequest();
         httpRequest.setSession(new MockHttpSession());
-        factory.invokeFragmentAction("test", "test", "controller", httpRequest);
+        MockHttpServletResponse httpResponse = new MockHttpServletResponse();
+        factory.invokeFragmentAction("test", "test", "controller", httpRequest, httpResponse);
     }
 
 	class MockControllerProvider implements FragmentControllerProvider {
@@ -292,6 +312,14 @@ public class FragmentFactoryTest {
         public FragmentActionResult action(Integer injected, Long notInjected) {
             Assert.assertNotNull("Integer argument was not injected", injected);
             Assert.assertNull("Long argument should not have been injected", notInjected);
+            return new SuccessResult();
+        }
+    }
+
+    public class ActionThatTakeServletRequestResponse {
+        public FragmentActionResult action(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+            Assert.assertNotNull("HttpServletRequest argument was not injected", httpRequest);
+            Assert.assertNotNull("HttpServletResponse argument was not injected", httpResponse);
             return new SuccessResult();
         }
     }
