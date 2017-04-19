@@ -125,6 +125,10 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 
 	private static Object fromObjectHelper(Object obj, UiUtils ui, String currentLevel,
 	        Map<String, Set<String>> propertiesByLevel) {
+
+		if (obj == null) {
+			return null;
+		}
 		if (obj instanceof Collection<?>) {
 			// iterate over everything, but this doesn't count as a level
 			List ret = new ArrayList();
