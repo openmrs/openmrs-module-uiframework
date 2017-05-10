@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
@@ -210,7 +211,10 @@ public class FormatterImpl implements Formatter {
     }
 
 	private String format(Obs o, Locale locale) {
-		if (o.getValueDatetime() != null) {
+		if (o.getValueTime() != null) {
+			return DateFormatUtils.format(o.getValueTime(), "hh:mm a", locale);
+		}
+		else if (o.getValueDatetime() != null) {
 			// limitation of Obs.getValueAsString() and java date locale
 			return format(o.getValueDatetime(), locale);
 		}
