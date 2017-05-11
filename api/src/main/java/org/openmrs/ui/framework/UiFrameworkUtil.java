@@ -647,29 +647,32 @@ public class UiFrameworkUtil {
 	}
 
     public static DateFormat getDateFormat(AdministrationService administrationService, Locale locale) {
+    	String defaultFormat = "dd.MMM.yyyy";
         if (administrationService != null) {
             return new SimpleDateFormat(
-                    administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT), locale);
+                    administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT, defaultFormat), locale);
         } else {
-            return new SimpleDateFormat("dd.MMM.yyyy", locale);
+            return new SimpleDateFormat(defaultFormat, locale);
         }
     }
 
     public static DateFormat getDateTimeFormat(AdministrationService administrationService, Locale locale) {
+    	String defaultFormat = "dd.MMM.yyyy, HH:mm:ss";
         if (administrationService != null) {
             return new SimpleDateFormat(
-                    administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT), locale);
+                    administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT, defaultFormat), locale);
         } else {
-            return new SimpleDateFormat("dd.MMM.yyyy, HH:mm:ss", locale);
+            return new SimpleDateFormat(defaultFormat, locale);
         }
     }
     
     public static DateFormat getTimeFormat(AdministrationService administrationService, Locale locale) {
+    	String defaultFormat = "hh:mm a";
         if (administrationService != null) {
             return new SimpleDateFormat(
-                    administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT), locale);
+                    administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT, defaultFormat), locale);
         } else {
-            return new SimpleDateFormat("hh:mm a", locale);
+            return new SimpleDateFormat(defaultFormat, locale);
         }
     }
 }
