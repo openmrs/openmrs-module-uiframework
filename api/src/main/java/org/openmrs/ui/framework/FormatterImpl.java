@@ -212,7 +212,7 @@ public class FormatterImpl implements Formatter {
 
 	private String format(Obs o, Locale locale) {
 		if (o.getValueTime() != null && o.getConcept().getDatatype().isTime()) {
-			return DateFormatUtils.format(o.getValueTime(), "hh:mm a", locale);
+			return UiFrameworkUtil.getTimeFormat(administrationService, locale).format(o.getValueTime());
 		}
 		else if (o.getValueDatetime() != null) {
 			// limitation of Obs.getValueAsString() and java date locale

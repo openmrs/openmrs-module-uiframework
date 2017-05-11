@@ -663,4 +663,13 @@ public class UiFrameworkUtil {
             return new SimpleDateFormat("dd.MMM.yyyy, HH:mm:ss", locale);
         }
     }
+    
+    public static DateFormat getTimeFormat(AdministrationService administrationService, Locale locale) {
+        if (administrationService != null) {
+            return new SimpleDateFormat(
+                    administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT), locale);
+        } else {
+            return new SimpleDateFormat("hh:mm a", locale);
+        }
+    }
 }
