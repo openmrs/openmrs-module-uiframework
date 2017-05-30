@@ -576,28 +576,41 @@ public class UiFrameworkUtil {
 		if (folderNames.isEmpty()) {
 			folderNames.add("omod");
 		}
-		
+
+		final String srcWebPath = "src" + File.separator + "main" + File.separator + "webapp" + File.separator;
+		final String targetWebPath = "target" + File.separator + "classes" + File.separator + "web" + File.separator + "module" + File.separator;
 		for (String folderName : folderNames) {
 			// Get the appropriate folderPath to check, given the type of provider passed in
-			String folderPath = baseFolder + File.separator + folderName + File.separator;
+			final String folderNamePath = baseFolder + File.separator + folderName + File.separator;
+
+			final String folderPath;
+			final String targetFolderPath;
 			if (provider instanceof ResourceProvider) {
-				folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "resources";
+				folderPath = folderNamePath + srcWebPath + "resources";
+				targetFolderPath = folderNamePath + targetWebPath + "resources";
 			}
 			else if (provider instanceof PageViewProvider) {
-				folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "pages";
+				folderPath = folderNamePath + srcWebPath+ "pages";
+				targetFolderPath = folderNamePath + targetWebPath + "pages";
 			}
 			else if (provider instanceof FragmentViewProvider) {
-				folderPath += "src" + File.separator + "main" + File.separator + "webapp" + File.separator + "fragments";
+				folderPath = folderNamePath + srcWebPath + "fragments";
+				targetFolderPath = folderNamePath + targetWebPath + "fragments";
 			}
 			else if (provider instanceof PageControllerProvider || provider instanceof FragmentControllerProvider) {
-				folderPath += "target" + File.separator + "classes";
+				folderPath = null;
+				targetFolderPath = folderNamePath + "target" + File.separator + "classes";
 			}
 			else {
 				throw new IllegalArgumentException("Provider is not of an expected type.  Found: " + provider.getClass());
 			}
-	
-			File devFolder = new File(folderPath);
-			folders.add(devFolder);
+
+			if (folderPath != null) {
+				folders.add(new File(folderPath));
+			}
+			if (targetFolderPath != null) {
+				folders.add(new File(targetFolderPath));
+			}
 		}
 		
 		if (folderExists(folders)) {
