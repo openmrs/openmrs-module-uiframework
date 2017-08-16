@@ -24,12 +24,20 @@ public class UrlMappingsRegistrar implements ServletContextAware {
 	
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
+	private static boolean skipAddMappings = false;
+	
 	@Override
 	public void setServletContext(ServletContext servletContext) {
 		log.debug("Registering URL mappings");
 		
-		servletContext.getServletRegistration("openmrs").addMapping("*.page", "*.action");
-		servletContext.getFilterRegistration("compressionFilter").addMappingForUrlPatterns(null, true, "*.page", "*.action");
+		//Dynamic servlet registration can only be done once i.e. at application startup
+		//In theory it means this module can only be installed at application startup
+		if (!skipAddMappings) {
+			servletContext.getServletRegistration("openmrs").addMapping("*.page", "*.action");
+			servletContext.getFilterRegistration("compressionFilter").addMappingForUrlPatterns(null, true, "*.page",
+			    "*.action");
+			skipAddMappings = true;
+		}
 	}
 	
 }
