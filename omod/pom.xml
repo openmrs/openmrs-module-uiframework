@@ -79,7 +79,13 @@
 			<artifactId>spring-web</artifactId>
 			<version>${springVersion}</version>
 			<scope>provided</scope>
-			</dependency>
+		</dependency>
+
+        <dependency>
+            <groupId>org.openmrs.module</groupId>
+            <artifactId>uiframework-omod-2.0</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
 
 	</dependencies>
 

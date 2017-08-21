@@ -32,6 +32,7 @@
     <modules>
         <module>api</module>
         <module>omod</module>
+        <module>omod-2.0</module>
     </modules>
 
     <properties>

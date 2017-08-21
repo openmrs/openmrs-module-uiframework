@@ -23,6 +23,13 @@
 		UserDefinedPageView.hbm.xml
 	</mappingFiles>
 
+    <conditionalResources>
+        <conditionalResource>
+            <path>/lib/uiframework-omod-2.*</path>
+            <openmrsVersion>2.0</openmrsVersion>
+        </conditionalResource>
+    </conditionalResources>
+
 	<!-- Internationalization -->
 	<!-- All message codes should start with ${project.parent.artifactId}. -->
 	<messages>
