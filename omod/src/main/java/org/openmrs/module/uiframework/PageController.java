@@ -69,7 +69,7 @@ public class PageController {
 	 */
 	@RequestMapping("/pages/**")
 	public String handleUrlStartingWithPage(HttpServletRequest request, HttpServletResponse response, Model model, HttpSession httpSession) {
-        // everything after the contextPath, e.g. "/pages/uilibrary/examples.form", "/pages/emr/registration/checkin.form"
+        // everything after the contextPath, e.g. "/pages/mymodule/examples.form", "/pages/emr/registration/checkin.form"
         String path = request.getServletPath();
         path = path.substring("/pages/".length(), path.lastIndexOf("."));
 		return handlePath(path, request, response, model, httpSession);
@@ -77,7 +77,7 @@ public class PageController {
 
     @RequestMapping("**/*.page")
     public String handleUrlWithDotPage(HttpServletRequest request, HttpServletResponse response, Model model, HttpSession httpSession) {
-        // everything after the contextPath, e.g. "/uilibrary/examples.page", "/emr/registration/checkin.page"
+        // everything after the contextPath, e.g. "/mymodule/examples.page", "/emr/registration/checkin.page"
         String path = request.getServletPath();
         path = path.substring(1, path.lastIndexOf(".page"));
         return handlePath(path, request, response, model, httpSession);
