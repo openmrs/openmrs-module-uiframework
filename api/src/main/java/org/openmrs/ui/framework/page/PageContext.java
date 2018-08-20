@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -189,7 +190,18 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 
     @Override
     public void includeResource(Resource resource) {
-        resourcesToInclude.add(resource);
+    	Iterator<Resource> iterator = resourcesToInclude.iterator();
+    	while (iterator.hasNext()) {
+    	    Resource res = iterator.next();
+    	    if (res.getProviderName().equals(resource.getProviderName()) && res.getResourcePath().equals(resource.getResourcePath())) {
+    	    	if (res.getPriority() < resource.getPriority()) {
+    	    		iterator.remove();
+    	    		resourcesToInclude.add(resource);
+    	    	}
+    	    	return;
+    	    } 
+    	}
+    	resourcesToInclude.add(resource);   		 
     }
 
     @Override
