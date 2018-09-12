@@ -19,9 +19,11 @@ import org.openmrs.ui.framework.resource.Resource;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -60,5 +62,21 @@ public class PageContextTest {
 
 		Collection<Resource> resources = pageContext.uniqueSortedResourcesByCategory(Resource.CATEGORY_JS);
 		assertThat(resources, contains(third, first, second));
+	}
+	
+	@Test
+	public void includeResource_shouldNotIncludeDuplicateResources() {
+		Resource first = new Resource(Resource.CATEGORY_JS, "source", "z_first", 1);
+		Resource second = new Resource(Resource.CATEGORY_JS, "mergepatientdata", "path", 2);
+		Resource duplicateResource = new Resource(Resource.CATEGORY_JS, "mergepatientdata", "path", 3);
+		PageContext pageContext = new PageContext(null);
+		pageContext.includeResource(first);
+		pageContext.includeResource(second);
+		pageContext.includeResource(duplicateResource);
+		
+		List<Resource> jsResourcesToIncluude = pageContext.getResourcesToInclude(Resource.CATEGORY_JS);
+		assertEquals(2, jsResourcesToIncluude.size());
+		assertEquals(3, (int) jsResourcesToIncluude.get(0).getPriority());
+		assertEquals(1, (int) jsResourcesToIncluude.get(1).getPriority());
 	}
 }
