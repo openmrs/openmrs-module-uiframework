@@ -210,9 +210,6 @@
                     <version>2.22.1</version>
                     <configuration>
                         <argLine>-Xmx512m -XX:MaxPermSize=512m -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-                        <includes>
-                            <include>**/*Test.java</include>
-                        </includes>
                     </configuration>
                 </plugin>
             </plugins>
