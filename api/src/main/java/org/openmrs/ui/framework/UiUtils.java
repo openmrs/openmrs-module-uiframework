@@ -431,6 +431,16 @@ public abstract class UiUtils {
 		input = input.replaceAll("\"", "\\\\\"");
 		return input;
 	}
+
+	/**
+	 * Used to make sure that a string can safely be used in a URL
+	 * 
+	 * @param input the input text which may have characters that are URL unsafe
+	 * @return text that is fit to be used in an URL
+	 */
+	public String encodeForSafeURL(String input) {
+		return Encode.forUriComponent(input);
+	}
 	
 	/**
 	 * @see org.owasp.encoder.Encode#forJavaScriptAttribute(java.lang.String)

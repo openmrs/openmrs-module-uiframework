@@ -120,4 +120,5 @@ public class UiUtilsTest {
         Assert.assertEquals("someUrl.page?patientId=2&patientId=2&patient=patient_uuid&patientUuid=patient_uuid&patientid=2&visitId=3&visit.id=3&visit=visit_uuid&visitUuid=visit_uuid&visit=3", ui.urlBind(url, visit));
 
     }
+    
 }
