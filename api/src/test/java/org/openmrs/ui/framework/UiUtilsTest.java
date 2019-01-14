@@ -120,4 +120,12 @@ public class UiUtilsTest {
         Assert.assertEquals("someUrl.page?patientId=2&patientId=2&patient=patient_uuid&patientUuid=patient_uuid&patientid=2&visitId=3&visit.id=3&visit=visit_uuid&visitUuid=visit_uuid&visit=3", ui.urlBind(url, visit));
 
     }
+    
+    @Test
+    public void encodeForSafeURL_shouldMakeStringURLSafe() {
+    	//first escapes javascript then the square and curly brackets
+    	String string = "[{\"abc\":\"ABC\",\"elements\":[{\"personInt\":personId},{\"patientInt\":\"patientId\"}]}]";
+    	String urlSafeString = ui.encodeForSafeURL(string);
+    	Assert.assertEquals("%5B%7B\\\"abc\\\":\\\"ABC\\\",\\\"elements\\\":%5B%7B\\\"personInt\\\":personId%7D,%7B\\\"patientInt\\\":\\\"patientId\\\"%7D%5D%7D%5D" , urlSafeString);
+    }
 }

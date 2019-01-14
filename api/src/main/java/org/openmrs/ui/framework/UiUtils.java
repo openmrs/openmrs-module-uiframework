@@ -431,6 +431,24 @@ public abstract class UiUtils {
 		input = input.replaceAll("\"", "\\\\\"");
 		return input;
 	}
+
+	/**
+	 * Used to make sure that a string can safely be used in a URL for https transfer
+	 * 
+	 * @param input the input text which may have characters that an URL requires to escape
+	 * @return text that is fit to be used in an URL
+	 */
+	public String encodeForSafeURL(String input) {
+		if (input == null) {
+			return null;
+		}
+		input = escapeJs(input);
+		input = input.replaceAll("[\\[]", "%5B");
+		input = input.replaceAll("[\\]]", "%5D");
+		input = input.replaceAll("[\\{]", "%7B");
+		input = input.replaceAll("[\\}]", "%7D");
+		return input;
+	}
 	
 	/**
 	 * @see org.owasp.encoder.Encode#forJavaScriptAttribute(java.lang.String)
