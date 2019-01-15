@@ -65,6 +65,22 @@
             Format used by UiUtils.format for dates that have a time component
         </description>
     </globalProperty>
+
+	<globalProperty>
+		<property>uiframework.formatter.JSdateFormat</property>
+		<defaultValue>DD.MMM.YYYY</defaultValue>
+		<description>
+			Format used by Javascript for dates that do not have a time component
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>uiframework.formatter.JSdateAndTimeFormat</property>
+		<defaultValue>DD.MMM.YYYY, HH:mm:ss</defaultValue>
+		<description>
+			Format used by Javascript functions for dates that have a time component
+		</description>
+	</globalProperty>
 	
 	<servlet>
 		<servlet-name>resource</servlet-name>
