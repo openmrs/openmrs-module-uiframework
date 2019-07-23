@@ -176,6 +176,26 @@ public class UiFrameworkUtilTest {
 	}
 
 	@Test
+	public void test_determineControllerMethodParameters_requestParamNull() throws Exception {
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.addParameter("parameter2", "");
+		
+		Map<Class<?>, Object> argumentsByType = new HashMap<Class<?>, Object>();
+		argumentsByType.put(HttpServletRequest.class, req);
+		
+		Method method = MockController.class.getMethod("search", String.class, String.class);
+		
+		Object[] temp = UiFrameworkUtil.determineControllerMethodParameters(controller, method, argumentsByType, conversionService, applicationContext);
+
+		@SuppressWarnings("unchecked")
+		String	methodParameter1 = (String) temp[0];
+		String	methodParameter2 = (String) temp[1];
+
+		Assert.assertNull(methodParameter1);
+		Assert.assertEquals("", methodParameter2);
+	}
+
+	@Test
     public void test_determineControllerMethodParameters_fromCookie() throws Exception {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setCookies(new Cookie("number", "3"));
@@ -296,6 +316,10 @@ public class UiFrameworkUtilTest {
 		}
 		
 		public void action(@BindParams("helper") MockDomainObject helper) {
+			// intentionally blank
+		}
+
+		public void search(@RequestParam(value="parameter1", required=false) String parameter1, @RequestParam(value="parameter2", required=false) String parameter2) {
 			// intentionally blank
 		}
 		

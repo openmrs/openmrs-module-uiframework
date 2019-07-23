@@ -239,15 +239,19 @@ public class UiFrameworkUtil {
 				}
 			}
 			
-			try {
-				ret = conversionService.convert(ret, TypeDescriptor.forObject(ret), new TypeDescriptor(methodParam));
-			}
-			catch (ConversionException ex) {
-				APIAuthenticationException authEx = findCause(ex, APIAuthenticationException.class);
-				if (authEx != null)
-					throw authEx;
-				else
-					throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
+			if (ValueConstants.DEFAULT_NONE.equals(rp.defaultValue()) && request.getParameter(param) == null) {
+				ret = null;
+			} else {
+				try {
+					ret = conversionService.convert(ret, TypeDescriptor.forObject(ret), new TypeDescriptor(methodParam));
+				}
+				catch (ConversionException ex) {
+					APIAuthenticationException authEx = findCause(ex, APIAuthenticationException.class);
+					if (authEx != null)
+						throw authEx;
+					else
+						throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
+				}
 			}
 		}
 
