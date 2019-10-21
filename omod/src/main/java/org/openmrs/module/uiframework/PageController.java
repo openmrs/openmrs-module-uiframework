@@ -26,6 +26,7 @@ import org.openmrs.ui.framework.page.Redirect;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
 import org.openmrs.ui.util.ExceptionUtil;
+import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,14 +157,14 @@ public class PageController {
             
             StringWriter sw = new StringWriter();
             ex.printStackTrace(new PrintWriter(sw));
-            model.addAttribute("fullStacktrace", sw.toString());
+            model.addAttribute("fullStacktrace", Encode.forHtml(sw.toString()));
 
             Throwable t = ex;
             while (t.getCause() != null && !t.equals(t.getCause()))
                 t = t.getCause();
             sw = new StringWriter();
             t.printStackTrace(new PrintWriter(sw));
-            model.addAttribute("rootStacktrace", sw.toString());
+            model.addAttribute("rootStacktrace", Encode.forHtml(sw.toString()));
 
             return "/module/uiframework/uiError";
         }
