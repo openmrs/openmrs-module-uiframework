@@ -138,19 +138,19 @@ public class FormatterImpl implements Formatter {
 	}
 
     private String getLocalization(Locale locale, String shortClassName, String uuid) {
-    	 if (messageSource == null) {
-             return null;
-         }
-         shortClassName = getCleanClassName(shortClassName);
+        if (messageSource == null) {
+            return null;
+        }
+        shortClassName = getCleanClassName(shortClassName);
 
 
-         String code = "ui.i18n." + shortClassName + ".name." + uuid;
-         String localization = messageSource.getMessage(code, null, locale);
-         if (localization == null || localization.equals(code)) {
-             return null;
-         } else {
-             return localization;
-         }
+        String code = "ui.i18n." + shortClassName + ".name." + uuid;
+        String localization = messageSource.getMessage(code, null, locale);
+        if (localization == null || localization.equals(code)) {
+            return null;
+        } else {
+            return localization;
+        }
     }
 
     private String getCleanClassName(String shortClassName) {
