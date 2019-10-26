@@ -134,7 +134,7 @@ public class FormatterImpl implements Formatter {
 
 	private String format(OpenmrsMetadata md, Locale locale) {
         String override = getLocalization(locale, md.getClass().getSimpleName(), md.getUuid());
-        return override != null ? override : md.getName();
+        return override != null ? override : messageSource.getMessage(md.getName(), null, locale);
 	}
 
     private String getLocalization(Locale locale, String shortClassName, String uuid) {
