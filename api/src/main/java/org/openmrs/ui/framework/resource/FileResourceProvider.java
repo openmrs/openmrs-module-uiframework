@@ -13,9 +13,9 @@
  */
 package org.openmrs.ui.framework.resource;
 
-import java.io.File;
-
 import org.openmrs.util.OpenmrsUtil;
+
+import java.io.File;
 
 /**
  * Standard way for resources to be provided via external files deployed to a server
@@ -33,7 +33,7 @@ public class FileResourceProvider implements ResourceProvider {
 	public File getResource(String path) {
 		File resourceFile = null;
 		if (path != null) {
-			if (path.startsWith("/")) {
+			if (new File(path).isAbsolute()) {
 				resourceFile = new File(path);
 			}
 			else {
