@@ -586,4 +586,5 @@ public abstract class UiUtils {
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
+
 }
