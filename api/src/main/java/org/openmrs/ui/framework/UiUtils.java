@@ -61,13 +61,13 @@ public abstract class UiUtils {
         includeCss(providerName, file, null);
     }
 
-    public void includeCss(String providerName, String file, Integer priority) { includeCss(providerName, file, priority, false);}
+    public void includeCss(String providerName, String file, Integer priority) { includeCss(providerName, file, priority, true);}
 
-    public void includeCss(String providerName, String file, Integer priority, Boolean excludeStylesPrefixFromPath) {
+    public void includeCss(String providerName, String file, Integer priority, boolean pathIsRelativeToStyles) {
         MapResourceExtension resource = mapResource(providerName, file);
 
         resourceIncluder.includeResource(new Resource(Resource.CATEGORY_CSS, resource.getProviderId(),
-                (excludeStylesPrefixFromPath ? "" : "styles/") + resource.getResourceId(), priority));
+                (pathIsRelativeToStyles ? "styles/" : "") + resource.getResourceId(), priority));
     }
 
     public void includeJavascript(String file) {
@@ -78,13 +78,13 @@ public abstract class UiUtils {
         includeJavascript(providerName, file, null);
     }
 
-    public void includeJavascript(String providerName, String file, Integer priority) { includeJavascript(providerName, file, priority, false);}
+    public void includeJavascript(String providerName, String file, Integer priority) { includeJavascript(providerName, file, priority, true);}
 
-    public void includeJavascript(String providerName, String file, Integer priority, Boolean excludeScriptsPrefixFromPath) {
+    public void includeJavascript(String providerName, String file, Integer priority, boolean pathIsRelativeToScripts) {
         MapResourceExtension resource = mapResource(providerName, file);
 
         resourceIncluder.includeResource(new Resource(Resource.CATEGORY_JS, resource.getProviderId(),
-                (excludeScriptsPrefixFromPath ? "" : "scripts/") + resource.getResourceId(), priority));
+                (pathIsRelativeToScripts ? "scripts/" : "") + resource.getResourceId(), priority));
     }
 
 	/**
