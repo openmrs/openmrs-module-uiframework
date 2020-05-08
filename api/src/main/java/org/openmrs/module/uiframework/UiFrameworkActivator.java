@@ -25,7 +25,7 @@ import org.openmrs.ui.framework.UiContextRefreshedCallback;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.fragment.FragmentFactory;
 import org.openmrs.ui.framework.page.PageFactory;
-import org.openmrs.ui.framework.resource.FileResourceProvider;
+import org.openmrs.ui.framework.resource.ConfigurationResourceProvider;
 import org.openmrs.ui.framework.resource.ResourceFactory;
 
 /**
@@ -84,7 +84,7 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 		ResourceFactory resourceFactory = getComponent(ResourceFactory.class);
 
 		// Register a standard resource provider that can load file-based resources
-		resourceFactory.addResourceProvider(FileResourceProvider.RESOURCE_KEY, new FileResourceProvider());
+		resourceFactory.addResourceProvider(ConfigurationResourceProvider.RESOURCE_KEY, new ConfigurationResourceProvider());
 
 		List<UiContextRefreshedCallback> callbacks = Context.getRegisteredComponents(UiContextRefreshedCallback.class);
 		for (UiContextRefreshedCallback callback : callbacks) {
