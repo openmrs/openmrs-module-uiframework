@@ -17,7 +17,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openmrs.module.ModuleClassLoader;
 
 
@@ -37,13 +36,8 @@ public class ModuleResourceProvider implements ResourceProvider {
 	 */
 	@Override
 	public File getResource(String path) {
-		if (resourceShortcuts != null && resourceShortcuts.containsKey(path)) {
+		if (resourceShortcuts != null && resourceShortcuts.containsKey(path))
 			path = resourceShortcuts.get(path);
-		}
-
-		if (path == null || new File(path).isAbsolute() || !path.equals(FilenameUtils.normalize(path))) {
-			return null;
-		}
 		
 		if (developmentFolders != null) {
 			for (File developmentFolder : developmentFolders) {
