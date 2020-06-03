@@ -3,7 +3,7 @@
 
     <groupId>org.openmrs.module</groupId>
     <artifactId>uiframework</artifactId>
-    <version>3.18.0-SNAPSHOT</version>
+    <version>3.18.0</version>
     <packaging>pom</packaging>
     <name>OpenMRS UI Framework</name>
     <description>OpenMRS's new custom UI Framework, built on top of Spring MVC, and leveraging Groovy templates for
@@ -26,7 +26,7 @@
         <connection>scm:git:git@github.com:openmrs/openmrs-module-uiframework.git</connection>
         <developerConnection>scm:git:git@github.com:openmrs/openmrs-module-uiframework.git</developerConnection>
         <url>https://github.com/openmrs/openmrs-module-uiframework</url>
-        <tag>HEAD</tag>
+        <tag>3.18.0</tag>
     </scm>
 
     <modules>
