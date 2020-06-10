@@ -14,16 +14,21 @@
 package org.openmrs.ui.framework.resource;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.openmrs.module.ModuleClassLoader;
-
+import org.openmrs.util.OpenmrsClassLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Standard way for a module to provide resources. Supports "development mode" when a developmentFolder is specified.
  */
 public class ModuleResourceProvider implements ResourceProvider {
+
+	private static final Logger log = LoggerFactory.getLogger(ModuleResourceProvider.class);
 	
 	private List<File> developmentFolders;
 	private List<String> developmentFolderNames;
@@ -36,8 +41,15 @@ public class ModuleResourceProvider implements ResourceProvider {
 	 */
 	@Override
 	public File getResource(String path) {
-		if (resourceShortcuts != null && resourceShortcuts.containsKey(path))
+		if (resourceShortcuts != null && resourceShortcuts.containsKey(path)) {
 			path = resourceShortcuts.get(path);
+		}
+
+		// module resources should be fetched by a path relative to the module, so a request for a file by absolute path
+		// is an error
+		if (path == null || new File(path).isAbsolute()) {
+			return null;
+		}
 		
 		if (developmentFolders != null) {
 			for (File developmentFolder : developmentFolders) {
@@ -58,6 +70,18 @@ public class ModuleResourceProvider implements ResourceProvider {
     		
     		File folderForModule = ModuleClassLoader.getLibCacheFolderForModule(mcl.getModule());
     		File resourceFile = new File(folderForModule, resourcePrefix + path);
+
+    		// guard against loading files outside of the lib cache folder
+    		try {
+			    if (!resourceFile.getCanonicalPath().startsWith(OpenmrsClassLoader.getLibCacheFolder().getCanonicalPath())) {
+				    log.warn("Attempted to load invalid resource: {}", resourceFile);
+				    return null;
+			    }
+		    } catch (IOException e) {
+			    log.error("Error occurred while trying to load file: {}", path, e);
+			    return null;
+		    }
+
     		return resourceFile.exists() ? resourceFile : null;
     	}
 	}
