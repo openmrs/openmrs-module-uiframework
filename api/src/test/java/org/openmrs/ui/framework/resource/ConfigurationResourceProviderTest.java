@@ -13,7 +13,13 @@ import org.openmrs.util.OpenmrsUtil;
 public class ConfigurationResourceProviderTest {
 
 	public static final String FILE_NAME = "test.txt";
+
+	public static final String FILE_NAME_WITH_CONFIGURATION = "configuration" + File.separator + FILE_NAME;
+
 	public static final String TEST_CONTENTS = "THIS IS A TEST";
+
+	private static final String OPENMRS_APPLICATION_DATA_DIRECTORY = "OPENMRS_APPLICATION_DATA_DIRECTORY";
+
 	private static final File TEMP_DIR = new File(System.getProperty("java.io.tmpdir"));
 
 	private static File testDir;
@@ -41,21 +47,53 @@ public class ConfigurationResourceProviderTest {
 		}
 
 		try {
-
 			FileUtils.writeStringToFile(testFile, TEST_CONTENTS, "UTF-8");
 
 			// If file does not exist relative to application data directory, should return null
 			Assert.assertNotEquals(OpenmrsUtil.getApplicationDataDirectory(), testDir.getCanonicalPath());
 			Assert.assertNull(provider.getResource(FILE_NAME));
 
-			System.setProperty("OPENMRS_APPLICATION_DATA_DIRECTORY", testDir.getCanonicalPath());
+			System.setProperty(OPENMRS_APPLICATION_DATA_DIRECTORY, testDir.getCanonicalPath());
 			try {
 				Assert.assertEquals(OpenmrsUtil.getApplicationDataDirectory(), testDir.getCanonicalPath());
 				Assert.assertEquals(TEST_CONTENTS, FileUtils.readFileToString(provider.getResource(FILE_NAME), "UTF-8"));
-			} finally {
-				System.clearProperty("OPENMRS_APPLICATION_DATA_DIRECTORY");
 			}
-		} finally {
+			finally {
+				System.clearProperty(OPENMRS_APPLICATION_DATA_DIRECTORY);
+			}
+		}
+		finally {
+			if (testFile.exists()) {
+				testFile.delete();
+			}
+		}
+	}
+
+	@Test
+	public void shouldGetResourceByRelativePathStartingWithConfiguration() throws Exception {
+		File testFile = new File(new File(testDir, "configuration"), FILE_NAME);
+		if (testFile.exists()) {
+			testFile.delete();
+		}
+
+		try {
+			FileUtils.writeStringToFile(testFile, TEST_CONTENTS, "UTF-8");
+
+			// If file does not exist relative to application data directory, should return null
+			Assert.assertNotEquals(OpenmrsUtil.getApplicationDataDirectory(), testDir.getCanonicalPath());
+			Assert.assertNull(provider.getResource(FILE_NAME_WITH_CONFIGURATION));
+
+			System.setProperty(OPENMRS_APPLICATION_DATA_DIRECTORY, testDir.getCanonicalPath());
+			try {
+				Assert.assertEquals(OpenmrsUtil.getApplicationDataDirectory(), testDir.getCanonicalPath());
+				Assert.assertEquals(TEST_CONTENTS, FileUtils
+						.readFileToString(provider.getResource(FILE_NAME_WITH_CONFIGURATION), "UTF-8"));
+			}
+			finally {
+				System.clearProperty(OPENMRS_APPLICATION_DATA_DIRECTORY);
+			}
+		}
+		finally {
 			if (testFile.exists()) {
 				testFile.delete();
 			}
@@ -64,7 +102,7 @@ public class ConfigurationResourceProviderTest {
 
 	@Test
 	public void shouldGetResourceByAbsolutePathInOpenmrsApplicationDirectory() throws Exception {
-		File testFile = new File(OpenmrsUtil.getApplicationDataDirectory(), FILE_NAME);
+		File testFile = new File(new File(testDir, "configuration"), FILE_NAME);
 		if (testFile.exists()) {
 			testFile.delete();
 		}
@@ -72,9 +110,17 @@ public class ConfigurationResourceProviderTest {
 		try {
 			FileUtils.writeStringToFile(testFile, TEST_CONTENTS, "UTF-8");
 
-			Assert.assertEquals(TEST_CONTENTS, FileUtils.readFileToString(
-					new File(OpenmrsUtil.getApplicationDataDirectory(), FILE_NAME), "UTF-8"));
-		} finally {
+			System.setProperty(OPENMRS_APPLICATION_DATA_DIRECTORY, testDir.getCanonicalPath());
+			try {
+				Assert.assertEquals(TEST_CONTENTS, FileUtils.readFileToString(provider.getResource(
+						new File(OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration"), FILE_NAME)
+								.getAbsolutePath()), "UTF-8"));
+			}
+			finally {
+				System.clearProperty(OPENMRS_APPLICATION_DATA_DIRECTORY);
+			}
+		}
+		finally {
 			if (testFile.exists()) {
 				testFile.delete();
 			}
@@ -83,15 +129,21 @@ public class ConfigurationResourceProviderTest {
 
 	@Test
 	public void shouldNotGetResourceByAbsolutePathNotInOpenmrsApplicationDirectory() throws Exception {
-		File testFile = new File(testDir, FILE_NAME);
-		testFile.deleteOnExit();
+		File testFile = new File(new File(testDir, "configuration"), FILE_NAME);
 
-		FileUtils.writeStringToFile(testFile, TEST_CONTENTS, "UTF-8");
+		try {
+			FileUtils.writeStringToFile(testFile, TEST_CONTENTS, "UTF-8");
 
-		// If file does not exist relative to application data directory, should return null
-		Assert.assertNotEquals(OpenmrsUtil.getApplicationDataDirectory(), testDir.getCanonicalPath());
-		Assert.assertNull(provider.getResource(FILE_NAME));
+			// If file does not exist relative to application data directory, should return null
+			Assert.assertNotEquals(OpenmrsUtil.getApplicationDataDirectory(), testDir.getCanonicalPath());
+			Assert.assertNull(provider.getResource(FILE_NAME));
 
-		Assert.assertNull(provider.getResource(testFile.getAbsolutePath()));
+			Assert.assertNull(provider.getResource(testFile.getAbsolutePath()));
+		}
+		finally {
+			if (testFile.exists()) {
+				testFile.delete();
+			}
+		}
 	}
 }

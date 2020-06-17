@@ -11,7 +11,6 @@
  */
 package org.openmrs.ui.framework.resource;
 
-import org.apache.commons.io.FilenameUtils;
 import org.openmrs.api.APIException;
 import org.openmrs.util.OpenmrsUtil;
 import org.slf4j.Logger;
@@ -55,7 +54,18 @@ public class ConfigurationResourceProvider implements ResourceProvider {
 		if (file.isAbsolute()) {
 			resourceFile = file;
 		} else {
-			resourceFile = new File(configurationDirectory, path);
+			String firstDir = null;
+			int idx = path.indexOf(File.separatorChar, 1);
+			if (idx > 0) {
+				int start = path.charAt(0) == File.separatorChar ? 1 : 0;
+				firstDir = path.substring(start, idx);
+			}
+
+			if (!"configuration".equals(firstDir)) {
+				resourceFile = new File(configurationDirectory, path);
+			} else {
+				resourceFile = new File(OpenmrsUtil.getApplicationDataDirectory(), path);
+			}
 		}
 
 		// guard against loading files outside of the configuration directory
