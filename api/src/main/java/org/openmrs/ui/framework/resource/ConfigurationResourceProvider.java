@@ -54,11 +54,12 @@ public class ConfigurationResourceProvider implements ResourceProvider {
 		if (file.isAbsolute()) {
 			resourceFile = file;
 		} else {
+
 			String firstDir = null;
-			int idx = path.indexOf(File.separatorChar, 1);
+			int idx = file.getPath().indexOf(File.separatorChar, 1);
 			if (idx > 0) {
-				int start = path.charAt(0) == File.separatorChar ? 1 : 0;
-				firstDir = path.substring(start, idx);
+				int start = file.getPath().charAt(0) == File.separatorChar ? 1 : 0;
+				firstDir = file.getPath().substring(start, idx);
 			}
 
 			if (!"configuration".equals(firstDir)) {
