@@ -58,6 +58,14 @@
         </description>
     </globalProperty>
 
+	<globalProperty>
+		<property>uiframework.formatter.timeFormat</property>
+		<defaultValue>HH:mm:ss</defaultValue>
+		<description>
+			Format used by UiUtils.format for time only.
+		</description>
+	</globalProperty>
+
     <globalProperty>
         <property>uiframework.formatter.dateAndTimeFormat</property>
         <defaultValue>dd.MMM.yyyy, HH:mm:ss</defaultValue>
