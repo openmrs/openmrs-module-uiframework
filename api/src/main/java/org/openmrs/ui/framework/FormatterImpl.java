@@ -1,13 +1,8 @@
 package org.openmrs.ui.framework;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
@@ -34,6 +29,8 @@ import org.openmrs.ui.framework.formatter.FormatterFactory;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
 
+import static org.openmrs.util.TimeZoneUtil.toRFC3339;
+
 /**
  * Contains default formatting for most OpenMRS classes, which can be override with {@link FormatterFactory} instances.
  * Do not construct this class directly, but rather use {@link FormatterService#getFormatter()}.
@@ -42,6 +39,7 @@ public class FormatterImpl implements Formatter {
 
     private MessageSource messageSource;
     private AdministrationService administrationService;
+    private UiUtils ui = new BasicUiUtils();
 
     /**
      * Map from fully-qualified classname, to the formatter to use for this class
@@ -113,6 +111,9 @@ public class FormatterImpl implements Formatter {
 
     private String format(Date d, Locale locale) {
         DateFormat df;
+        if(ui.handleTimeZones()){
+            return (toRFC3339(d));
+        }
         if (hasTimeComponent(d)) {
             df = UiFrameworkUtil.getDateTimeFormat(administrationService, locale);
         } else {

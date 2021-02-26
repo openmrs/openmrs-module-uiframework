@@ -24,7 +24,8 @@ public class UiFrameworkConstants {
     public static final String GP_FORMATTER_TIME_FORMAT = "uiframework.formatter.timeFormat";
     public static final String GP_FORMATTER_JS_DATETIME_FORMAT = "uiframework.formatter.JSdateAndTimeFormat";
     public static final String GP_FORMATTER_JS_DATE_FORMAT = "uiframework.formatter.JSdateFormat";
-    
+    public final static String GP_HANDLE_TIMEZONES = "uiframework.handleTimezones";
+
     public static final String MAP_RESOURCE_EXTENSION_POINT_ID = "org.openmrs.ui.framework.mapResource";
 
 

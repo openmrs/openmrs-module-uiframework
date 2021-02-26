@@ -586,4 +586,30 @@ public abstract class UiUtils {
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
+
+	/**
+	 * @return the value of the Global Propriety Handle Timezones 
+	 */
+	public boolean handleTimeZones(){
+		return  Boolean.parseBoolean(
+				Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES));
+	}
+
+	public String getJSDatetimeFormat(){
+		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATETIME_FORMAT);
+	}
+	public String getJSDateFormat(){
+		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATE_FORMAT);
+	}
+	public String getDatetimeFormat(){
+		return	Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT);
+	}
+	public String getDateFormat(){
+		return  Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT);
+	}
+
+	public String getTimeFormat(){
+		return  Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT);
+	}
+
 }
