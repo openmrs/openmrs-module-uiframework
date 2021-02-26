@@ -1,13 +1,8 @@
 package org.openmrs.ui.framework;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
@@ -34,34 +29,36 @@ import org.openmrs.ui.framework.formatter.FormatterFactory;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
 
+import static org.openmrs.util.TimeZoneUtil.toRFC3339;
+
 /**
  * Contains default formatting for most OpenMRS classes, which can be override with
  * {@link FormatterFactory} instances. Do not construct this class directly, but rather use
  * {@link FormatterService#getFormatter()}.
  */
 public class FormatterImpl implements Formatter {
-	
-	private MessageSource messageSource;
-	
-	private AdministrationService administrationService;
-	
-	/**
-	 * Map from fully-qualified classname, to the formatter to use for this class
-	 */
-	private Map<String, Formatter> classFormatters = new HashMap<String, Formatter>();
-	
-	private static final String ADDRESS_LAYOUT_TEMPLATE_NAME_GP = "layout.address.format";
-	
-	public FormatterImpl(MessageSource messageSource, AdministrationService administrationService) {
-		this.messageSource = messageSource;
-		this.administrationService = administrationService;
-	}
-	
-	@Override
-	public String format(Object o, Locale locale) {
+
+    private MessageSource messageSource;
+    private AdministrationService administrationService;
+    private UiUtils ui = new BasicUiUtils();
+
+    /**
+     * Map from fully-qualified classname, to the formatter to use for this class
+     */
+    private Map<String, Formatter> classFormatters = new HashMap<String, Formatter>();
+
+    private static final String ADDRESS_LAYOUT_TEMPLATE_NAME_GP = "layout.address.format";
+
+    public FormatterImpl(MessageSource messageSource, AdministrationService administrationService) {
+        this.messageSource = messageSource;
+        this.administrationService = administrationService;
+    }
+
+    @Override
+    public String format(Object o, Locale locale) {
 		if (o == null)
 			return "";
-		
+
 		String className = o.getClass().getName();
 		Formatter classFormatter = classFormatters.get(getCleanClassName(className));
 		if (classFormatter != null) {
@@ -100,7 +97,7 @@ public class FormatterImpl implements Formatter {
 			return o.toString();
 		}
 	}
-	
+
 	private String format(Number n, Locale locale) {
 		if (wholeNumber(n)) {
 			return "" + n.intValue();
@@ -108,44 +105,47 @@ public class FormatterImpl implements Formatter {
 			return "" + n;
 		}
 	}
-	
+
 	private boolean wholeNumber(Number n) {
 		return n != null && n.intValue() == n.doubleValue();
 	}
-	
+
 	private String format(Date d, Locale locale) {
 		DateFormat df;
-		if (hasTimeComponent(d)) {
+		if(ui.handleTimeZones()){
+            return (toRFC3339(d));
+        }
+        if (hasTimeComponent(d)) {
 			df = UiFrameworkUtil.getDateTimeFormat(administrationService, locale);
 		} else {
 			df = UiFrameworkUtil.getDateFormat(administrationService, locale);
 		}
 		return df.format(d);
 	}
-	
+
 	private boolean hasTimeComponent(Date d) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(d);
 		return cal.get(Calendar.HOUR_OF_DAY) != 0 || cal.get(Calendar.MINUTE) != 0 || cal.get(Calendar.SECOND) != 0
 		        || cal.get(Calendar.MILLISECOND) != 0;
 	}
-	
+
 	private String format(Role role, Locale locale) {
 		String override = getLocalization(locale, "Role", role.getUuid());
 		return override != null ? override : role.getRole();
 	}
-	
+
 	private String format(OpenmrsMetadata md, Locale locale) {
 		String override = getLocalization(locale, md.getClass().getSimpleName(), md.getUuid());
 		return override != null ? override : messageSource.getMessage(md.getName(), null, locale);
 	}
-	
+
 	private String getLocalization(Locale locale, String shortClassName, String uuid) {
 		if (messageSource == null) {
 			return null;
 		}
 		shortClassName = getCleanClassName(shortClassName);
-		
+
 		String code = "ui.i18n." + shortClassName + ".name." + uuid;
 		String localization = messageSource.getMessage(code, null, locale);
 		if (localization == null || localization.equals(code)) {
@@ -154,7 +154,7 @@ public class FormatterImpl implements Formatter {
 			return localization;
 		}
 	}
-	
+
 	private String getCleanClassName(String shortClassName) {
 		// in case this is a hibernate proxy, strip off anything after an underscore
 		// ie: EncounterType_$$_javassist_26 needs to be converted to EncounterType
@@ -164,7 +164,7 @@ public class FormatterImpl implements Formatter {
 		}
 		return shortClassName;
 	}
-	
+
 	private String format(Concept c, Locale locale) {
 		String override = getLocalization(locale, "Concept", c.getUuid());
 		if (override != null) {
@@ -178,15 +178,15 @@ public class FormatterImpl implements Formatter {
 		}
 		return conceptName.getName();
 	}
-	
+
 	private String format(Person p, Locale locale) {
 		if (p == null) {
 			return null;
 		}
-		
+
 		return format(p.getPersonName(), locale);
 	}
-	
+
 	private String format(PersonName n, Locale locale) {
 		// no name, return message
 		if (n == null) {
@@ -199,7 +199,7 @@ public class FormatterImpl implements Formatter {
 		// otherwise, just return full name
 		return n.getFullName();
 	}
-	
+
 	private String format(User u, Locale locale) {
 		String un = u.getUsername();
 		if (un == null) {
@@ -207,11 +207,11 @@ public class FormatterImpl implements Formatter {
 		}
 		return format(u.getPerson(), locale) + " (" + un + ")";
 	}
-	
+
 	private String format(PersonAttribute pa, Locale locale) {
 		return format(pa.getHydratedObject(), locale);
 	}
-	
+
 	private String format(Obs o, Locale locale) {
 		if (o.getValueTime() != null && o.getConcept().getDatatype().isTime()) {
 			return UiFrameworkUtil.getTimeFormat(administrationService, locale).format(o.getValueTime());
@@ -244,11 +244,11 @@ public class FormatterImpl implements Formatter {
 			}
 		}
 	}
-	
+
 	private String format(PatientIdentifier pi, Locale locale) {
 		return format(pi.getIdentifierType(), locale) + ": " + pi.getIdentifier();
 	}
-	
+
 	private String format(PersonAddress personAddress, Locale locale) {
 		List<String> personAddressLines = new ArrayList<String>();
 		try {
@@ -259,7 +259,7 @@ public class FormatterImpl implements Formatter {
 			catch (ClassNotFoundException ex) {
 				addressSupportClass = Context.loadClass("org.openmrs.layout.address.AddressSupport");
 			}
-			
+
 			Object addressSupport = addressSupportClass.getMethod("getInstance").invoke(null);
 			Object addressTemplate = null;
 			if (isOneNineOrLater()) {
@@ -274,7 +274,7 @@ public class FormatterImpl implements Formatter {
 					addressTemplate = MethodUtils.invokeExactMethod(addressSupport, "getDefaultLayoutTemplate", null);
 				}
 			}
-			
+
 			List<List<Map<String, String>>> lines = (List<List<Map<String, String>>>) MethodUtils.invokeExactMethod(
 			    addressTemplate, "getLines", null);
 			String layoutToken = (String) MethodUtils.invokeExactMethod(addressTemplate, "getLayoutToken", null);
@@ -301,10 +301,10 @@ public class FormatterImpl implements Formatter {
 			//wrap into a runtime exception
 			throw new APIException("Error while getting patient address", e);
 		}
-		
+
 		return StringUtils.join(personAddressLines, "\n");
 	}
-	
+
 	/**
 	 * We are using this hacky code to check if it is OpenMRS 1.9 or later until
 	 * https://tickets.openmrs.org/browse/TRUNK-3751 is done and back ported to 1.8.x and 1.9.x
@@ -317,12 +317,12 @@ public class FormatterImpl implements Formatter {
 		catch (ClassNotFoundException e) {
 			//ignore, this is 1.8
 		}
-		
+
 		return false;
 	}
-	
+
 	public void registerClassFormatter(String forClass, Formatter formatter) {
 		classFormatters.put(forClass, formatter);
 	}
-	
+
 }
