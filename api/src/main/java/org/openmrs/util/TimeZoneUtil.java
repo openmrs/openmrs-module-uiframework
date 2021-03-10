@@ -47,14 +47,15 @@ public class TimeZoneUtil {
 
 
 	/**
-	 * Gets a String date in ISO8601 format. This always returns a Date converted from UTC to the server timezone
-	 * subclass.
+	 * Get a Date out of its ISO 8601 string representation.
 	 *
-	 * @param ISOStringDate A String in a ISO 8601 Format.
-	 * @return Date with the server timezone.
+	 * @param s A date formatted as ISO 8601.
+	 * @return The Date object.
+	 * @Throws IllegalArgumentException – if string parameter does not conform to lexical value space
 	 */
-	public static Date toDate(String ISOStringDate) {
-		return javax.xml.bind.DatatypeConverter.parseDateTime(ISOStringDate).getTime();
+	public static Date fromISO8601(String s) throws
+			IllegalArgumentException {
+		return javax.xml.bind.DatatypeConverter.parseDateTime(s).getTime();
 	}
 
 }

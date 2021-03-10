@@ -21,10 +21,9 @@ public class StringToDateConverter implements Converter<String, Date> {
 
 		//try to parse date with format ISO 8601
 		try {
-			return TimeZoneUtil.toDate(ymdhmsms);
+			return TimeZoneUtil.fromISO8601(ymdhmsms);
 		}
-		catch (Exception ex) {
-		}
+		catch (Exception ex) {}
 
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(WebConstants.DATE_FORMAT_TIMESTAMP);
