@@ -42,6 +42,14 @@ public class FormatterImpl implements Formatter {
     private AdministrationService administrationService;
     private UiUtils ui = new BasicUiUtils();
 
+    public UiUtils getUi() {
+        return ui;
+    }
+
+    public void setUi(UiUtils ui) {
+        this.ui = ui;
+    }
+
     /**
      * Map from fully-qualified classname, to the formatter to use for this class
      */
