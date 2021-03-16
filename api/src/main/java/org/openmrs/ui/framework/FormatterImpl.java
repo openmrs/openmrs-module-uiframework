@@ -115,7 +115,7 @@ public class FormatterImpl implements Formatter {
     private String format(Date d, Locale locale) {
         DateFormat df;
         if(Boolean.parseBoolean(
-                Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES))){
+                administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES))){
             return (toRFC3339(d));
         }
         if (hasTimeComponent(d)) {
