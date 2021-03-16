@@ -10,6 +10,7 @@
 package org.openmrs.util;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.Calendar;
@@ -55,7 +56,8 @@ public class TimeZoneUtil {
 	 */
 	public static Date fromISO8601(String s) throws
 			IllegalArgumentException {
-		return javax.xml.bind.DatatypeConverter.parseDateTime(s).getTime();
+		DateTimeFormatter parser = ISODateTimeFormat.dateTime();
+		return parser.parseDateTime(s).toDate();
 	}
 
 }

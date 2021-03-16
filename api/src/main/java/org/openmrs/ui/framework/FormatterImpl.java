@@ -43,15 +43,6 @@ public class FormatterImpl implements Formatter {
 
     private MessageSource messageSource;
     private AdministrationService administrationService;
-    private UiUtils ui = new BasicUiUtils();
-
-    public UiUtils getUi() {
-        return ui;
-    }
-
-    public void setUi(UiUtils ui) {
-        this.ui = ui;
-    }
 
     /**
      * Map from fully-qualified classname, to the formatter to use for this class
@@ -123,7 +114,8 @@ public class FormatterImpl implements Formatter {
 
     private String format(Date d, Locale locale) {
         DateFormat df;
-        if(ui.handleTimeZones()){
+        if(Boolean.parseBoolean(
+                Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES))){
             return (toRFC3339(d));
         }
         if (hasTimeComponent(d)) {
