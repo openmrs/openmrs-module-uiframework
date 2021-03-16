@@ -139,8 +139,7 @@ public class FormatterImplTest {
     @Test
     public void testFormattingADateWithNoTime() throws Exception {
         when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT, "dd.MMM.yyyy")).thenReturn("dd.MMM.yyyy");
-        formatter.setUi(ui);
-        when(ui.handleTimeZones()).thenReturn(false);
+        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES)).thenReturn("false");
 
         Locale locale = Locale.ENGLISH;
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2003-02-01");
@@ -152,8 +151,7 @@ public class FormatterImplTest {
     @Test
     public void testFormattingADateWithATime() throws Exception {
         when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT, "dd.MMM.yyyy, HH:mm:ss")).thenReturn("dd.MMM.yyyy, HH:mm:ss");
-        formatter.setUi(ui);
-        when(ui.handleTimeZones()).thenReturn(false);
+        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES)).thenReturn("false");
 
 		Locale locale = Locale.ENGLISH;
 		Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse("2003-02-01 14:25:07.123");
