@@ -1,5 +1,6 @@
 package org.openmrs.ui.framework;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -583,6 +584,11 @@ public abstract class UiUtils {
 		return Context.getLocale();
 	}
 
+	/**
+	 * Change the current locale.
+	 *
+	 * @param locale The locale.
+	 */
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
@@ -591,7 +597,7 @@ public abstract class UiUtils {
 	 * @return the value of the Global Propriety Handle Timezones 
 	 */
 	public boolean handleTimeZones(){
-		return  Boolean.parseBoolean(
+		return  BooleanUtils.toBoolean(
 				Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES));
 	}
 
