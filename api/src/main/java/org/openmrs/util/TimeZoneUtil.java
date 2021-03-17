@@ -50,14 +50,14 @@ public class TimeZoneUtil {
 	/**
 	 * Get a Date out of its ISO 8601 string representation.
 	 *
-	 * @param s A date formatted as ISO 8601.
+	 * @param isoDateString A date formatted as ISO 8601.
 	 * @return The Date object.
 	 * @Throws IllegalArgumentException – if string parameter does not conform to lexical value space
 	 */
-	public static Date fromISO8601(String s) throws
+	public static Date fromISO8601(String isoDateString) throws
 			IllegalArgumentException {
 		DateTimeFormatter parser = ISODateTimeFormat.dateTime();
-		return parser.parseDateTime(s).toDate();
+		return parser.parseDateTime(isoDateString).toDate();
 	}
 
 }

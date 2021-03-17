@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
@@ -115,7 +116,7 @@ public class FormatterImpl implements Formatter {
 
 	private String format(Date d, Locale locale) {
 		DateFormat df;
-		if(Boolean.parseBoolean(
+		if(BooleanUtils.toBoolean(
                 administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES))){
             return (toRFC3339(d));
         }
