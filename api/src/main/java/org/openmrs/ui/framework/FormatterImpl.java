@@ -34,7 +34,8 @@ import org.openmrs.ui.framework.formatter.FormatterFactory;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
 
-import static org.openmrs.util.TimeZoneUtil.toRFC3339;
+import static org.openmrs.util.TimeZoneUtil.toClientTimezone;
+
 
 /**
  * Contains default formatting for most OpenMRS classes, which can be override with {@link FormatterFactory} instances.
@@ -115,9 +116,11 @@ public class FormatterImpl implements Formatter {
 
     private String format(Date d, Locale locale) {
         DateFormat df;
-        if(BooleanUtils.toBoolean(
-                administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES))){
-            return (toRFC3339(d));
+        boolean handleTimezones = BooleanUtils.toBoolean(
+                administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES));
+        String clientTimezone  = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
+        if(StringUtils.isNotEmpty(clientTimezone) && handleTimezones ){
+            return (toClientTimezone(d , Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT)));
         }
         if (hasTimeComponent(d)) {
             df = UiFrameworkUtil.getDateTimeFormat(administrationService, locale);
