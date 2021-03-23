@@ -31,6 +31,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import static org.openmrs.util.TimeZoneUtil.toClientTimezone;
+
 /**
  * Utility methods that should be available in view technologies for pages and fragments
  */
@@ -388,6 +390,10 @@ public abstract class UiUtils {
 		} else if (dateExt.isDayBefore(today)) {
 			return message("uiframework.yesterday");
 		} else {
+			if(BooleanUtils.toBoolean(
+					Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES))){
+				return formatDateWithClientTimezone(date);
+			}
 			return format(dateExt.getDateWithoutTime());
 		}
 	}
@@ -398,7 +404,31 @@ public abstract class UiUtils {
 	 * @param date the date to format
 	 */
 	public String formatDatetimePretty(Date date) {
+		if(handleTimeZones()){
+			return toClientTimezone(date, getDatetimeFormat());
+		}
 		return formatDatePretty(date) + " " + DateFormatUtils.format(date, "hh:mm a", locale);
+	}
+
+	/**
+	 * Formats a time, in the client timezone with the format in the GP_FORMATTER_TIME_FORMAT
+	 * Change the date to the client timezone, then strip the time and format it with GP_FORMATTER_TIME_FORMAT
+	 *
+	 * @param date the date to be converted to client timezone
+	 * @return string version of time with GP_FORMATTER_TIME_FORMAT format ("15:05:00").
+	 */
+	public String formatTimeWithClientTimezone(Date date) {
+		return toClientTimezone(date, getTimeFormat());
+	}
+
+	/**
+	 * Formats a date, in the client timezone with the format in the GP_FORMATTER_DATE_FORMAT
+	 *
+	 * @param date the date to be converted to client timezone
+	 * @return string version of date with GP_FORMATTER_DATE_FORMAT format, only date without time.
+	 */
+	public String formatDateWithClientTimezone(Date date) {
+		return toClientTimezone(date, getDateFormat());
 	}
 
 	public String format(Object o) {
@@ -599,11 +629,12 @@ public abstract class UiUtils {
 	}
 
 	/**
-	 * @return the value of the Global Propriety Handle Timezones 
+	 * @return the value of the Global Propriety Handle Timezones <
 	 */
 	public boolean handleTimeZones(){
 		return  BooleanUtils.toBoolean(
 				Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES));
+
 	}
 
 	public String getJSDatetimeFormat(){

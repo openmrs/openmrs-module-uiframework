@@ -12,9 +12,14 @@ package org.openmrs.util;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.openmrs.api.context.Context;
+import org.openmrs.ui.framework.UiFrameworkConstants;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import static org.joda.time.DateTimeZone.UTC;
 
@@ -24,7 +29,26 @@ import static org.joda.time.DateTimeZone.UTC;
  * @see https://wiki.openmrs.org/display/docs/Time+Zones+Conventions
  */
 public class TimeZoneUtil {
-	
+
+	/**
+	 * Convert a date to the client timezone, and format it, to be readable to for the user. .
+	 *
+	 * @param date The date.
+	 * @param format the format to be used on the date
+	 * @return string with the date on the client timezone, formatted and ready to be displayed.
+	 */
+	public static String toClientTimezone(Date date, String format) {
+
+		/***************TESTING USER PROPRIETY TO IDENTIFY TIMEZONE*************************/
+		Context.getAuthenticatedUser().setUserProperty("clientTimezone", "Pacific/Kiritimati");
+		/***************TO BE REMOVED*************************/
+
+		String clientTimezone  = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
+		SimpleDateFormat dateFormat = new SimpleDateFormat(format , Context.getLocale());
+		dateFormat.setTimeZone(TimeZone.getTimeZone(clientTimezone));
+		return dateFormat.format(date);
+	}
+
 	/**
 	 * Formats a date as its RFC 3339 string representation.
 	 * 
@@ -32,7 +56,8 @@ public class TimeZoneUtil {
 	 * @return The date formated as RFC 3339.
 	 */
 	public static String toRFC3339(Date date) {
-		return ISODateTimeFormat.dateTime().print(new DateTime(date.getTime(), UTC));
+		return toClientTimezone(date, Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT ));
+		//return ISODateTimeFormat.dateTime().print(new DateTime(date.getTime(), UTC));
 	}
 	
 	/**
