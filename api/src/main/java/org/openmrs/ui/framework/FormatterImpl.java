@@ -59,6 +59,7 @@ public class FormatterImpl implements Formatter {
         this.administrationService = administrationService;
     }
 
+
     @Override
     public String format(Object o, Locale locale) {
 		if (o == null)
@@ -119,9 +120,9 @@ public class FormatterImpl implements Formatter {
 		DateFormat df;
 		boolean handleTimezones = BooleanUtils.toBoolean(
                 administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES));
-        String clientTimezone  = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
+        String clientTimezone  = getAuthenticatedUser().getUserProperty("clientTimezone");
         if(StringUtils.isNotEmpty(clientTimezone) && handleTimezones ){
-            return (toClientTimezone(d , Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT)));
+            return (toClientTimezone(d , administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT)));
         }
         if (hasTimeComponent(d)) {
 			df = UiFrameworkUtil.getDateTimeFormat(administrationService, locale);
@@ -332,5 +333,9 @@ public class FormatterImpl implements Formatter {
 	public void registerClassFormatter(String forClass, Formatter formatter) {
 		classFormatters.put(forClass, formatter);
 	}
+
+    private User getAuthenticatedUser(){
+        return Context.getAuthenticatedUser();
+    }
 
 }
