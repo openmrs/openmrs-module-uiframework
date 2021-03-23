@@ -337,7 +337,7 @@ public class FormatterImpl implements Formatter {
         classFormatters.put(forClass, formatter);
     }
 
-    private User getAuthenticatedUser(){
+    protected User getAuthenticatedUser(){
         return Context.getAuthenticatedUser();
     }
 
