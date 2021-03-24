@@ -39,16 +39,6 @@ public class TimeZoneUtil {
 	 * @return string with the date on the client timezone, formatted and ready to be displayed.
 	 */
 	public static String toClientTimezone(Date date, String format) {
-/*
-		/***************TESTING USER PROPRIETY TO IDENTIFY TIMEZONE*************************/
-	//	Context.getAuthenticatedUser().setUserProperty("clientTimezone", "Pacific/Kiritimati");
-		/***************TO BE REMOVED*************************/
-/*
-		String clientTimezone  = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
-		SimpleDateFormat dateFormat = new SimpleDateFormat(format , Context.getLocale());
-		dateFormat.setTimeZone(TimeZone.getTimeZone(clientTimezone));
-		return dateFormat.format(date);*/
-
 		String clientTimezone  = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
 		return toClientTimezone(date, format,clientTimezone);
 
@@ -57,7 +47,10 @@ public class TimeZoneUtil {
 	public static String toClientTimezone(Date date, String format, String clientTimezone) {
 
 		/***************TESTING USER PROPRIETY TO IDENTIFY TIMEZONE*************************/
-		//	Context.getAuthenticatedUser().setUserProperty("clientTimezone", "Pacific/Kiritimati");
+		if(clientTimezone == null){
+			clientTimezone = "Pacific/Kiritimati";
+			//Context.getAuthenticatedUser().setUserProperty("clientTimezone", "Pacific/Kiritimati");
+		}
 		/***************TO BE REMOVED*************************/
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format , Context.getLocale());
