@@ -121,7 +121,7 @@ public class FormatterImpl implements Formatter {
                 administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES));
         String clientTimezone  = getAuthenticatedUser().getUserProperty("clientTimezone");
         if(StringUtils.isNotEmpty(clientTimezone) && handleTimezones ){
-            return (toClientTimezone(d , administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT)));
+            return (toClientTimezone(d , administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT) , clientTimezone));
         }
         if (hasTimeComponent(d)) {
             df = UiFrameworkUtil.getDateTimeFormat(administrationService, locale);

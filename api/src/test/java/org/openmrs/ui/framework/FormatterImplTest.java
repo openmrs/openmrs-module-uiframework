@@ -14,6 +14,7 @@
 
 package org.openmrs.ui.framework;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmrs.ConceptDatatype;
@@ -23,6 +24,7 @@ import org.openmrs.Obs;
 import org.openmrs.Role;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.User;
+import org.powermock.api.mockito.PowerMockito;
 import org.springframework.context.MessageSource;
 
 import java.text.SimpleDateFormat;
@@ -34,6 +36,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.joda.time.DateTimeZone.UTC;
+import static org.openmrs.util.TimeZoneUtil.toClientTimezone;
 
 /**
  *
@@ -137,10 +141,27 @@ public class FormatterImplTest {
     }
 
     @Test
+    public void testFormattingADateWithNoTimeWithClientTimezone() throws Exception {
+        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT)).thenReturn("dd.MMM.yyyy");
+        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES)).thenReturn("true");
+        Locale locale = Locale.ENGLISH;
+        Date date = new DateTime("2011-08-16T00:00:00Z").toDate();
+        //Date date = new Date();
+        String output = formatter.format(date, locale);
+        assertThat(output, is("16.Aug.2011"));
+    }
+
+    @Test
+    public void testFormattingTimeWithClientTimezone() throws Exception {
+        Date date = new DateTime("2011-08-16T07:22:05Z").toDate();
+        String output =  toClientTimezone(date,"HH:mm:ss","Pacific/Kiritimati");
+        assertThat(output, is("21:22:05"));
+    }
+
+    @Test
     public void testFormattingADateWithNoTime() throws Exception {
         when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT, "dd.MMM.yyyy")).thenReturn("dd.MMM.yyyy");
         when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES)).thenReturn("false");
-        when(formatter.getAuthenticatedUser().getUserProperty("clientTimezone")).thenReturn("Pacific/Kiritimati");
         Locale locale = Locale.ENGLISH;
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2003-02-01");
 
@@ -152,7 +173,6 @@ public class FormatterImplTest {
     public void testFormattingADateWithATime() throws Exception {
         when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT, "dd.MMM.yyyy, HH:mm:ss")).thenReturn("dd.MMM.yyyy, HH:mm:ss");
         when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES)).thenReturn("false");
-        when(formatter.getAuthenticatedUser().getUserProperty("clientTimezone")).thenReturn("Pacific/Kiritimati");
         Locale locale = Locale.ENGLISH;
         Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse("2003-02-01 14:25:07.123");
 
@@ -231,14 +251,16 @@ public class FormatterImplTest {
 
     }
 
-    private class MockFormatter  extends FormatterImpl  {
+    private class MockFormatter extends FormatterImpl {
         public MockFormatter(MessageSource messageSource, AdministrationService administrationService) {
             super(messageSource, administrationService);
         }
 
         @Override
         protected User getAuthenticatedUser(){
-            return mock(User.class);
+            User mockedUser = new User();
+            mockedUser.setUserProperty("clientTimezone", "Pacific/Kiritimati");
+            return mockedUser;
         }
     }
 }
