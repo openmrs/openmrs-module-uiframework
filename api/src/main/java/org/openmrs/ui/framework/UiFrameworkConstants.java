@@ -31,7 +31,7 @@ public class UiFrameworkConstants {
 
 	public final static String GP_TIMEZONE_CONVERSIONS = "uiframework.timezone.conversions";
 
-    public static final String MAP_RESOURCE_EXTENSION_POINT_ID = "org.openmrs.ui.framework.mapResource";
+	public static final String MAP_RESOURCE_EXTENSION_POINT_ID = "org.openmrs.ui.framework.mapResource";
 
 
 }
