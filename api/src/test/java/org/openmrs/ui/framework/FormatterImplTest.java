@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.joda.time.DateTimeZone.UTC;
-import static org.openmrs.util.TimeZoneUtil.toClientTimezone;
+import static org.openmrs.util.TimeZoneUtil.toTimezone;
 
 /**
  *
@@ -143,7 +143,7 @@ public class FormatterImplTest {
     @Test
     public void testFormattingADateWithNoTimeWithClientTimezone() throws Exception {
         when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT)).thenReturn("dd.MMM.yyyy");
-        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES)).thenReturn("true");
+        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS)).thenReturn("true");
         Locale locale = Locale.ENGLISH;
         Date date = new DateTime("2011-08-16T00:00:00Z").toDate();
         //Date date = new Date();
@@ -154,14 +154,14 @@ public class FormatterImplTest {
     @Test
     public void testFormattingTimeWithClientTimezone() throws Exception {
         Date date = new DateTime("2011-08-16T07:22:05Z").toDate();
-        String output =  toClientTimezone(date,"HH:mm:ss","Pacific/Kiritimati");
+        String output =  toTimezone(date,"HH:mm:ss","Pacific/Kiritimati");
         assertThat(output, is("21:22:05"));
     }
 
     @Test
     public void testFormattingADateWithNoTime() throws Exception {
         when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT, "dd.MMM.yyyy")).thenReturn("dd.MMM.yyyy");
-        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES)).thenReturn("false");
+        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS)).thenReturn("false");
         Locale locale = Locale.ENGLISH;
         Date date = new SimpleDateFormat("yyyy-MM-dd").parse("2003-02-01");
 
@@ -172,7 +172,7 @@ public class FormatterImplTest {
     @Test
     public void testFormattingADateWithATime() throws Exception {
         when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT, "dd.MMM.yyyy, HH:mm:ss")).thenReturn("dd.MMM.yyyy, HH:mm:ss");
-        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES)).thenReturn("false");
+        when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS)).thenReturn("false");
         Locale locale = Locale.ENGLISH;
         Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse("2003-02-01 14:25:07.123");
 

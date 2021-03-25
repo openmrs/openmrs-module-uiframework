@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
-import static org.openmrs.util.TimeZoneUtil.toClientTimezone;
+import static org.openmrs.util.TimeZoneUtil.toTimezone;
 
 /**
  * Utility methods that should be available in view technologies for pages and fragments
@@ -391,7 +391,7 @@ public abstract class UiUtils {
 			return message("uiframework.yesterday");
 		} else {
 			if(BooleanUtils.toBoolean(
-					Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES))){
+					Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS))){
 				return formatDateWithClientTimezone(date);
 			}
 			return format(dateExt.getDateWithoutTime());
@@ -405,20 +405,20 @@ public abstract class UiUtils {
 	 */
 	public String formatDatetimePretty(Date date) {
 		if(handleTimeZones()){
-			return toClientTimezone(date, getDatetimeFormat());
+			return toTimezone(date, getDatetimeFormat());
 		}
 		return formatDatePretty(date) + " " + DateFormatUtils.format(date, "hh:mm a", locale);
 	}
 
 	/**
 	 * Formats a time, in the client timezone with the format in the GP_FORMATTER_TIME_FORMAT
-	 * Change the date to the client timezone, then strip the time and format it with GP_FORMATTER_TIME_FORMAT
+	 * Change the date to the client timezone, then only use the time and format it with GP_FORMATTER_TIME_FORMAT
 	 *
 	 * @param date the date to be converted to client timezone
 	 * @return string version of time with GP_FORMATTER_TIME_FORMAT format ("15:05:00").
 	 */
 	public String formatTimeWithClientTimezone(Date date) {
-		return toClientTimezone(date, getTimeFormat());
+		return toTimezone(date, getTimeFormat());
 	}
 
 	/**
@@ -428,7 +428,7 @@ public abstract class UiUtils {
 	 * @return string version of date with GP_FORMATTER_DATE_FORMAT format, only date without time.
 	 */
 	public String formatDateWithClientTimezone(Date date) {
-		return toClientTimezone(date, getDateFormat());
+		return toTimezone(date, getDateFormat());
 	}
 
 	public String format(Object o) {
@@ -633,7 +633,7 @@ public abstract class UiUtils {
 	 */
 	public boolean handleTimeZones(){
 		return  BooleanUtils.toBoolean(
-				Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_HANDLE_TIMEZONES));
+				Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS));
 
 	}
 

@@ -33,28 +33,34 @@ public class TimeZoneUtil {
 
 	/**
 	 * Convert a date to the client timezone, and format it, to be readable to for the user. .
-	 *
 	 * @param date The date.
 	 * @param format the format to be used on the date
 	 * @return string with the date on the client timezone, formatted and ready to be displayed.
 	 */
-	public static String toClientTimezone(Date date, String format) {
+	public static String toTimezone(Date date, String format) {
 		String clientTimezone  = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
-		return toClientTimezone(date, format,clientTimezone);
+		return toTimezone(date, format,clientTimezone);
 
 	}
 
-	public static String toClientTimezone(Date date, String format, String clientTimezone) {
+	/**
+	 * Formats a date while expressing it in the specified timezone.
+	 * @param date The date.
+	 * @param format the format to be used on the date
+	 * @param timezone The tz database name, eg. "Europe/Zurich".
+	 * @return string with the date on the client timezone, formatted and ready to be displayed.
+	 */
+	public static String toTimezone(Date date, String format, String timezone) {
 
 		/***************TESTING USER PROPRIETY TO IDENTIFY TIMEZONE*************************/
-		if(clientTimezone == null){
-			clientTimezone = "Pacific/Kiritimati";
+		if(timezone == null){
+			timezone = "Pacific/Kiritimati";
 			//Context.getAuthenticatedUser().setUserProperty("clientTimezone", "Pacific/Kiritimati");
 		}
 		/***************TO BE REMOVED*************************/
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format , Context.getLocale());
-		dateFormat.setTimeZone(TimeZone.getTimeZone(clientTimezone));
+		dateFormat.setTimeZone(TimeZone.getTimeZone(timezone));
 		return dateFormat.format(date);
 	}
 
@@ -65,7 +71,7 @@ public class TimeZoneUtil {
 	 * @return The date formated as RFC 3339.
 	 */
 	public static String toRFC3339(Date date) {
-		return toClientTimezone(date, Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT ));
+		return toTimezone(date, Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT ));
 		//return ISODateTimeFormat.dateTime().print(new DateTime(date.getTime(), UTC));
 	}
 	
