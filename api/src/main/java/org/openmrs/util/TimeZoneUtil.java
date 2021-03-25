@@ -47,18 +47,13 @@ public class TimeZoneUtil {
 	 * Formats a date while expressing it in the specified timezone.
 	 * @param date The date.
 	 * @param format the format to be used on the date
-	 * @param timezone The tz database name, eg. "Europe/Zurich".
+	 * @param timezone The tz database name, eg. "Europe/Zurich", if for some reason that param is null, it will use UTC.
 	 * @return string with the date on the client timezone, formatted and ready to be displayed.
 	 */
 	public static String toTimezone(Date date, String format, String timezone) {
-
-		/***************TESTING USER PROPRIETY TO IDENTIFY TIMEZONE*************************/
-		if(timezone == null){
-			timezone = "Pacific/Kiritimati";
-			//Context.getAuthenticatedUser().setUserProperty("clientTimezone", "Pacific/Kiritimati");
+		if(timezone == null) {
+			timezone = "UTC";
 		}
-		/***************TO BE REMOVED*************************/
-
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format , Context.getLocale());
 		dateFormat.setTimeZone(TimeZone.getTimeZone(timezone));
 		return dateFormat.format(date);
@@ -72,7 +67,6 @@ public class TimeZoneUtil {
 	 */
 	public static String toRFC3339(Date date) {
 		return toTimezone(date, Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT ));
-		//return ISODateTimeFormat.dateTime().print(new DateTime(date.getTime(), UTC));
 	}
 	
 	/**
