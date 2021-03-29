@@ -18,13 +18,13 @@ public class StringToDateConverter implements Converter<String, Date> {
 		if (ymdhmsms.isEmpty()) {
 			return null;
 		}
-
+		
 		//try to parse date with format ISO 8601
 		try {
 			return TimeZoneUtil.fromISO8601(ymdhmsms);
 		}
 		catch (Exception ex) {}
-
+		
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(WebConstants.DATE_FORMAT_TIMESTAMP);
 			return sdf.parse(ymdhmsms);

@@ -30,35 +30,38 @@ import static org.joda.time.DateTimeZone.UTC;
  * @see https://wiki.openmrs.org/display/docs/Time+Zones+Conventions
  */
 public class TimeZoneUtil {
-
+	
 	/**
 	 * Convert a date to the client timezone, and format it, to be readable to for the user. .
+	 * 
 	 * @param date The date.
 	 * @param format the format to be used on the date
 	 * @return string with the date on the client timezone, formatted and ready to be displayed.
 	 */
 	public static String toTimezone(Date date, String format) {
-		String clientTimezone  = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
-		return toTimezone(date, format,clientTimezone);
-
+		String clientTimezone = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
+		return toTimezone(date, format, clientTimezone);
+		
 	}
-
+	
 	/**
 	 * Formats a date while expressing it in the specified timezone.
+	 * 
 	 * @param date The date.
 	 * @param format the format to be used on the date
-	 * @param timezone The tz database name, eg. "Europe/Zurich", if for some reason that param is null, it will use UTC.
+	 * @param timezone The tz database name, eg. "Europe/Zurich", if for some reason that param is null,
+	 *            it will use UTC.
 	 * @return string with the date on the client timezone, formatted and ready to be displayed.
 	 */
 	public static String toTimezone(Date date, String format, String timezone) {
-		if(timezone == null) {
+		if (timezone == null) {
 			timezone = "UTC";
 		}
-		SimpleDateFormat dateFormat = new SimpleDateFormat(format , Context.getLocale());
+		SimpleDateFormat dateFormat = new SimpleDateFormat(format, Context.getLocale());
 		dateFormat.setTimeZone(TimeZone.getTimeZone(timezone));
 		return dateFormat.format(date);
 	}
-
+	
 	/**
 	 * Formats a date as its RFC 3339 string representation.
 	 * 
@@ -66,7 +69,8 @@ public class TimeZoneUtil {
 	 * @return The date formated as RFC 3339.
 	 */
 	public static String toRFC3339(Date date) {
-		return toTimezone(date, Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT ));
+		return toTimezone(date,
+		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT));
 	}
 	
 	/**
@@ -79,21 +83,17 @@ public class TimeZoneUtil {
 	public static Calendar toUTCCalendar(Date date) {
 		return new DateTime(date.getTime(), UTC).toGregorianCalendar();
 	}
-
-
+	
 	/**
 	 * Get a Date out of its ISO 8601 string representation.
-	 *
+	 * 
 	 * @param isoDateString A date formatted as ISO 8601.
 	 * @return The Date object.
 	 * @Throws IllegalArgumentException – if string parameter does not conform to lexical value space
 	 */
-	public static Date fromISO8601(String isoDateString) throws
-			IllegalArgumentException {
+	public static Date fromISO8601(String isoDateString) throws IllegalArgumentException {
 		DateTimeFormatter parser = ISODateTimeFormat.dateTime();
 		return parser.parseDateTime(isoDateString).toDate();
 	}
-
+	
 }
-
-
