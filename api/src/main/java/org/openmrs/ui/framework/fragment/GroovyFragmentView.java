@@ -54,15 +54,15 @@ public class GroovyFragmentView implements FragmentView {
 			}
 			throw new ViewException(sb.toString());
 		}
-        catch (NullPointerException ex) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("*** In view '" + viewName + "', NullPointerException: " + ex.getMessage() + ".\n");
-            sb.append("Passed from controller: ");
-            for (Map.Entry<String, Object> e : model.entrySet()) {
-                sb.append("\n  " + e.getKey() + " -> " + e.getValue());
-            }
-            throw new ViewException(sb.toString(), ex);
-        }
+		catch (NullPointerException ex) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("*** In view '" + viewName + "', NullPointerException: " + ex.getMessage() + ".\n");
+			sb.append("Passed from controller: ");
+			for (Map.Entry<String, Object> e : model.entrySet()) {
+				sb.append("\n  " + e.getKey() + " -> " + e.getValue());
+			}
+			throw new ViewException(sb.toString(), ex);
+		}
 		catch (ViewException ex) {
 			throw new ViewException("(in '" + viewName + "')\n" + ex.getMessage(), ex);
 		}
@@ -71,10 +71,11 @@ public class GroovyFragmentView implements FragmentView {
 			if (authEx != null)
 				throw authEx;
 			
-			ContextAuthenticationException cAuthEx = ExceptionUtil.findExceptionInChain(ex, ContextAuthenticationException.class);
+			ContextAuthenticationException cAuthEx = ExceptionUtil.findExceptionInChain(ex,
+			    ContextAuthenticationException.class);
 			if (cAuthEx != null)
-				throw cAuthEx;  
-
+				throw cAuthEx;
+			
 			throw new FragmentException("Error evaluating view: " + viewName, ex);
 		}
 	}

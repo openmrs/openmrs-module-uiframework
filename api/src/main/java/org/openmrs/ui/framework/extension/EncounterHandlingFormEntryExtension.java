@@ -20,14 +20,15 @@ import org.openmrs.Form;
 import org.openmrs.ui.framework.AttributeHolder;
 
 /**
- * Subclass of FormEntryExtension for technologies that are able to re-open an existing {@link Encounter}
- * (either in view or edit mode, however they prefer)
+ * Subclass of FormEntryExtension for technologies that are able to re-open an existing
+ * {@link Encounter} (either in view or edit mode, however they prefer)
  */
 public interface EncounterHandlingFormEntryExtension extends FormEntryExtension {
 	
 	/**
 	 * Gets the pages that may be used to open an already-entered encounter. The framework will
 	 * append encounterId=x to this page
+	 * 
 	 * @param context contains person, patient, (TBD)
 	 * @return
 	 */

@@ -24,8 +24,8 @@ import org.apache.commons.lang.StringUtils;
 public class AttributeHolderUtil {
 	
 	/**
-	 * Evaluates the list of expressions on attributeHolder and returns a list of the ones that fail. Supported
-	 * expressions are:
+	 * Evaluates the list of expressions on attributeHolder and returns a list of the ones that
+	 * fail. Supported expressions are:
 	 * <ul>
 	 * <li>simple attributeName, e.g. require("href", "label")</li>
 	 * <li>any one of specified attributeNames, e.g. require("href", "label | icon")</li>

@@ -23,7 +23,6 @@ public interface UserDefinedPageViewDAO extends SingleClassDAO<UserDefinedPageVi
 	 * @param pageName the name of the page view to get
 	 * @return a user defined page view
 	 * @should get a user defined page by name
-	 * 
 	 */
 	public UserDefinedPageView getPageViewByName(String pageName);
 }

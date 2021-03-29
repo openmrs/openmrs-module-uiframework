@@ -24,8 +24,8 @@ public class FragmentActionRequest implements AttributeHolder {
 		this.factory = factory;
 		this.httpRequest = httpRequest;
 		errors = new MapBindingResult(httpRequest.getParameterMap(), "request");
-		this.ui = new FragmentActionUiUtils(factory.getMessageSource(), factory.getExtensionManager(), factory
-		        .getConversionService(), factory.getFormatterService());
+		this.ui = new FragmentActionUiUtils(factory.getMessageSource(), factory.getExtensionManager(),
+		        factory.getConversionService(), factory.getFormatterService());
 	}
 	
 	public FragmentActionUiUtils getUiUtils() {

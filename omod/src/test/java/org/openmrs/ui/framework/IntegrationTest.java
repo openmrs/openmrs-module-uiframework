@@ -46,8 +46,8 @@ public class IntegrationTest extends BaseModuleWebContextSensitiveTest {
 	
 	@Autowired
 	SessionFactory sessionFactory;
-
-    // Commenting out because this test doesn't pass and I need to code review and figure out why
+	
+	// Commenting out because this test doesn't pass and I need to code review and figure out why
 	//@Autowired
 	//@Qualifier("userDefinedPageviewDAO")
 	//UserDefinedPageViewDAO dao;
@@ -56,77 +56,75 @@ public class IntegrationTest extends BaseModuleWebContextSensitiveTest {
 	public void integrationTest() throws Exception {
 		MockHttpSession httpSession = new MockHttpSession();
 		Session session = sessionFactory.getSession(httpSession);
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        PageRequest req = new PageRequest("uiframework", "home", new MockHttpServletRequest(),
-                response, session);
-
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		PageRequest req = new PageRequest("uiframework", "home", new MockHttpServletRequest(), response, session);
+		
 		String html = pageFactory.handle(req);
 		System.out.println("Result = " + html);
-
-        // should not be cached
-        assertThat((String) response.getHeader("Cache-Control"), is("no-cache,no-store,must-revalidate"));
+		
+		// should not be cached
+		assertThat((String) response.getHeader("Cache-Control"), is("no-cache,no-store,must-revalidate"));
 	}
 	
 	/**
 	 * TODO Fix this test
-	 *
+	 * 
+	 * @Test public void shouldDisplayAUserDefinedPage() throws Exception { UserDefinedPageView page
+	 *       = new UserDefinedPageView("welcome", "Welcome ${context.authenticatedUser}!");
+	 *       page.setTemplateType(WebConstants.DEFAULT_USER_DEFINED_TEMPLATE_TYPE);
+	 *       page.setUuid("random-uuid"); page.setCreator(Context.getAuthenticatedUser());
+	 *       page.setDateCreated(new Date()); dao.saveOrUpdate(page); MockHttpSession httpSession =
+	 *       new MockHttpSession(); Session session = sessionFactory.getSession(httpSession);
+	 *       PageRequest req = new PageRequest("userdefined", "welcome", new
+	 *       MockHttpServletRequest(), new MockHttpServletResponse(), session); String html =
+	 *       pageFactory.handle(req); Assert.assertTrue(html.indexOf("Welcome admin!") > -1); }
+	 */
+	
 	@Test
-	public void shouldDisplayAUserDefinedPage() throws Exception {
-		UserDefinedPageView page = new UserDefinedPageView("welcome", "Welcome ${context.authenticatedUser}!");
-		page.setTemplateType(WebConstants.DEFAULT_USER_DEFINED_TEMPLATE_TYPE);
-		page.setUuid("random-uuid");
-		page.setCreator(Context.getAuthenticatedUser());
-		page.setDateCreated(new Date());
-		dao.saveOrUpdate(page);
-		MockHttpSession httpSession = new MockHttpSession();
-		Session session = sessionFactory.getSession(httpSession);
-		PageRequest req = new PageRequest("userdefined", "welcome", new MockHttpServletRequest(),
-		        new MockHttpServletResponse(), session);
-		String html = pageFactory.handle(req);
-		Assert.assertTrue(html.indexOf("Welcome admin!") > -1);
+	public void test_InjectBeansAnnotation() throws Exception {
+		pageFactory.addControllerProvider("test", new PageControllerProvider() {
+			
+			@Override
+			public Object getController(String id) {
+				return new ControllerWithInjectBeansAnnotation();
+			}
+		});
+		pageFactory.addViewProvider("test", new PageViewProvider() {
+			
+			@Override
+			public PageView getView(String name) {
+				return new PageView() {
+					
+					@Override
+					public String render(PageContext context) throws PageAction {
+						return "Contents of Some Page";
+					}
+					
+					@Override
+					public ProviderAndName getController() {
+						return null;
+					}
+				};
+			}
+		});
+		pageFactory.handle(pageRequest("test", "injectBeansAnnotation"));
 	}
-    */
-
-    @Test
-    public void test_InjectBeansAnnotation() throws Exception {
-        pageFactory.addControllerProvider("test", new PageControllerProvider() {
-            @Override
-            public Object getController(String id) {
-                return new ControllerWithInjectBeansAnnotation();
-            }
-        });
-        pageFactory.addViewProvider("test", new PageViewProvider() {
-            @Override
-            public PageView getView(String name) {
-                return new PageView() {
-                    @Override
-                    public String render(PageContext context) throws PageAction {
-                        return "Contents of Some Page";
-                    }
-                    @Override
-                    public ProviderAndName getController() {
-                        return null;
-                    }
-                };
-            }
-        });
-        pageFactory.handle(pageRequest("test", "injectBeansAnnotation"));
-    }
-
-    public class ControllerWithInjectBeansAnnotation {
-        public void controller(@InjectBeans ClassWithAutowiredAnnotations autowired) {
-            assertNull(autowired.shouldBeNull1);
-            assertNull(autowired.shouldBeNull2);
-            assertNotNull(autowired.shouldBeSet1);
-            assertNotNull(autowired.shouldBeSet2);
-        }
-    }
-
-    private PageRequest pageRequest(String provider, String page) {
-        MockHttpSession httpSession = new MockHttpSession();
-        Session uiSession = new Session(httpSession);
-        MockHttpServletRequest req = new MockHttpServletRequest();
-        req.setSession(httpSession);
-        return new PageRequest(provider, page, req, new MockHttpServletResponse(), uiSession);
-    }
+	
+	public class ControllerWithInjectBeansAnnotation {
+		
+		public void controller(@InjectBeans ClassWithAutowiredAnnotations autowired) {
+			assertNull(autowired.shouldBeNull1);
+			assertNull(autowired.shouldBeNull2);
+			assertNotNull(autowired.shouldBeSet1);
+			assertNotNull(autowired.shouldBeSet2);
+		}
+	}
+	
+	private PageRequest pageRequest(String provider, String page) {
+		MockHttpSession httpSession = new MockHttpSession();
+		Session uiSession = new Session(httpSession);
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		req.setSession(httpSession);
+		return new PageRequest(provider, page, req, new MockHttpServletResponse(), uiSession);
+	}
 }

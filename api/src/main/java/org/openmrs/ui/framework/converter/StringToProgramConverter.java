@@ -12,20 +12,20 @@ import org.springframework.core.convert.converter.Converter;
  * Converts from a {@link String} to a {@link Program}
  */
 public class StringToProgramConverter implements Converter<String, Program> {
-
-    @Autowired
-    @Qualifier("programWorkflowService")
-    private ProgramWorkflowService service;
-
+	
+	@Autowired
+	@Qualifier("programWorkflowService")
+	private ProgramWorkflowService service;
+	
 	@Override
 	public Program convert(String id) {
-        if (StringUtils.isBlank(id)) {
-            return null;
-        } else if (ConversionUtil.onlyDigits(id)) {
-            return service.getProgram(Integer.valueOf(id));
-        } else {
-            return service.getProgramByUuid(id);
-        }
+		if (StringUtils.isBlank(id)) {
+			return null;
+		} else if (ConversionUtil.onlyDigits(id)) {
+			return service.getProgram(Integer.valueOf(id));
+		} else {
+			return service.getProgramByUuid(id);
+		}
 	}
-
+	
 }

@@ -21,17 +21,17 @@ import java.util.List;
  *
  */
 public class MissingRequiredCookieException extends RequestValidationException {
-
-    private static final long serialVersionUID = 1L;
-
-    private String requiredCookieName;
-
-    public MissingRequiredCookieException(String requiredCookieName) {
-        this.requiredCookieName = requiredCookieName;
-    }
-
-    @Override
-    public List<String> getGlobalErrorCodes() {
-        return Collections.singletonList("Required cookie: " + requiredCookieName);
-    }
+	
+	private static final long serialVersionUID = 1L;
+	
+	private String requiredCookieName;
+	
+	public MissingRequiredCookieException(String requiredCookieName) {
+		this.requiredCookieName = requiredCookieName;
+	}
+	
+	@Override
+	public List<String> getGlobalErrorCodes() {
+		return Collections.singletonList("Required cookie: " + requiredCookieName);
+	}
 }

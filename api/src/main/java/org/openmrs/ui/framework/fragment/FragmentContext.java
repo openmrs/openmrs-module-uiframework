@@ -10,7 +10,7 @@ import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 
 /**
- * State and methods involved in taking a fragment request and generating fragment output 
+ * State and methods involved in taking a fragment request and generating fragment output
  */
 public class FragmentContext implements Decoratable, FragmentIncluder, ExtensionAware {
 	
@@ -41,6 +41,7 @@ public class FragmentContext implements Decoratable, FragmentIncluder, Extension
 	
 	/**
 	 * Returns a merged version of this fragment's model and the shared page model
+	 * 
 	 * @return
 	 */
 	public Model getMergedModel() {
@@ -55,8 +56,9 @@ public class FragmentContext implements Decoratable, FragmentIncluder, Extension
 	}
 	
 	/**
-	 * Requests that this fragment be decorated with another one. (The output of this fragment
-	 * will be passed to the decorator as "content".)
+	 * Requests that this fragment be decorated with another one. (The output of this fragment will
+	 * be passed to the decorator as "content".)
+	 * 
 	 * @param fragmentRequest
 	 */
 	public void setDecorateWith(FragmentRequest fragmentRequest) {
@@ -168,9 +170,9 @@ public class FragmentContext implements Decoratable, FragmentIncluder, Extension
 		else
 			return 1;
 	}
-
-    public Formatter getFormatter() {
-        return pageContext.getFormatter();
-    }
-
+	
+	public Formatter getFormatter() {
+		return pageContext.getFormatter();
+	}
+	
 }

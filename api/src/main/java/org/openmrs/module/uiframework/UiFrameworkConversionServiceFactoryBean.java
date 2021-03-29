@@ -19,14 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
 
-
 /**
- * We ovverride Spring's implementation so we can autowire all spring-managed converters.
- * This allows other modules (besides uiframework) to provide converters.
+ * We ovverride Spring's implementation so we can autowire all spring-managed converters. This
+ * allows other modules (besides uiframework) to provide converters.
  */
 public class UiFrameworkConversionServiceFactoryBean extends ConversionServiceFactoryBean {
 	
-	@Autowired(required=false)
+	@Autowired(required = false)
 	Set<Converter<?, ?>> springManagedConverters;
 	
 	/**
@@ -36,7 +35,7 @@ public class UiFrameworkConversionServiceFactoryBean extends ConversionServiceFa
 	public void afterPropertiesSet() {
 		if (springManagedConverters != null && springManagedConverters.size() > 0)
 			super.setConverters(springManagedConverters);
-	    super.afterPropertiesSet();
+		super.afterPropertiesSet();
 	}
 	
 }

@@ -17,7 +17,7 @@ public class NameSupportCompatibility {
 	}
 	
 	public static String format(PersonName n) {
-
+		
 		Object nameTemplate = getLayoutTemplate();
 		
 		try {

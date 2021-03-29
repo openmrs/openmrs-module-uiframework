@@ -43,9 +43,9 @@ import org.springframework.core.convert.ConversionService;
 public class FragmentFactory {
 	
 	private static Map<String, FragmentControllerProvider> controllerProviders;
-
+	
 	private static Map<String, FragmentViewProvider> viewProviders;
-
+	
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
@@ -56,9 +56,9 @@ public class FragmentFactory {
 	
 	@Autowired
 	MessageSource messageSource;
-
-    @Autowired
-    FormatterService formatterService;
+	
+	@Autowired
+	FormatterService formatterService;
 	
 	@Autowired
 	ExtensionManager extensionManager;
@@ -68,24 +68,24 @@ public class FragmentFactory {
 	
 	@Autowired(required = false)
 	ServletContext servletContext;
-
+	
 	@Autowired(required = false)
 	List<FragmentActionInterceptor> fragmentActionInterceptors;
-
+	
 	@Autowired(required = false)
 	List<FragmentRequestMapper> requestMappers;
-
-    @Autowired(required = false)
-    List<FragmentModelConfigurator> modelConfigurators;
-
-    @Autowired(required = false)
-    List<PossibleFragmentControllerArgumentProvider> possibleFragmentControllerArgumentProviders;
-
-    @Autowired(required = false)
-    List<PossibleFragmentActionArgumentProvider> possibleFragmentActionArgumentProviders;
-
+	
+	@Autowired(required = false)
+	List<FragmentModelConfigurator> modelConfigurators;
+	
+	@Autowired(required = false)
+	List<PossibleFragmentControllerArgumentProvider> possibleFragmentControllerArgumentProviders;
+	
+	@Autowired(required = false)
+	List<PossibleFragmentActionArgumentProvider> possibleFragmentActionArgumentProviders;
+	
 	private boolean developmentMode = false;
-
+	
 	// a cache of views for production mode
 	private Map<String, FragmentView> viewCache = new HashMap<String, FragmentView>();
 	
@@ -104,9 +104,9 @@ public class FragmentFactory {
 		}
 		// before using the fragment request, apply any fragment mappers
 		context.setRequest(mapFragmentProviderAndId(context.getRequest()));
-
+		
 		applyDefaultConfiguration(context);
-        configureModel(context);
+		configureModel(context);
 		// it's possible someone has pre-requested that this fragment be decorated
 		if (context.getRequest().getConfiguration().containsKey("decorator")) {
 			String decoratorProvider = (String) context.getRequest().getConfiguration().get("decoratorProvider");
@@ -128,22 +128,22 @@ public class FragmentFactory {
 		decoratorRequest.getConfiguration().put("content", result);
 		decoratorRequest.getConfiguration().put("contentFragmentId", context.getRequest().getConfiguration().get("id"));
 		FragmentContext decoratorContext = new FragmentContext(decoratorRequest, context);
-        String ret = process(decoratorContext);
+		String ret = process(decoratorContext);
 		if (log.isDebugEnabled()) {
 			log.debug("\thandled " + context.getRequest() + " in " + (System.currentTimeMillis() - startTime) + " ms");
 		}
 		return ret;
 	}
-
-    private void configureModel(FragmentContext fragmentContext) {
-        if (modelConfigurators != null) {
-            for (FragmentModelConfigurator configurator : modelConfigurators) {
-                configurator.configureModel(fragmentContext);
-            }
-        }
-    }
-
-    private void applyDefaultConfiguration(FragmentContext context) {
+	
+	private void configureModel(FragmentContext fragmentContext) {
+		if (modelConfigurators != null) {
+			for (FragmentModelConfigurator configurator : modelConfigurators) {
+				configurator.configureModel(fragmentContext);
+			}
+		}
+	}
+	
+	private void applyDefaultConfiguration(FragmentContext context) {
 		FragmentConfiguration config = context.getRequest().getConfiguration();
 		if (!config.containsKey("id"))
 			config.put("id", UiUtils.randomId("fr"));
@@ -182,7 +182,8 @@ public class FragmentFactory {
 		context.setView(view);
 		
 		if (context.getController().equals(emptyController) && context.getView() == null) {
-			throw new RuntimeException("Cannot find controller or view for fragment: " + context.getRequest().getFragmentId());
+			throw new RuntimeException("Cannot find controller or view for fragment: "
+			        + context.getRequest().getFragmentId());
 		}
 		
 		// Fragments are allowed to have no view (their controller can still affect the shared
@@ -225,23 +226,24 @@ public class FragmentFactory {
 		possibleArguments.put(PageRequest.class, context.getPageContext().getRequest());
 		possibleArguments.put(HttpServletRequest.class, context.getPageContext().getRequest().getRequest());
 		possibleArguments.put(HttpServletResponse.class, context.getPageContext().getRequest().getResponse());
-        possibleArguments.put(HttpSession.class, context.getPageContext().getRequest().getRequest().getSession());
+		possibleArguments.put(HttpSession.class, context.getPageContext().getRequest().getRequest().getSession());
 		possibleArguments.put(FragmentFactory.class, this);
 		possibleArguments.put(UiUtils.class, new FragmentUiUtils(context));
 		possibleArguments.put(Session.class, context.getPageContext().getRequest().getSession());
 		possibleArguments.put(ApplicationContext.class, applicationContext);
 		possibleArguments.put(ServletContext.class, servletContext);
-        if (possibleFragmentControllerArgumentProviders != null) {
-            for (PossibleFragmentControllerArgumentProvider provider : possibleFragmentControllerArgumentProviders) {
-                provider.addPossibleFragmentControllerArguments(possibleArguments);
-            }
-        }
-
-        String httpRequestMethod = context.getPageContext().getRequest().getRequest().getMethod();
-        return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments, conversionService, applicationContext);
+		if (possibleFragmentControllerArgumentProviders != null) {
+			for (PossibleFragmentControllerArgumentProvider provider : possibleFragmentControllerArgumentProviders) {
+				provider.addPossibleFragmentControllerArguments(possibleArguments);
+			}
+		}
+		
+		String httpRequestMethod = context.getPageContext().getRequest().getRequest().getMethod();
+		return UiFrameworkUtil.executeControllerMethod(context.getController(), httpRequestMethod, possibleArguments,
+		    conversionService, applicationContext);
 	}
-
-    /**
+	
+	/**
 	 * @param request
 	 * @param viewName if not null, overrides what is specified in request
 	 * @return
@@ -284,9 +286,9 @@ public class FragmentFactory {
 	}
 	
 	/**
-	 * Allow modules to override fragment handling via {@link FragmentRequestMapper}s.
-	 * Sets this internal fragment provider and fragmentId on request
-	 *
+	 * Allow modules to override fragment handling via {@link FragmentRequestMapper}s. Sets this
+	 * internal fragment provider and fragmentId on request
+	 * 
 	 * @param request
 	 */
 	private FragmentRequest mapFragmentProviderAndId(FragmentRequest request) {
@@ -298,10 +300,10 @@ public class FragmentFactory {
 				}
 			}
 		}
-
+		
 		return request;
 	}
-
+	
 	/**
 	 * TODO cache the results in production mode?
 	 * 
@@ -372,13 +374,14 @@ public class FragmentFactory {
 	
 	/**
 	 * Registers a Fragment Controller Provider
+	 * 
 	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
 	 */
 	public void addControllerProvider(String key, FragmentControllerProvider provider) {
 		if (controllerProviders == null) {
 			controllerProviders = new LinkedHashMap<String, FragmentControllerProvider>();
 		}
-
+		
 		UiFrameworkUtil.checkAndSetDevelopmentModeForProvider(key, provider);
 		
 		controllerProviders.put(key, provider);
@@ -412,24 +415,26 @@ public class FragmentFactory {
 	
 	/**
 	 * Registers a Fragment View Provider
+	 * 
 	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
 	 */
 	public void addViewProvider(String key, FragmentViewProvider provider) {
 		if (viewProviders == null) {
 			viewProviders = new LinkedHashMap<String, FragmentViewProvider>();
 		}
-
+		
 		UiFrameworkUtil.checkAndSetDevelopmentModeForProvider(key, provider);
 		
 		viewProviders.put(key, provider);
 	}
 	
-	public Object invokeFragmentAction(String providerName, String fragmentName, String action, HttpServletRequest httpRequest, HttpServletResponse httpServletResponse) {
+	public Object invokeFragmentAction(String providerName, String fragmentName, String action,
+	        HttpServletRequest httpRequest, HttpServletResponse httpServletResponse) {
 		log.info("Invoking " + providerName + ":" + fragmentName + " . " + action);
-        if ("controller".equals(action)) {
-            throw new UiFrameworkException("Illegal to access fragment controller() method as an action");
-        }
-        FragmentActionRequest request = new FragmentActionRequest(this, httpRequest);
+		if ("controller".equals(action)) {
+			throw new UiFrameworkException("Illegal to access fragment controller() method as an action");
+		}
+		FragmentActionRequest request = new FragmentActionRequest(this, httpRequest);
 		
 		// try to find the requested fragment controller
 		Object controller = getController(providerName, fragmentName);
@@ -448,10 +453,10 @@ public class FragmentFactory {
 		if (method == null) {
 			throw new UiFrameworkException("Error getting " + controller.getClass() + "." + action + " method");
 		}
-        if (method.getDeclaringClass().equals(Object.class)) {
-            throw new UiFrameworkException("Cannot invoke methods from Object as fragment actions");
-        }
-
+		if (method.getDeclaringClass().equals(Object.class)) {
+			throw new UiFrameworkException("Cannot invoke methods from Object as fragment actions");
+		}
+		
 		// invoke all fragment action interceptors
 		if (fragmentActionInterceptors != null) {
 			for (FragmentActionInterceptor interceptor : fragmentActionInterceptors) {
@@ -469,15 +474,16 @@ public class FragmentFactory {
 		possibleArguments.put(Session.class, sessionFactory.getSession(httpRequest.getSession()));
 		possibleArguments.put(ApplicationContext.class, applicationContext);
 		possibleArguments.put(ServletContext.class, servletContext);
-        if (possibleFragmentActionArgumentProviders != null) {
-            for (PossibleFragmentActionArgumentProvider provider : possibleFragmentActionArgumentProviders) {
-                provider.addPossibleFragmentActionArguments(possibleArguments);
-            }
-        }
-
-        Object[] params = null;
+		if (possibleFragmentActionArgumentProviders != null) {
+			for (PossibleFragmentActionArgumentProvider provider : possibleFragmentActionArgumentProviders) {
+				provider.addPossibleFragmentActionArguments(possibleArguments);
+			}
+		}
+		
+		Object[] params = null;
 		try {
-			params = UiFrameworkUtil.determineControllerMethodParameters(controller, method, possibleArguments, conversionService, applicationContext);
+			params = UiFrameworkUtil.determineControllerMethodParameters(controller, method, possibleArguments,
+			    conversionService, applicationContext);
 		}
 		catch (RequestValidationException ex) {
 			// this means we caught something via a @Validate annotation
@@ -488,7 +494,7 @@ public class FragmentFactory {
 					request.getErrors().rejectValue(e.getKey(), errorCode);
 			}
 		}
-
+		
 		if (request.hasErrors())
 			return new FailureResult(request.getErrors());
 		
@@ -500,7 +506,8 @@ public class FragmentFactory {
 		catch (Exception ex) {
 			// if this error is a RequestValidationException (likely wrapped in an InvocationTargetException), the action
 			// a validation exception (as opposed to this happen via a @Validate annotation, caught above)
-			RequestValidationException validationEx = ExceptionUtil.findExceptionInChain(ex, RequestValidationException.class);
+			RequestValidationException validationEx = ExceptionUtil.findExceptionInChain(ex,
+			    RequestValidationException.class);
 			if (validationEx != null) {
 				for (String errorCode : validationEx.getGlobalErrorCodes())
 					request.getErrors().reject(errorCode);
@@ -525,28 +532,29 @@ public class FragmentFactory {
 		
 		return result;
 	}
-
-    private String describeParamsForErrorMessage(Method method, Object[] params) {
-        if (method.getParameterTypes().length != params.length) {
-            return "Parameter length mismatch: expected " + method.getParameterTypes().length + " but passed " + params.length;
-        }
-        List<String> lines = new ArrayList<String>();
-        for (int i = 0; i < method.getParameterTypes().length; ++i) {
-            Class<?> expected = method.getParameterTypes()[i];
-            String temp = "" + i + ": ";
-            temp += "Expected: " + expected.getName() + " (cl: " + expected.getClassLoader() + ")";
-            temp += " | Actual: ";
-            if (params[i] == null) {
-                temp += "null";
-            } else {
-                temp += params[i].getClass().getName() + " (cl: " + params[i].getClass().getClassLoader() + ")";
-            }
-            lines.add(temp);
-        }
-        return "\n" + OpenmrsUtil.join(lines, "\n");
-    }
-
-    public boolean fragmentExists(String providerName, String fragmentName) {
+	
+	private String describeParamsForErrorMessage(Method method, Object[] params) {
+		if (method.getParameterTypes().length != params.length) {
+			return "Parameter length mismatch: expected " + method.getParameterTypes().length + " but passed "
+			        + params.length;
+		}
+		List<String> lines = new ArrayList<String>();
+		for (int i = 0; i < method.getParameterTypes().length; ++i) {
+			Class<?> expected = method.getParameterTypes()[i];
+			String temp = "" + i + ": ";
+			temp += "Expected: " + expected.getName() + " (cl: " + expected.getClassLoader() + ")";
+			temp += " | Actual: ";
+			if (params[i] == null) {
+				temp += "null";
+			} else {
+				temp += params[i].getClass().getName() + " (cl: " + params[i].getClass().getClassLoader() + ")";
+			}
+			lines.add(temp);
+		}
+		return "\n" + OpenmrsUtil.join(lines, "\n");
+	}
+	
+	public boolean fragmentExists(String providerName, String fragmentName) {
 		Object controller = getController(providerName, fragmentName);
 		if (controller != null) {
 			return true;
@@ -575,39 +583,41 @@ public class FragmentFactory {
 	public ConversionService getConversionService() {
 		return conversionService;
 	}
-
-    public FormatterService getFormatterService() {
-        return formatterService;
-    }
-
-    public ServletContext getServletContext() {
+	
+	public FormatterService getFormatterService() {
+		return formatterService;
+	}
+	
+	public ServletContext getServletContext() {
 		return servletContext;
 	}
-
+	
 	public List<FragmentModelConfigurator> getModelConfigurators() {
 		return modelConfigurators;
 	}
-
-    public void setModelConfigurators(List<FragmentModelConfigurator> modelConfigurators) {
-        this.modelConfigurators = modelConfigurators;
-    }
-
-    public void setPossibleFragmentControllerArgumentProviders(List<PossibleFragmentControllerArgumentProvider> possibleFragmentControllerArgumentProviders) {
-        this.possibleFragmentControllerArgumentProviders = possibleFragmentControllerArgumentProviders;
-    }
-
-    public void setPossibleFragmentActionArgumentProviders(List<PossibleFragmentActionArgumentProvider> possibleFragmentActionArgumentProviders) {
-        this.possibleFragmentActionArgumentProviders = possibleFragmentActionArgumentProviders;
-    }
-
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
+	
+	public void setModelConfigurators(List<FragmentModelConfigurator> modelConfigurators) {
+		this.modelConfigurators = modelConfigurators;
+	}
+	
+	public void setPossibleFragmentControllerArgumentProviders(
+	        List<PossibleFragmentControllerArgumentProvider> possibleFragmentControllerArgumentProviders) {
+		this.possibleFragmentControllerArgumentProviders = possibleFragmentControllerArgumentProviders;
+	}
+	
+	public void setPossibleFragmentActionArgumentProviders(
+	        List<PossibleFragmentActionArgumentProvider> possibleFragmentActionArgumentProviders) {
+		this.possibleFragmentActionArgumentProviders = possibleFragmentActionArgumentProviders;
+	}
+	
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+	
 	public List<FragmentRequestMapper> getRequestMappers() {
 		return requestMappers;
 	}
-
+	
 	public void setRequestMappers(List<FragmentRequestMapper> requestMappers) {
 		this.requestMappers = requestMappers;
 	}

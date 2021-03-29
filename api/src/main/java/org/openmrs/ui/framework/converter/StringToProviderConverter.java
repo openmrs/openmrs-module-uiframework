@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 public class StringToProviderConverter implements Converter<String, Provider> {
 	
 	@Autowired
-	@Qualifier("providerService")       
+	@Qualifier("providerService")
 	ProviderService service;
 	
 	/**

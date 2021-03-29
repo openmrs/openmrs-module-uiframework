@@ -11,6 +11,7 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	private String basePackage;
 	
 	private List<File> developmentFolders;
+	
 	private List<String> developmentFolderNames;
 	
 	@Override
@@ -70,11 +71,11 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	public void setBasePackage(String basePackage) {
 		this.basePackage = basePackage;
 	}
-    
+	
 	public List<File> getDevelopmentFolders() {
 		return developmentFolders;
 	}
-
+	
 	public void setDevelopmentFolders(List<File> developmentFolders) {
 		this.developmentFolders = developmentFolders;
 	}
@@ -82,7 +83,7 @@ public class ConventionBasedClasspathFragmentControllerProvider implements Fragm
 	public List<String> getDevelopmentFolderNames() {
 		return developmentFolderNames;
 	}
-
+	
 	public void setDevelopmentFolderNames(List<String> developmentFolderNames) {
 		this.developmentFolderNames = developmentFolderNames;
 	}

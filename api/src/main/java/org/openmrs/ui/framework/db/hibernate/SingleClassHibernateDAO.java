@@ -2,7 +2,7 @@ package org.openmrs.ui.framework.db.hibernate;
 
 import java.util.List;
 
-import org.openmrs.api.db.hibernate.DbSessionFactory;  
+import org.openmrs.api.db.hibernate.DbSessionFactory;
 import org.openmrs.ui.framework.db.SingleClassDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,14 +37,14 @@ public abstract class SingleClassHibernateDAO<T> implements SingleClassDAO<T> {
 	}
 	
 	@SuppressWarnings("unchecked")
-    @Override
+	@Override
 	@Transactional(readOnly = true)
 	public T getById(Integer id) {
 		return (T) sessionFactory.getCurrentSession().get(mappedClass, id);
 	}
 	
 	@SuppressWarnings("unchecked")
-    @Override
+	@Override
 	@Transactional(readOnly = true)
 	public List<T> getAll() {
 		return (List<T>) sessionFactory.getCurrentSession().createCriteria(mappedClass).list();

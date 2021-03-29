@@ -31,9 +31,9 @@ import org.openmrs.ui.framework.fragment.FragmentContext;
 import org.openmrs.ui.framework.fragment.FragmentView;
 
 /**
- * A view that will effectively do a jsp:include of the given page (with this application's servlet).
- * This is able to implement _both_ {@link PageView} and {@link FragmentView} because it ignores most
- * of the PageContext and FragmentContext, and just uses the configured requestMapping.
+ * A view that will effectively do a jsp:include of the given page (with this application's
+ * servlet). This is able to implement _both_ {@link PageView} and {@link FragmentView} because it
+ * ignores most of the PageContext and FragmentContext, and just uses the configured requestMapping.
  */
 public class SpringMvcView implements PageView, FragmentView {
 	
@@ -59,7 +59,7 @@ public class SpringMvcView implements PageView, FragmentView {
 	@Override
 	public ProviderAndName getController() {
 		// TODO force this to be controller-less
-	    return null;
+		return null;
 	}
 	
 	/**
@@ -79,8 +79,8 @@ public class SpringMvcView implements PageView, FragmentView {
 	}
 	
 	/**
-	 * 
-	 * Does an include based on the HttpServletRequest and response underlying the original page request
+	 * Does an include based on the HttpServletRequest and response underlying the original page
+	 * request
 	 * 
 	 * @param context
 	 * @return
@@ -144,7 +144,8 @@ public class SpringMvcView implements PageView, FragmentView {
 	}
 	
 	/**
-	 * To aid 1.x/2.x compatibility, allow a comment to indicate when the content to include starts and ends
+	 * To aid 1.x/2.x compatibility, allow a comment to indicate when the content to include starts
+	 * and ends
 	 * 
 	 * @return
 	 * @should trim content before starting comment
@@ -163,8 +164,9 @@ public class SpringMvcView implements PageView, FragmentView {
 	}
 	
 	/**
-	 * Idea copied from org.apache.taglibs.standard.tag.common.core.ImportSupport$ImportResponseWrapper
-	 * Captures content written to the writer, as well as redirects.
+	 * Idea copied from
+	 * org.apache.taglibs.standard.tag.common.core.ImportSupport$ImportResponseWrapper Captures
+	 * content written to the writer, as well as redirects.
 	 */
 	class ContentCapturingHttpServletResponse extends HttpServletResponseWrapper {
 		

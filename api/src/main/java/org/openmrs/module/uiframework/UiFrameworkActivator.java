@@ -34,12 +34,13 @@ import org.openmrs.ui.framework.resource.ResourceFactory;
 public class UiFrameworkActivator extends BaseModuleActivator implements ModuleActivator {
 	
 	private Log log = LogFactory.getLog(getClass());
+	
 	private volatile static long contextLastRefreshedTime;
-
+	
 	public static long getContextLastRefreshedTime() {
 		return contextLastRefreshedTime;
 	}
-
+	
 	/**
 	 * @see org.openmrs.module.BaseModuleActivator#willStart()
 	 */
@@ -57,16 +58,17 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 	}
 	
 	/**
-	 * Every time the spring context is refreshed, we make callbacks to any {@link UiContextRefreshedCallback}
-	 * beans that are managed by Spring. The main purpose of this is to that modules can be configured to use
-	 * the UI Framework through simple usage of {@link StandardModuleUiConfiguration}.
+	 * Every time the spring context is refreshed, we make callbacks to any
+	 * {@link UiContextRefreshedCallback} beans that are managed by Spring. The main purpose of this
+	 * is to that modules can be configured to use the UI Framework through simple usage of
+	 * {@link StandardModuleUiConfiguration}.
 	 * 
 	 * @see org.openmrs.module.BaseModuleActivator#contextRefreshed()
 	 */
 	@Override
 	public void contextRefreshed() {
 		contextLastRefreshedTime = System.currentTimeMillis();
-
+		
 		// START HACK
 		// since we're not using a Listener anymore, these are not set at startup
 		try {
@@ -74,7 +76,8 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 			String webappName = (String) webConstants1x.getField("WEBAPP_NAME").get(null);
 			WebConstants.CONTEXT_PATH = webappName;
 			WebConstants.WEBAPP_NAME = webappName;
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			log.error("Failed to get CONTEXT_PATH from WebConstants during UI Framework startup");
 		}
 		// END HACK
@@ -82,10 +85,10 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 		PageFactory pageFactory = getComponent(PageFactory.class);
 		FragmentFactory fragmentFactory = getComponent(FragmentFactory.class);
 		ResourceFactory resourceFactory = getComponent(ResourceFactory.class);
-
+		
 		// Register a standard resource provider that can load file-based resources
 		resourceFactory.addResourceProvider(ConfigurationResourceProvider.RESOURCE_KEY, new ConfigurationResourceProvider());
-
+		
 		List<UiContextRefreshedCallback> callbacks = Context.getRegisteredComponents(UiContextRefreshedCallback.class);
 		for (UiContextRefreshedCallback callback : callbacks) {
 			try {
@@ -96,7 +99,6 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 			}
 		}
 	}
-	
 	
 	private <T> T getComponent(Class<T> clazz) {
 		List<T> list = Context.getRegisteredComponents(clazz);

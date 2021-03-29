@@ -3,15 +3,15 @@ package org.openmrs.ui.framework;
 public class WebConstants {
 	
 	public static String CONTEXT_PATH = null;
-
+	
 	public static final String DATE_FORMAT_TIMESTAMP = "yyyy-MM-dd HH:mm:ss.SSS";
 	
 	public static final String DATE_FORMAT_DATETIME = "yyyy-MM-dd HH:mm:ss";
 	
 	public static final String DATE_FORMAT_DATE = "yyyy-MM-dd";
-
-    public static final String DATE_FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ";
-
+	
+	public static final String DATE_FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ";
+	
 	// TODO BW: This file can probably be cleaned out, most are specific to the old webapp
 	
 	public static final String SESSION_SESSION_ATTRIBUTE = "__openmrs_session";

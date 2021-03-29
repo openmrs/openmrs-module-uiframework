@@ -17,14 +17,14 @@ package org.openmrs.ui.framework.page;
 import java.util.Map;
 
 /**
- * Modules can implement this interface to provide possible arguments for page controllers, which will be injected
- * by type into the page's controller method.
+ * Modules can implement this interface to provide possible arguments for page controllers, which
+ * will be injected by type into the page's controller method.
  */
 public interface PossiblePageControllerArgumentProvider {
-
-    /**
-     * @param possibleArguments Implementations should add new mappings to this map
-     */
-    void addPossiblePageControllerArguments(Map<Class<?>, Object> possibleArguments);
-
+	
+	/**
+	 * @param possibleArguments Implementations should add new mappings to this map
+	 */
+	void addPossiblePageControllerArguments(Map<Class<?>, Object> possibleArguments);
+	
 }

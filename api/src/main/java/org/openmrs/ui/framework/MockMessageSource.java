@@ -23,37 +23,38 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Behaves like the OpenMRS message source, i.e. it returns the passed-in code if no message is defined
+ * Behaves like the OpenMRS message source, i.e. it returns the passed-in code if no message is
+ * defined
  */
 public class MockMessageSource implements MessageSource {
-
-    Map<String, String> messages = new HashMap<String, String>();
-
-    public void addMessage(String code, String message) {
-        messages.put(code, message);
-    }
-
-    @Override
-    public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
-        return helper(code, defaultMessage);
-    }
-
-    @Override
-    public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-        return helper(code, null);
-    }
-
-    @Override
-    public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
-        return helper(resolvable.getCodes()[0], resolvable.getDefaultMessage());
-    }
-
-    private String helper(String code, String defaultMessage) {
-        String message = messages.get(code);
-        if (message != null) {
-            return message;
-        }
-        return defaultMessage != null ? defaultMessage : code;
-    }
-
+	
+	Map<String, String> messages = new HashMap<String, String>();
+	
+	public void addMessage(String code, String message) {
+		messages.put(code, message);
+	}
+	
+	@Override
+	public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
+		return helper(code, defaultMessage);
+	}
+	
+	@Override
+	public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
+		return helper(code, null);
+	}
+	
+	@Override
+	public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
+		return helper(resolvable.getCodes()[0], resolvable.getDefaultMessage());
+	}
+	
+	private String helper(String code, String defaultMessage) {
+		String message = messages.get(code);
+		if (message != null) {
+			return message;
+		}
+		return defaultMessage != null ? defaultMessage : code;
+	}
+	
 }

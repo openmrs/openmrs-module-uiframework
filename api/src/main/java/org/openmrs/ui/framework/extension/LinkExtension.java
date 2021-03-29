@@ -4,7 +4,7 @@ import org.openmrs.ui.framework.Link;
 import org.openmrs.ui.framework.session.Session;
 
 /**
- * inherits getLabel, getLink, and getIcon methods from {@link Link} 
+ * inherits getLabel, getLink, and getIcon methods from {@link Link}
  */
 public class LinkExtension extends Link implements Extension {
 	
@@ -41,6 +41,7 @@ public class LinkExtension extends Link implements Extension {
 	
 	/**
 	 * Subclasses should override this method if they don't always want to be enabled.
+	 * 
 	 * @see org.openmrs.ui.framework.extension.Extension#isEnabled(org.openmrs.ui.framework.session.Session)
 	 */
 	@Override

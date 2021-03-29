@@ -16,7 +16,6 @@ package org.openmrs.module.uiframework.page.controller;
 import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.page.PageModel;
 
-
 /**
  * Controller for home.page
  */

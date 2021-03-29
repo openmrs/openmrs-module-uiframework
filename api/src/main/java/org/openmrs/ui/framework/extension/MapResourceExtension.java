@@ -5,9 +5,8 @@ import org.openmrs.ui.framework.session.Session;
 
 /**
  * Allows to map an extension like kenyaemr/standardEmrPage so that it is used instead of
- * appui/standardEmrPage.
- * 
- * The extension point is {@link UiFrameworkConstants#MAP_RESOURCE_EXTENSION_POINT_ID}.
+ * appui/standardEmrPage. The extension point is
+ * {@link UiFrameworkConstants#MAP_RESOURCE_EXTENSION_POINT_ID}.
  */
 public class MapResourceExtension implements Extension {
 	

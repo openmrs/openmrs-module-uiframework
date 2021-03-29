@@ -15,7 +15,6 @@ package org.openmrs.ui.framework.resource;
 
 import java.io.File;
 
-
 /**
  * Interface capable of providing static resources (e.g. images, javascript, css)
  */

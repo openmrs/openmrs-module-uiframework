@@ -17,18 +17,17 @@ import org.openmrs.PatientProgram;
 import org.openmrs.api.context.Context;
 import org.springframework.core.convert.converter.Converter;
 
-
 /**
  * Treats the string as a pk id of a {@link PatientProgram}
  */
 public class StringToPatientProgramConverter implements Converter<String, PatientProgram> {
-
+	
 	/**
 	 * @see org.springframework.core.convert.converter.Converter#convert(java.lang.Object)
 	 */
 	@Override
 	public PatientProgram convert(String source) {
-	    return Context.getProgramWorkflowService().getPatientProgram(Integer.valueOf(source));
+		return Context.getProgramWorkflowService().getPatientProgram(Integer.valueOf(source));
 	}
 	
 }

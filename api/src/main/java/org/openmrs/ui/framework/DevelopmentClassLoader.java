@@ -10,8 +10,8 @@ import org.openmrs.util.OpenmrsClassLoader;
 import org.openmrs.util.OpenmrsUtil;
 
 /**
- * This is a placeholder solution for allowing Page and Fragment controller classes to
- * be reloaded in development mode. It probably leaks lots of memory. 
+ * This is a placeholder solution for allowing Page and Fragment controller classes to be reloaded
+ * in development mode. It probably leaks lots of memory.
  */
 public class DevelopmentClassLoader extends ClassLoader {
 	
@@ -22,9 +22,10 @@ public class DevelopmentClassLoader extends ClassLoader {
 	List<File> classDirectories;
 	
 	/**
-	 * Constructs a class loader that will automatically load classes from one specific
-	 * package from the given location on disk, and delegate to the regular OpenmrsClassLoader
-	 * for all other classes
+	 * Constructs a class loader that will automatically load classes from one specific package from
+	 * the given location on disk, and delegate to the regular OpenmrsClassLoader for all other
+	 * classes
+	 * 
 	 * @param classDirectory
 	 * @param reloadablePackage
 	 */

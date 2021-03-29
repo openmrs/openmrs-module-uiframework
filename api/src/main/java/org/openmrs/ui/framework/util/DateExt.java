@@ -20,13 +20,13 @@ import java.util.Date;
  * Wraps Date providing helper methods.
  */
 public class DateExt {
-
+	
 	final Date date;
-
+	
 	public DateExt(Date date) {
 		this.date = date;
 	}
-
+	
 	public boolean isSameDay(Date anotherDate) {
 		Calendar day = Calendar.getInstance();
 		day.setTime(date);
@@ -34,17 +34,17 @@ public class DateExt {
 		day.set(Calendar.MINUTE, 0);
 		day.set(Calendar.SECOND, 0);
 		day.set(Calendar.MILLISECOND, 0);
-
+		
 		Calendar anotherDay = Calendar.getInstance();
 		anotherDay.setTime(anotherDate);
 		anotherDay.set(Calendar.HOUR_OF_DAY, 0);
 		anotherDay.set(Calendar.MINUTE, 0);
 		anotherDay.set(Calendar.SECOND, 0);
 		anotherDay.set(Calendar.MILLISECOND, 0);
-
+		
 		return day.equals(anotherDay);
 	}
-
+	
 	public boolean isDayBefore(Date anotherDate) {
 		Calendar day = Calendar.getInstance();
 		day.setTime(date);
@@ -52,7 +52,7 @@ public class DateExt {
 		day.set(Calendar.MINUTE, 0);
 		day.set(Calendar.SECOND, 0);
 		day.set(Calendar.MILLISECOND, 0);
-
+		
 		Calendar anotherDay = Calendar.getInstance();
 		anotherDay.setTime(anotherDate);
 		anotherDay.add(Calendar.DAY_OF_YEAR, -1);
@@ -60,10 +60,10 @@ public class DateExt {
 		anotherDay.set(Calendar.MINUTE, 0);
 		anotherDay.set(Calendar.SECOND, 0);
 		anotherDay.set(Calendar.MILLISECOND, 0);
-
+		
 		return day.equals(anotherDay);
 	}
-
+	
 	public Date getDateWithoutTime() {
 		Calendar day = Calendar.getInstance();
 		day.setTime(date);
@@ -71,7 +71,7 @@ public class DateExt {
 		day.set(Calendar.MINUTE, 0);
 		day.set(Calendar.SECOND, 0);
 		day.set(Calendar.MILLISECOND, 0);
-
+		
 		return day.getTime();
 	}
 }

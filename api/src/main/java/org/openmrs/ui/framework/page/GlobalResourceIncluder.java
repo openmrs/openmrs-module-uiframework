@@ -23,6 +23,7 @@ import java.util.List;
 
 /**
  * To use this class, instantiate a bean in your module's application context, for example:
+ * 
  * <pre>
  * <bean class="org.openmrs.ui.framework.page.GlobalResourceIncluder>
  *     <property name="resources">
@@ -36,38 +37,40 @@ import java.util.List;
  *     </property>
  * </bean>
  * </pre>
+ * 
  * @since 2.1
  */
 public class GlobalResourceIncluder implements PageModelConfigurator {
-
-    private final Log log = LogFactory.getLog(getClass());
-
-    private List<Resource> resources;
-
-    public List<Resource> getResources() {
-        return resources;
-    }
-
-    public void setResources(List<Resource> resources) {
-        this.resources = resources;
-    }
-    
-    public void addResource(Resource resource) {
-        if (resources == null) {
-            resources = new ArrayList<Resource>();
-        }
-        resources.add(resource);
-    }
-    
-    @Override
-    public void configureModel(PageContext pageContext) {
-        for (Resource resource : resources) {
-            if (resource.getCategory() != null) {
-                pageContext.includeResource(resource);
-            } else {
-                log.warn(GlobalResourceIncluder.class.getName() + " is trying to include a resource with no category: " + resource.getProviderName() + ":" + resource.getResourcePath());
-            }
-        }
-    }
-
+	
+	private final Log log = LogFactory.getLog(getClass());
+	
+	private List<Resource> resources;
+	
+	public List<Resource> getResources() {
+		return resources;
+	}
+	
+	public void setResources(List<Resource> resources) {
+		this.resources = resources;
+	}
+	
+	public void addResource(Resource resource) {
+		if (resources == null) {
+			resources = new ArrayList<Resource>();
+		}
+		resources.add(resource);
+	}
+	
+	@Override
+	public void configureModel(PageContext pageContext) {
+		for (Resource resource : resources) {
+			if (resource.getCategory() != null) {
+				pageContext.includeResource(resource);
+			} else {
+				log.warn(GlobalResourceIncluder.class.getName() + " is trying to include a resource with no category: "
+				        + resource.getProviderName() + ":" + resource.getResourcePath());
+			}
+		}
+	}
+	
 }

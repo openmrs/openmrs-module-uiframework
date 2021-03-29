@@ -23,20 +23,21 @@ import org.springframework.beans.factory.annotation.Qualifier;
 *
 */
 public class ClassWithAutowiredAnnotations {
-    @Autowired(required = false)
-    public Patient shouldBeNull1;
-
-    @Autowired
-    public HibernateSessionFactoryBean shouldBeSet1;
-
-    @Autowired(required = false)
-    @Qualifier("wrongName")
-    public HibernateSessionFactoryBean shouldBeNull2;
-
-    @Autowired
-    @Qualifier("sessionFactory")
-    public Object shouldBeSet2;
-
-    public ClassWithAutowiredAnnotations() {
-    }
+	
+	@Autowired(required = false)
+	public Patient shouldBeNull1;
+	
+	@Autowired
+	public HibernateSessionFactoryBean shouldBeSet1;
+	
+	@Autowired(required = false)
+	@Qualifier("wrongName")
+	public HibernateSessionFactoryBean shouldBeNull2;
+	
+	@Autowired
+	@Qualifier("sessionFactory")
+	public Object shouldBeSet2;
+	
+	public ClassWithAutowiredAnnotations() {
+	}
 }

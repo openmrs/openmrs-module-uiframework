@@ -32,8 +32,8 @@ import java.util.Set;
 public class PageContext implements ResourceIncluder, Messager, Decoratable, FragmentIncluder, ExtensionAware {
 	
 	private Locale locale;
-
-    private MessageSource messageSource;
+	
+	private MessageSource messageSource;
 	
 	private Messager messager;
 	
@@ -52,9 +52,9 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	private PageModel model;
 	
 	private FragmentRequest decorateWith;
-
-    private List<Resource> resourcesToInclude = new ArrayList<Resource>();
-
+	
+	private List<Resource> resourcesToInclude = new ArrayList<Resource>();
+	
 	public PageContext(PageRequest request) {
 		this.request = request;
 		this.model = new PageModel();
@@ -62,6 +62,7 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	
 	/**
 	 * Set up a FragmentContext for including a fragment within this page
+	 * 
 	 * @param fragmentRequest
 	 * @return
 	 */
@@ -113,9 +114,10 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 			ret.deleteCharAt(ret.length() - 1);
 		return ret.toString();
 	}
-
+	
 	/**
 	 * Gets the unique resources of the given category included by this page
+	 * 
 	 * @param resourceCategory the resource category
 	 * @return the resources
 	 */
@@ -129,8 +131,9 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	}
 	
 	/**
-	 * Requests that this fragment be decorated with another one. (The output of this fragment
-	 * will be passed to the decorator as "content".)
+	 * Requests that this fragment be decorated with another one. (The output of this fragment will
+	 * be passed to the decorator as "content".)
+	 * 
 	 * @param fragmentRequest
 	 */
 	@Override
@@ -187,73 +190,78 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
-
-    @Override
-    public void includeResource(Resource resource) {
-    	Iterator<Resource> iterator = resourcesToInclude.iterator();
-    	while (iterator.hasNext()) {
-    	    Resource res = iterator.next();
-    	    if (res.getProviderName().equals(resource.getProviderName()) && res.getResourcePath().equals(resource.getResourcePath())) {
-    	    	if (res.getPriority() < resource.getPriority()) {
-    	    		iterator.remove();
-    	    		resourcesToInclude.add(resource);
-    	    	}
-    	    	return;
-    	    } 
-    	}
-    	resourcesToInclude.add(resource);   		 
-    }
-
-    @Override
-    public List<Resource> getResourcesToInclude(String resourceCategory) {
-        List<Resource> ret = new ArrayList<Resource>();
-        for (Resource candidate : resourcesToInclude) {
-            if (resourceCategory.equals(candidate.getCategory())) {
-                ret.add(candidate);
-            }
-        }
-        // we count on Java providing a stable sort algorithm, so insertion order is maintained where priority is equal
-        Collections.sort(ret, new Comparator<Resource>() {
+	
+	@Override
+	public void includeResource(Resource resource) {
+		Iterator<Resource> iterator = resourcesToInclude.iterator();
+		while (iterator.hasNext()) {
+			Resource res = iterator.next();
+			if (res.getProviderName().equals(resource.getProviderName())
+			        && res.getResourcePath().equals(resource.getResourcePath())) {
+				if (res.getPriority() < resource.getPriority()) {
+					iterator.remove();
+					resourcesToInclude.add(resource);
+				}
+				return;
+			}
+		}
+		resourcesToInclude.add(resource);
+	}
+	
+	@Override
+	public List<Resource> getResourcesToInclude(String resourceCategory) {
+		List<Resource> ret = new ArrayList<Resource>();
+		for (Resource candidate : resourcesToInclude) {
+			if (resourceCategory.equals(candidate.getCategory())) {
+				ret.add(candidate);
+			}
+		}
+		// we count on Java providing a stable sort algorithm, so insertion order is maintained where priority is equal
+		Collections.sort(ret, new Comparator<Resource>() {
+			
 			@Override
 			public int compare(Resource left, Resource right) {
 				return right.getPriority().compareTo(left.getPriority());
 			}
 		});
-        return ret;
-    }
-
-    /**
+		return ret;
+	}
+	
+	/**
 	 * Requests that this page include the given javascript file.
+	 * 
 	 * @param resource
 	 */
 	public void includeJavascript(Resource resource) {
-        resource.setCategory(Resource.CATEGORY_JS);
-        includeResource(resource);
+		resource.setCategory(Resource.CATEGORY_JS);
+		includeResource(resource);
 	}
 	
 	/**
 	 * Requests that this page include the given css file.
+	 * 
 	 * @param resource
 	 */
 	public void includeCss(Resource resource) {
-        resource.setCategory(Resource.CATEGORY_CSS);
-        includeResource(resource);
-    }
+		resource.setCategory(Resource.CATEGORY_CSS);
+		includeResource(resource);
+	}
 	
 	/**
-     * Also instantiates a MessageerImpl with this message source
+	 * Also instantiates a MessageerImpl with this message source
+	 * 
 	 * @param messageSource the messageSource to set
 	 */
 	public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
+		this.messageSource = messageSource;
 		this.messager = new MessagerImpl(getLocale(), messageSource);
 	}
-
-    public MessageSource getMessageSource() {
-        return messageSource;
-    }
-
-    /**
+	
+	public MessageSource getMessageSource() {
+		return messageSource;
+	}
+	
+	/**
 	 * @return the controller
 	 */
 	public Object getController() {
@@ -322,13 +330,14 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	public void setExtensionManager(ExtensionManager extensionManager) {
 		this.extensionManager = extensionManager;
 	}
-
-    public Formatter getFormatter() {
-        try {
-            return fragmentFactory.getFormatterService().getFormatter();
-        } catch (NullPointerException ex) {
-            return null;
-        }
-    }
-
+	
+	public Formatter getFormatter() {
+		try {
+			return fragmentFactory.getFormatterService().getFormatter();
+		}
+		catch (NullPointerException ex) {
+			return null;
+		}
+	}
+	
 }

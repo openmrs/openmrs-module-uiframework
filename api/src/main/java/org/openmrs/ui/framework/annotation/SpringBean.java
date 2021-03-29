@@ -19,8 +19,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates that a parameter to a page or fragment controller should be autowired. If you specify a value, the framework will find the
- * Spring bean with that id (like with the @Qualifier annotation), otherwise it will attempt to autowire by type.
+ * Indicates that a parameter to a page or fragment controller should be autowired. If you specify a
+ * value, the framework will find the Spring bean with that id (like with the @Qualifier
+ * annotation), otherwise it will attempt to autowire by type.
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

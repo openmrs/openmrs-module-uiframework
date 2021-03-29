@@ -23,9 +23,10 @@ import org.openmrs.ui.framework.page.SpringMvcView;
  * satisfy it, with query params (e.g. "/module/xyz/xyz.form?inPopup=true"). Note: when specifying
  * an url with multiple parameters in a Spring xml file, you need to replace "&" with "&amp;", for
  * example:
- * "/module/htmlformentry/htmlFormEntry.form?pageFragment=true&amp;mode=VIEW&amp;which=last"
- * Any part of the content that is outside of the comments <!-- START 2.x FRAGMENT CONTENT --> and
- * <!-- END 2.x FRAGMENT CONTENT --> will be trimmed before the fragment is returned. (Both these are optional.)
+ * "/module/htmlformentry/htmlFormEntry.form?pageFragment=true&amp;mode=VIEW&amp;which=last" Any
+ * part of the content that is outside of the comments <!-- START 2.x FRAGMENT CONTENT --> and <!--
+ * END 2.x FRAGMENT CONTENT --> will be trimmed before the fragment is returned. (Both these are
+ * optional.)
  */
 public class SpringMvcPageAsFragmentViewProvider implements FragmentViewProvider {
 	

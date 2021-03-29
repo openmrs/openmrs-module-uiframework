@@ -138,8 +138,9 @@ public class PageRequest implements AttributeHolder {
 	}
 	
 	/**
-     * This method actually gets a <em>parameter</em> from the HTTP Request (not an attribute), but the method must be
-     * named this way due to the AttributeHolder interface.
+	 * This method actually gets a <em>parameter</em> from the HTTP Request (not an attribute), but
+	 * the method must be named this way due to the AttributeHolder interface.
+	 * 
 	 * @see org.openmrs.ui.framework.AttributeHolder#getAttribute(java.lang.String)
 	 */
 	@Override
@@ -169,40 +170,43 @@ public class PageRequest implements AttributeHolder {
 	 * @return pageNameOverride ?: pageName
 	 */
 	public String getMappedPageName() {
-		return pageNameOverride != null ? pageNameOverride : pageName;		
+		return pageNameOverride != null ? pageNameOverride : pageName;
 	}
-
-    /**
-     * Adds a cookie value to the HttpServletResponse
-     * @param name
-     * @param value
-     * @since 2.2
-     */
-    public void setCookieValue(String name, String value) {
-        response.addCookie(new Cookie(name, value));
-    }
-
-    /**
-     * @param name
-     * @return the value of a cookie in the HttpServletRequest with the given name (or null if none has that name)
-     * @since 2.2
-     */
-    public String getCookieValue(String name) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals(name)) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
-
+	
+	/**
+	 * Adds a cookie value to the HttpServletResponse
+	 * 
+	 * @param name
+	 * @param value
+	 * @since 2.2
+	 */
+	public void setCookieValue(String name, String value) {
+		response.addCookie(new Cookie(name, value));
+	}
+	
+	/**
+	 * @param name
+	 * @return the value of a cookie in the HttpServletRequest with the given name (or null if none
+	 *         has that name)
+	 * @since 2.2
+	 */
+	public String getCookieValue(String name) {
+		if (request.getCookies() != null) {
+			for (Cookie cookie : request.getCookies()) {
+				if (cookie.getName().equals(name)) {
+					return cookie.getValue();
+				}
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-	    return "Request for " + providerName + ":" + pageName + " (mapped to " + providerNameOverride + ":" + pageNameOverride + ")";
+		return "Request for " + providerName + ":" + pageName + " (mapped to " + providerNameOverride + ":"
+		        + pageNameOverride + ")";
 	}
 }

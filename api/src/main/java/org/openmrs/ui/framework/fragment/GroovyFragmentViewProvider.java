@@ -22,8 +22,11 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 	
 	//config properties
 	private ClassLoader viewClassLoader;
+	
 	private String resourcePrefix = "web/module/fragments/";
+	
 	private List<File> developmentFolders;
+	
 	private List<String> developmentFolderNames;
 	
 	// internal data
@@ -38,14 +41,13 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 			String gsp = getViewContents(name);
 			if (gsp == null)
 				return null;
-
+			
 			if (developmentFolders != null) {
 				// we are in development mode, so we do not cache view templates
 				Template template = engine.createTemplate(gsp);
 				GroovyFragmentView view = new GroovyFragmentView(name, template);
 				return view;
-			}
-			else {
+			} else {
 				// cache for performance, since compiling templates is expensive
 				GroovyFragmentView cached = cache.get(name);
 				if (cached == null) {
@@ -64,26 +66,25 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 			throw new RuntimeException("Error creating GroovyFragmentView for " + name, ex);
 		}
 	}
-		
 	
 	/**
 	 * @param name
-	 * @return if there's a matching view file for the given name, returns its contents 
-     * @throws Exception
-     */
-    public String getViewContents(String name) throws Exception {
-    	if (developmentFolders != null) {
-    		for (File developmentFolder : developmentFolders) {
-    			// we're in development mode, and we want to dynamically reload views from this filesystem directory
+	 * @return if there's a matching view file for the given name, returns its contents
+	 * @throws Exception
+	 */
+	public String getViewContents(String name) throws Exception {
+		if (developmentFolders != null) {
+			for (File developmentFolder : developmentFolders) {
+				// we're in development mode, and we want to dynamically reload views from this filesystem directory
 				File file = new File(developmentFolder, name + ".gsp");
 				if (file.exists()) {
 					return OpenmrsUtil.getFileAsString(file);
 				}
-    		}
-    		return null;
-    	}
-    	else {
-			URL resource = (viewClassLoader != null ? viewClassLoader : getClass().getClassLoader()).getResource(resourcePrefix + name + ".gsp");
+			}
+			return null;
+		} else {
+			URL resource = (viewClassLoader != null ? viewClassLoader : getClass().getClassLoader())
+			        .getResource(resourcePrefix + name + ".gsp");
 			if (resource == null)
 				return null;
 			InputStream inputStream = resource.openStream();
@@ -93,29 +94,27 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 			String fileContents = outputStream.toString();
 			OpenmrsUtil.closeStream(inputStream);
 			return fileContents;
-    	}
-    }
-
-
-	/**
-     * @return the resourcePrefix
-     */
-    public String getResourcePrefix() {
-    	return resourcePrefix;
-    }
-
+		}
+	}
 	
-    /**
-     * @param resourcePrefix the resourcePrefix to set
-     */
-    public void setResourcePrefix(String resourcePrefix) {
-    	this.resourcePrefix = resourcePrefix;
-    }
-    
+	/**
+	 * @return the resourcePrefix
+	 */
+	public String getResourcePrefix() {
+		return resourcePrefix;
+	}
+	
+	/**
+	 * @param resourcePrefix the resourcePrefix to set
+	 */
+	public void setResourcePrefix(String resourcePrefix) {
+		this.resourcePrefix = resourcePrefix;
+	}
+	
 	public List<File> getDevelopmentFolders() {
 		return developmentFolders;
 	}
-
+	
 	public void setDevelopmentFolders(List<File> developmentFolders) {
 		this.developmentFolders = developmentFolders;
 	}
@@ -123,23 +122,23 @@ public class GroovyFragmentViewProvider implements FragmentViewProvider {
 	public List<String> getDevelopmentFolderNames() {
 		return developmentFolderNames;
 	}
-
+	
 	public void setDevelopmentFolderNames(List<String> developmentFolderNames) {
 		this.developmentFolderNames = developmentFolderNames;
 	}
-
+	
 	/**
-     * @return the viewClassLoader
-     */
-    public ClassLoader getViewClassLoader() {
-    	return viewClassLoader;
-    }
-
-    /**
-     * @param viewClassLoader the viewClassLoader to set
-     */
-    public void setViewClassLoader(ClassLoader viewClassLoader) {
-    	this.viewClassLoader = viewClassLoader;
-    }
-    
+	 * @return the viewClassLoader
+	 */
+	public ClassLoader getViewClassLoader() {
+		return viewClassLoader;
+	}
+	
+	/**
+	 * @param viewClassLoader the viewClassLoader to set
+	 */
+	public void setViewClassLoader(ClassLoader viewClassLoader) {
+		this.viewClassLoader = viewClassLoader;
+	}
+	
 }

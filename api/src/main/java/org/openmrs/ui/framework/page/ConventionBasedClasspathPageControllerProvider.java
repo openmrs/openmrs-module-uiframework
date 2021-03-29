@@ -11,6 +11,7 @@ public class ConventionBasedClasspathPageControllerProvider implements PageContr
 	private String basePackage;
 	
 	private List<File> developmentFolders;
+	
 	private List<String> developmentFolderNames;
 	
 	@Override
@@ -70,7 +71,6 @@ public class ConventionBasedClasspathPageControllerProvider implements PageContr
 	public void setBasePackage(String basePackage) {
 		this.basePackage = basePackage;
 	}
-
 	
 	public List<File> getDevelopmentFolders() {
 		return developmentFolders;
@@ -79,11 +79,11 @@ public class ConventionBasedClasspathPageControllerProvider implements PageContr
 	public void setDevelopmentFolders(List<File> developmentFolders) {
 		this.developmentFolders = developmentFolders;
 	}
-
+	
 	public List<String> getDevelopmentFolderNames() {
 		return developmentFolderNames;
 	}
-
+	
 	public void setDevelopmentFolderNames(List<String> developmentFolderNames) {
 		this.developmentFolderNames = developmentFolderNames;
 	}

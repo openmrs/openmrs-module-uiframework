@@ -1,8 +1,8 @@
 package org.openmrs.ui.framework.fragment.action;
 
 /**
- * Return type from a fragment action method that indicates success.
- * Optionally you may provide a message which will be put in the session and displayed on the next page load
+ * Return type from a fragment action method that indicates success. Optionally you may provide a
+ * message which will be put in the session and displayed on the next page load
  */
 public class SuccessResult implements FragmentActionResult {
 	

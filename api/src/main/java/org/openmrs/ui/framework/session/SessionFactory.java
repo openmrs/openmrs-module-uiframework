@@ -24,8 +24,9 @@ public class SessionFactory {
 	}
 	
 	/**
-	 * Ensures that a {@link Session} exists on the given http session, creating it (and
-	 * notifying {@link SessionListener}s) if necessary.
+	 * Ensures that a {@link Session} exists on the given http session, creating it (and notifying
+	 * {@link SessionListener}s) if necessary.
+	 * 
 	 * @param httpSession
 	 * @return
 	 */
@@ -51,9 +52,10 @@ public class SessionFactory {
 	}
 	
 	/**
-	 * Gets the {@link Session} on the given http session. (This method will create one if it doesn't exist,
-	 * so this method is actually equivalent to ensureSession, but each name is semantically better in a
-	 * different situation.)
+	 * Gets the {@link Session} on the given http session. (This method will create one if it
+	 * doesn't exist, so this method is actually equivalent to ensureSession, but each name is
+	 * semantically better in a different situation.)
+	 * 
 	 * @param httpSession
 	 * @return
 	 */
@@ -75,14 +77,17 @@ public class SessionFactory {
 	}
 	
 	/**
-	 * Removes the {@link Session} from the given http session, and notifies {@link SessionListener}s.
+	 * Removes the {@link Session} from the given http session, and notifies {@link SessionListener}
+	 * s.
+	 * 
 	 * @param httpSession
 	 */
 	public void destroySession(HttpSession httpSession) {
 		Session session;
 		try {
 			session = (Session) httpSession.getAttribute(WebConstants.SESSION_SESSION_ATTRIBUTE);
-		} catch (ClassCastException ex) {
+		}
+		catch (ClassCastException ex) {
 			// this means the UI Framework module was reloaded
 			httpSession.removeAttribute(WebConstants.SESSION_SESSION_ATTRIBUTE);
 			return;

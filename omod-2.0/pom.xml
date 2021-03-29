@@ -10,7 +10,7 @@
     <artifactId>uiframework-omod-2.0</artifactId>
 
     <properties>
-        <openMRSVersion2>2.0.0</openMRSVersion2>
+        <openmrsPlatformVersion>2.0.0</openmrsPlatformVersion>
     </properties>
 
     <dependencies>
@@ -18,13 +18,13 @@
         <dependency>
             <groupId>org.openmrs.api</groupId>
             <artifactId>openmrs-api</artifactId>
-            <version>${openMRSVersion2}</version>
+            <version>${openmrsPlatformVersion}</version>
         </dependency>
 
         <dependency>
             <groupId>org.openmrs.web</groupId>
             <artifactId>openmrs-web</artifactId>
-            <version>${openMRSVersion2}</version>
+            <version>${openmrsPlatformVersion}</version>
         </dependency>
 
     </dependencies>

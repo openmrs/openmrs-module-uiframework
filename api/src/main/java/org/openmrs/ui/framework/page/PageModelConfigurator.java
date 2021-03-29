@@ -18,11 +18,13 @@ package org.openmrs.ui.framework.page;
  * Allows modules to add custom content to PageModels
  */
 public interface PageModelConfigurator {
-
-    /**
-     * PageFactory will call this method before passing the PageModel to the page controller and view
-     * @param pageContext implementations should add any custom content to pageContext.getModel()
-     */
-    void configureModel(PageContext pageContext);
-
+	
+	/**
+	 * PageFactory will call this method before passing the PageModel to the page controller and
+	 * view
+	 * 
+	 * @param pageContext implementations should add any custom content to pageContext.getModel()
+	 */
+	void configureModel(PageContext pageContext);
+	
 }

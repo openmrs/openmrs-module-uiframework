@@ -20,16 +20,16 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Standard way for resources to be provided via external files deployed to a server
- * If the specified path is absolute, load it as is from the specified path
- * If the specified path is relative, treat this as relative to the OpenMRS Application Data Directory
+ * Standard way for resources to be provided via external files deployed to a server If the
+ * specified path is absolute, load it as is from the specified path If the specified path is
+ * relative, treat this as relative to the OpenMRS Application Data Directory
  */
 public class ConfigurationResourceProvider implements ResourceProvider {
-
+	
 	public static final String RESOURCE_KEY = "file";
-
+	
 	private static final Logger log = LoggerFactory.getLogger(ConfigurationResourceProvider.class);
-
+	
 	/**
 	 * @see ResourceProvider#getResource(String)
 	 */
@@ -38,37 +38,36 @@ public class ConfigurationResourceProvider implements ResourceProvider {
 		if (path == null) {
 			return null;
 		}
-
+		
 		final String configurationDirectory;
 		try {
-			configurationDirectory = OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration")
-					.getCanonicalPath();
+			configurationDirectory = OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration").getCanonicalPath();
 		}
 		catch (IOException e) {
 			throw new APIException("Could not determine canonical path for configuration directory", e);
 		}
-
+		
 		final File resourceFile;
 		final File file = new File(path);
-
+		
 		if (file.isAbsolute()) {
 			resourceFile = file;
 		} else {
-
+			
 			String firstDir = null;
 			int idx = file.getPath().indexOf(File.separatorChar, 1);
 			if (idx > 0) {
 				int start = file.getPath().charAt(0) == File.separatorChar ? 1 : 0;
 				firstDir = file.getPath().substring(start, idx);
 			}
-
+			
 			if (!"configuration".equals(firstDir)) {
 				resourceFile = new File(configurationDirectory, path);
 			} else {
 				resourceFile = new File(OpenmrsUtil.getApplicationDataDirectory(), path);
 			}
 		}
-
+		
 		// guard against loading files outside of the configuration directory
 		try {
 			if (!resourceFile.getCanonicalPath().startsWith(configurationDirectory)) {
@@ -80,7 +79,7 @@ public class ConfigurationResourceProvider implements ResourceProvider {
 			log.error("Error occurred while trying to load file: {}", path, e);
 			return null;
 		}
-
+		
 		return resourceFile.exists() ? resourceFile : null;
 	}
 }

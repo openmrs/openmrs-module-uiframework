@@ -20,12 +20,12 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 /**
- * Workaround for problem where the Spring conversion service reloads ConceptNumeric instances as plain Concept
- * instances.
+ * Workaround for problem where the Spring conversion service reloads ConceptNumeric instances as
+ * plain Concept instances.
  */
 @Component
 public class ConceptNumericToConceptConverter implements Converter<ConceptNumeric, Concept> {
-
+	
 	/**
 	 * @see org.springframework.core.convert.converter.Converter#convert(Object)
 	 */

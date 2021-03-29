@@ -17,7 +17,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Used to generate simplified representations of data or metadata, making it easier to serialize to json
+ * Used to generate simplified representations of data or metadata, making it easier to serialize to
+ * json
  */
 public class SimpleObject extends LinkedHashMap<String, Object> {
 	
@@ -28,8 +29,9 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 	}
 	
 	/**
-	 * Convenience constructor for creating a {@link SimpleObject} representing {@link OpenmrsMetadata},
-	 * which will set 'id' and 'label' properties
+	 * Convenience constructor for creating a {@link SimpleObject} representing
+	 * {@link OpenmrsMetadata}, which will set 'id' and 'label' properties
+	 * 
 	 * @param metadata
 	 */
 	public SimpleObject(OpenmrsMetadata metadata) {
@@ -39,9 +41,10 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 	}
 	
 	/**
-	 * Utility method to create a {@link SimpleObject} given a varargs style list of property names and
-	 * values. The array passed in must have even length. Every other element (starting from the 0-index one)
-	 * must be a String (representing a property name) and be followed by its value.
+	 * Utility method to create a {@link SimpleObject} given a varargs style list of property names
+	 * and values. The array passed in must have even length. Every other element (starting from the
+	 * 0-index one) must be a String (representing a property name) and be followed by its value.
+	 * 
 	 * @param propertyNamesAndValues
 	 * @return
 	 */
@@ -55,13 +58,15 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 	}
 	
 	/**
-	 * Builds a simplified version of the object passed in, such that the result can be automatically
-	 * converted to json without worrying about hibernate proxies, loops in the object graph, etc.
-	 * Takes the specified properties from the given object, formats them using {@link UiUtils} and builds
-	 * a {@link SimpleObject} out of them.
+	 * Builds a simplified version of the object passed in, such that the result can be
+	 * automatically converted to json without worrying about hibernate proxies, loops in the object
+	 * graph, etc. Takes the specified properties from the given object, formats them using
+	 * {@link UiUtils} and builds a {@link SimpleObject} out of them.
+	 * 
 	 * @param fromObject the bean to simplify
 	 * @param ui
-	 * @param propertiesToInclude properties to include in the returned object. dot-separated to refer to subproperties, ending with :message to call ui.message on them
+	 * @param propertiesToInclude properties to include in the returned object. dot-separated to
+	 *            refer to subproperties, ending with :message to call ui.message on them
 	 * @return
 	 */
 	public static SimpleObject fromObject(Object fromObject, UiUtils ui, String... propertiesToInclude) {
@@ -73,11 +78,13 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 	}
 	
 	/**
-	 * Like {@link #fromObject(Object, UiUtils, String...)}, but takes in a collection of objects and
-	 * returns a List of {@link SimpleObject}s
+	 * Like {@link #fromObject(Object, UiUtils, String...)}, but takes in a collection of objects
+	 * and returns a List of {@link SimpleObject}s
+	 * 
 	 * @param fromCollection
 	 * @param ui
-	 * @param propertiesToInclude properties to include in the returned objects. dot-separated to refer to subproperties, ending with :message to call ui.message on them
+	 * @param propertiesToInclude properties to include in the returned objects. dot-separated to
+	 *            refer to subproperties, ending with :message to call ui.message on them
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -98,20 +105,20 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 		}
 		return ret;
 	}
-
+	
 	private static String convertBracketNotationToDotNotation(String prop) {
-		prop = prop.replaceAll("\\[",".");
-		prop = prop.replaceAll("\\]","");
+		prop = prop.replaceAll("\\[", ".");
+		prop = prop.replaceAll("\\]", "");
 		return prop;
 	}
-
+	
 	private static void trimAnyLeadingOrTrailingQuotes(String[] components) {
 		for (int i = 0; i < components.length; ++i) {
 			components[i] = components[i].replaceAll("^\"|\"$", "");
 			components[i] = components[i].replaceAll("^\'|\'$", "");
 		}
 	}
-
+	
 	private static void splitIntoLevelsHelper(Map<String, Set<String>> ret, List<String> components, int index) {
 		String level = OpenmrsUtil.join(components.subList(0, index), ".");
 		Set<String> atLevel = ret.get(level);
@@ -121,11 +128,10 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 		}
 		atLevel.add(components.get(index));
 	}
-
-
+	
 	private static Object fromObjectHelper(Object obj, UiUtils ui, String currentLevel,
 	        Map<String, Set<String>> propertiesByLevel) {
-
+		
 		if (obj == null) {
 			return null;
 		}
@@ -140,39 +146,39 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 			BindingResult accessor = new DataBinder(obj).getBindingResult();
 			SimpleObject ret = new SimpleObject();
 			for (String property : propertiesByLevel.get(currentLevel)) {
-                boolean useMessage = false;
-                if (property.endsWith(":message")) {
-                    useMessage = true;
-                    property = property.substring(0, property.lastIndexOf(":"));
-                }
-
-                Object propertyValue;
-                if (obj instanceof Map) {
-                    // if this is a map, fetch the property using Map.get(property)
-                    propertyValue = ((Map) obj).get(property);
-                } else {
-                    // otherwise use property accessor
-                    propertyValue = accessor.getFieldValue(property);
-                }
-
-                String nextLevel = "".equals(currentLevel) ? property : currentLevel + "." + property;
-                if (propertiesByLevel.containsKey(nextLevel) && propertyValue != null) {
-                    // deep property: recurse into this
-                    ret.put(property, fromObjectHelper(propertyValue, ui, nextLevel, propertiesByLevel));
-                } else {
-                    // shallow property
-
-                    if (propertyValue == null || propertyValue instanceof Boolean || propertyValue instanceof Number) {
-                        // is a non-string type that can be represented natively in JSON
-                        ret.put(property, propertyValue);
-                    } else if (useMessage) {
-                        ret.put(property, ui.message(propertyValue.toString()));
-                    } else {
-                        ret.put(property, ui.format(propertyValue));
-                    }
-                }
-            }
-            return ret;
+				boolean useMessage = false;
+				if (property.endsWith(":message")) {
+					useMessage = true;
+					property = property.substring(0, property.lastIndexOf(":"));
+				}
+				
+				Object propertyValue;
+				if (obj instanceof Map) {
+					// if this is a map, fetch the property using Map.get(property)
+					propertyValue = ((Map) obj).get(property);
+				} else {
+					// otherwise use property accessor
+					propertyValue = accessor.getFieldValue(property);
+				}
+				
+				String nextLevel = "".equals(currentLevel) ? property : currentLevel + "." + property;
+				if (propertiesByLevel.containsKey(nextLevel) && propertyValue != null) {
+					// deep property: recurse into this
+					ret.put(property, fromObjectHelper(propertyValue, ui, nextLevel, propertiesByLevel));
+				} else {
+					// shallow property
+					
+					if (propertyValue == null || propertyValue instanceof Boolean || propertyValue instanceof Number) {
+						// is a non-string type that can be represented natively in JSON
+						ret.put(property, propertyValue);
+					} else if (useMessage) {
+						ret.put(property, ui.message(propertyValue.toString()));
+					} else {
+						ret.put(property, ui.format(propertyValue));
+					}
+				}
+			}
+			return ret;
 		}
 	}
 	
@@ -180,9 +186,10 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			StringWriter sw = new StringWriter();
-	        mapper.writeValue(sw, this);
-	        return sw.toString();
-		} catch (Exception ex) {
+			mapper.writeValue(sw, this);
+			return sw.toString();
+		}
+		catch (Exception ex) {
 			throw new UiFrameworkException("Error converting to JSON", ex);
 		}
 	}

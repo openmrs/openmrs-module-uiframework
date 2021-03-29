@@ -24,16 +24,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Standard way for a module to provide resources. Supports "development mode" when a developmentFolder is specified.
+ * Standard way for a module to provide resources. Supports "development mode" when a
+ * developmentFolder is specified.
  */
 public class ModuleResourceProvider implements ResourceProvider {
-
+	
 	private static final Logger log = LoggerFactory.getLogger(ModuleResourceProvider.class);
 	
 	private List<File> developmentFolders;
+	
 	private List<String> developmentFolderNames;
+	
 	private ModuleClassLoader moduleClassLoader;
+	
 	private String resourcePrefix = "web/module/resources/";
+	
 	private Map<String, String> resourceShortcuts;
 	
 	/**
@@ -44,7 +49,7 @@ public class ModuleResourceProvider implements ResourceProvider {
 		if (resourceShortcuts != null && resourceShortcuts.containsKey(path)) {
 			path = resourceShortcuts.get(path);
 		}
-
+		
 		// module resources should be fetched by a path relative to the module, so a request for a file by absolute path
 		// is an error
 		if (path == null || new File(path).isAbsolute()) {
@@ -53,57 +58,58 @@ public class ModuleResourceProvider implements ResourceProvider {
 		
 		if (developmentFolders != null) {
 			for (File developmentFolder : developmentFolders) {
-	    		// we're in development mode, and we want to dynamically reload resource from this filesystem directory
+				// we're in development mode, and we want to dynamically reload resource from this filesystem directory
 				File file = new File(developmentFolder, path);
 				if (file.exists()) {
 					return file;
 				}
 			}
 			return null;
-    	}
-    	else {
-    		ModuleClassLoader mcl = moduleClassLoader != null ? moduleClassLoader : (ModuleClassLoader) getClass().getClassLoader();
-    		
-    		// force OpenMRS to expand this resource from the jar, if available.
-    		// ideally we'd only look in this module, but this will also look in required modules...
-    		mcl.findResource(resourcePrefix + path);
-    		
-    		File folderForModule = ModuleClassLoader.getLibCacheFolderForModule(mcl.getModule());
-    		File resourceFile = new File(folderForModule, resourcePrefix + path);
-
-    		// guard against loading files outside of the lib cache folder
-    		try {
-			    if (!resourceFile.getCanonicalPath().startsWith(OpenmrsClassLoader.getLibCacheFolder().getCanonicalPath())) {
-				    log.warn("Attempted to load invalid resource: {}", resourceFile);
-				    return null;
-			    }
-		    } catch (IOException e) {
-			    log.error("Error occurred while trying to load file: {}", path, e);
-			    return null;
-		    }
-
-    		return resourceFile.exists() ? resourceFile : null;
-    	}
+		} else {
+			ModuleClassLoader mcl = moduleClassLoader != null ? moduleClassLoader : (ModuleClassLoader) getClass()
+			        .getClassLoader();
+			
+			// force OpenMRS to expand this resource from the jar, if available.
+			// ideally we'd only look in this module, but this will also look in required modules...
+			mcl.findResource(resourcePrefix + path);
+			
+			File folderForModule = ModuleClassLoader.getLibCacheFolderForModule(mcl.getModule());
+			File resourceFile = new File(folderForModule, resourcePrefix + path);
+			
+			// guard against loading files outside of the lib cache folder
+			try {
+				if (!resourceFile.getCanonicalPath().startsWith(OpenmrsClassLoader.getLibCacheFolder().getCanonicalPath())) {
+					log.warn("Attempted to load invalid resource: {}", resourceFile);
+					return null;
+				}
+			}
+			catch (IOException e) {
+				log.error("Error occurred while trying to load file: {}", path, e);
+				return null;
+			}
+			
+			return resourceFile.exists() ? resourceFile : null;
+		}
 	}
 	
-    /**
-     * @return the moduleClassLoader
-     */
-    public ModuleClassLoader getModuleClassLoader() {
-    	return moduleClassLoader;
-    }
+	/**
+	 * @return the moduleClassLoader
+	 */
+	public ModuleClassLoader getModuleClassLoader() {
+		return moduleClassLoader;
+	}
 	
-    /**
-     * @param moduleClassLoader the moduleClassLoader to set
-     */
-    public void setModuleClassLoader(ModuleClassLoader moduleClassLoader) {
-    	this.moduleClassLoader = moduleClassLoader;
-    }
-
+	/**
+	 * @param moduleClassLoader the moduleClassLoader to set
+	 */
+	public void setModuleClassLoader(ModuleClassLoader moduleClassLoader) {
+		this.moduleClassLoader = moduleClassLoader;
+	}
+	
 	public List<File> getDevelopmentFolders() {
 		return developmentFolders;
 	}
-
+	
 	public void setDevelopmentFolders(List<File> developmentFolders) {
 		this.developmentFolders = developmentFolders;
 	}
@@ -111,16 +117,16 @@ public class ModuleResourceProvider implements ResourceProvider {
 	public List<String> getDevelopmentFolderNames() {
 		return developmentFolderNames;
 	}
-
+	
 	public void setDevelopmentFolderNames(List<String> developmentFolderNames) {
 		this.developmentFolderNames = developmentFolderNames;
 	}
-
-    /**
-     * @param resourceShortcuts the resourceShortcuts to set
-     */
-    public void setResourceShortcuts(Map<String, String> resourceShortcuts) {
-	    this.resourceShortcuts = resourceShortcuts;
-    }
-    
+	
+	/**
+	 * @param resourceShortcuts the resourceShortcuts to set
+	 */
+	public void setResourceShortcuts(Map<String, String> resourceShortcuts) {
+		this.resourceShortcuts = resourceShortcuts;
+	}
+	
 }

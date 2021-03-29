@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * Indicates that an attribute check failed (for example because a required attribute was missing)
+ * 
  * @see AttributeHolderUtil#unsatisfiedExpressions(AttributeHolder, String[])
  */
 public class AttributeExpressionException extends UiFrameworkException {

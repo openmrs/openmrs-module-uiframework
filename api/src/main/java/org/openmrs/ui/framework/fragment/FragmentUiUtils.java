@@ -16,7 +16,7 @@ public class FragmentUiUtils extends UiUtils {
 		this.pageContext = context.getPageContext();
 		this.context = context;
 		this.resourceIncluder = pageContext;
-        this.formatter = context.getFormatter();
+		this.formatter = context.getFormatter();
 		this.messager = pageContext;
 		this.fragmentIncluder = context;
 		this.decoratable = context;
