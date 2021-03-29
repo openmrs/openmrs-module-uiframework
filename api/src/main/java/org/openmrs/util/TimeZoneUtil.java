@@ -9,6 +9,7 @@
  */
 package org.openmrs.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -54,7 +55,7 @@ public class TimeZoneUtil {
 	 * @return string with the date on the client timezone, formatted and ready to be displayed.
 	 */
 	public static String toTimezone(Date date, String format, String timezone) {
-		if (timezone == null) {
+		if (StringUtils.isEmpty(timezone)) {
 			timezone = "UTC";
 		}
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format, Context.getLocale());
