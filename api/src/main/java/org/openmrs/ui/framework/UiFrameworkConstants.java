@@ -33,5 +33,4 @@ public class UiFrameworkConstants {
 
 	public static final String MAP_RESOURCE_EXTENSION_POINT_ID = "org.openmrs.ui.framework.mapResource";
 
-
 }

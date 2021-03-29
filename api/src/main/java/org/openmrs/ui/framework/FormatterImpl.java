@@ -337,5 +337,4 @@ public class FormatterImpl implements Formatter {
     protected User getAuthenticatedUser(){
         return Context.getAuthenticatedUser();
     }
-
 }

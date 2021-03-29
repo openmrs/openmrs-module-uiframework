@@ -176,78 +176,78 @@ public class FormatterImplTest {
         Locale locale = Locale.ENGLISH;
         Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").parse("2003-02-01 14:25:07.123");
 
-		String output = formatter.format(date, locale);
-		assertThat(output, is("01.Feb.2003, 14:25:07"));
-	}
+        String output = formatter.format(date, locale);
+        assertThat(output, is("01.Feb.2003, 14:25:07"));
+    }
 
-	@Test
-	public void testFormattingConceptNumeric() throws Exception {
+    @Test
+    public void testFormattingConceptNumeric() throws Exception {
 
-		Locale locale = Locale.ENGLISH;
+        Locale locale = Locale.ENGLISH;
 
-		ConceptNumeric conceptNumeric = new ConceptNumeric();
-		conceptNumeric.setUnits("mg");
-		ConceptDatatype numericDatatype = new ConceptDatatype();
-		numericDatatype.setHl7Abbreviation("NM");
-		conceptNumeric.setDatatype(numericDatatype);
-		conceptNumeric.setPrecise(true);
+        ConceptNumeric conceptNumeric = new ConceptNumeric();
+        conceptNumeric.setUnits("mg");
+        ConceptDatatype numericDatatype = new ConceptDatatype();
+        numericDatatype.setHl7Abbreviation("NM");
+        conceptNumeric.setDatatype(numericDatatype);
+        conceptNumeric.setPrecise(true);
 
-		Obs numericObs = new Obs();
-		numericObs.setConcept(conceptNumeric);
-		numericObs.setValueNumeric(1.0);
+        Obs numericObs = new Obs();
+        numericObs.setConcept(conceptNumeric);
+        numericObs.setValueNumeric(1.0);
 
-		String output = formatter.format(numericObs, locale);
-		assertThat(output, is("1.0 mg"));
+        String output = formatter.format(numericObs, locale);
+        assertThat(output, is ("1.0 mg"));
 
-	}
+    }
 
-	@Test
-	public void testFormattingConceptNumeric_shouldNotFailIfNoUnits() throws Exception {
+    @Test
+    public void testFormattingConceptNumeric_shouldNotFailIfNoUnits() throws Exception {
 
-		Locale locale = Locale.ENGLISH;
+        Locale locale = Locale.ENGLISH;
 
-		ConceptNumeric conceptNumeric = new ConceptNumeric();
-		ConceptDatatype numericDatatype = new ConceptDatatype();
-		numericDatatype.setHl7Abbreviation("NM");
-		conceptNumeric.setDatatype(numericDatatype);
-		conceptNumeric.setPrecise(true);
+        ConceptNumeric conceptNumeric = new ConceptNumeric();
+        ConceptDatatype numericDatatype = new ConceptDatatype();
+        numericDatatype.setHl7Abbreviation("NM");
+        conceptNumeric.setDatatype(numericDatatype);
+        conceptNumeric.setPrecise(true);
 
-		Obs numericObs = new Obs();
-		numericObs.setConcept(conceptNumeric);
-		numericObs.setValueNumeric(1.0);
+        Obs numericObs = new Obs();
+        numericObs.setConcept(conceptNumeric);
+        numericObs.setValueNumeric(1.0);
 
-		String output = formatter.format(numericObs, locale);
-		assertThat(output, is("1.0"));
+        String output = formatter.format(numericObs, locale);
+        assertThat(output, is ("1.0"));
 
-	}
+    }
 
-	@Test
-	public void testFormattingClass() throws Exception {
-		String output = formatter.format(Date.class, Locale.ENGLISH);
-		assertThat(output, is("java.util.Date"));
-	}
+    @Test
+    public void testFormattingClass() throws Exception {
+        String output = formatter.format(Date.class, Locale.ENGLISH);
+        assertThat(output, is("java.util.Date"));
+    }
 
-	@Test
-	public void testFormattingWholeNumber() throws Exception {
-		String output = formatter.format(100d, Locale.ENGLISH);
-		assertThat(output, is("100"));
-	}
+    @Test
+    public void testFormattingWholeNumber() throws Exception {
+        String output = formatter.format(100d, Locale.ENGLISH);
+        assertThat(output, is("100"));
+    }
 
-	@Test
-	public void testFormattingDecimalNumber() throws Exception {
-		String output = formatter.format(0.5, Locale.ENGLISH);
-		assertThat(output, is("0.5"));
-	}
+    @Test
+    public void testFormattingDecimalNumber() throws Exception {
+        String output = formatter.format(0.5, Locale.ENGLISH);
+        assertThat(output, is("0.5"));
+    }
 
-	private class EncounterType_$$_javassist_26 extends EncounterType {
+    private class EncounterType_$$_javassist_26 extends EncounterType {
 
-	}
+    }
 
-	private class CustomClass {
+    private class CustomClass {
 
-	}
+    }
 
-	private class CustomClass_$$_javassist_26 extends CustomClass {
+    private class CustomClass_$$_javassist_26 extends CustomClass {
 
     }
 
