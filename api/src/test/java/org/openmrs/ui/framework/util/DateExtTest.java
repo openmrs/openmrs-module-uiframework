@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 public class DateExtTest {
-
+	
 	@Test
 	public void isDayBefore_shouldReturnTrueWhenYearChanges() {
 		Calendar currentDate = Calendar.getInstance();
@@ -30,7 +30,7 @@ public class DateExtTest {
 		pastDate.set(1999, Calendar.DECEMBER, 31);
 		assertThat(new DateExt(pastDate.getTime()).isDayBefore(currentDate.getTime()), is(true));
 	}
-
+	
 	@Test
 	public void isDayBefore_shouldReturnFalseWhen2YearsChange() {
 		Calendar currentDate = Calendar.getInstance();
@@ -39,7 +39,7 @@ public class DateExtTest {
 		pastDate.set(1998, Calendar.DECEMBER, 31);
 		assertThat(new DateExt(pastDate.getTime()).isDayBefore(currentDate.getTime()), is(false));
 	}
-
+	
 	@Test
 	public void isDayBefore_shouldReturnTrueForFebruary29WhenLeapYear() {
 		Calendar currentDate = Calendar.getInstance();
@@ -48,7 +48,7 @@ public class DateExtTest {
 		pastDate.set(2012, Calendar.FEBRUARY, 29);
 		assertThat(new DateExt(pastDate.getTime()).isDayBefore(currentDate.getTime()), is(true));
 	}
-
+	
 	@Test
 	public void isDayBefore_shouldReturnFalseForFebruary28WhenLeapYear() {
 		Calendar currentDate = Calendar.getInstance();
@@ -57,16 +57,16 @@ public class DateExtTest {
 		pastDate.set(2012, Calendar.FEBRUARY, 28);
 		assertThat(new DateExt(pastDate.getTime()).isDayBefore(currentDate.getTime()), is(false));
 	}
-
+	
 	@Test
-	 public void isSameDay_shouldReturnTrueWhenOnlyTimeDifferent() {
+	public void isSameDay_shouldReturnTrueWhenOnlyTimeDifferent() {
 		Calendar currentDate = Calendar.getInstance();
 		currentDate.set(2012, Calendar.MARCH, 01, 10, 00);
 		Calendar pastDate = Calendar.getInstance();
 		pastDate.set(2012, Calendar.MARCH, 01, 12, 12);
 		assertThat(new DateExt(pastDate.getTime()).isSameDay(currentDate.getTime()), is(true));
 	}
-
+	
 	@Test
 	public void isSameDay_shouldReturnFalseWhenDayDifferent() {
 		Calendar currentDate = Calendar.getInstance();

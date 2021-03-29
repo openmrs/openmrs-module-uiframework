@@ -56,39 +56,43 @@ public abstract class UiUtils {
 
 	protected ConversionService conversionService;
 
-    public void includeCss(String file) {
-        includeCss(null, file, null);
-    }
+	public void includeCss(String file) {
+		includeCss(null, file, null);
+	}
 
-    public void includeCss(String providerName, String file) {
-        includeCss(providerName, file, null);
-    }
+	public void includeCss(String providerName, String file) {
+		includeCss(providerName, file, null);
+	}
 
-    public void includeCss(String providerName, String file, Integer priority) { includeCss(providerName, file, priority, true);}
+	public void includeCss(String providerName, String file, Integer priority) {
+		includeCss(providerName, file, priority, true);
+	}
 
-    public void includeCss(String providerName, String file, Integer priority, boolean pathIsRelativeToStyles) {
-        MapResourceExtension resource = mapResource(providerName, file);
+	public void includeCss(String providerName, String file, Integer priority, boolean pathIsRelativeToStyles) {
+		MapResourceExtension resource = mapResource(providerName, file);
 
-        resourceIncluder.includeResource(new Resource(Resource.CATEGORY_CSS, resource.getProviderId(),
-                (pathIsRelativeToStyles ? "styles/" : "") + resource.getResourceId(), priority));
-    }
+		resourceIncluder.includeResource(new Resource(Resource.CATEGORY_CSS, resource.getProviderId(),
+		        (pathIsRelativeToStyles ? "styles/" : "") + resource.getResourceId(), priority));
+	}
 
-    public void includeJavascript(String file) {
-        includeJavascript(null, file, null);
-    }
+	public void includeJavascript(String file) {
+		includeJavascript(null, file, null);
+	}
 
-    public void includeJavascript(String providerName, String file) {
-        includeJavascript(providerName, file, null);
-    }
+	public void includeJavascript(String providerName, String file) {
+		includeJavascript(providerName, file, null);
+	}
 
-    public void includeJavascript(String providerName, String file, Integer priority) { includeJavascript(providerName, file, priority, true);}
+	public void includeJavascript(String providerName, String file, Integer priority) {
+		includeJavascript(providerName, file, priority, true);
+	}
 
-    public void includeJavascript(String providerName, String file, Integer priority, boolean pathIsRelativeToScripts) {
-        MapResourceExtension resource = mapResource(providerName, file);
+	public void includeJavascript(String providerName, String file, Integer priority, boolean pathIsRelativeToScripts) {
+		MapResourceExtension resource = mapResource(providerName, file);
 
-        resourceIncluder.includeResource(new Resource(Resource.CATEGORY_JS, resource.getProviderId(),
-                (pathIsRelativeToScripts ? "scripts/" : "") + resource.getResourceId(), priority));
-    }
+		resourceIncluder.includeResource(new Resource(Resource.CATEGORY_JS, resource.getProviderId(),
+		        (pathIsRelativeToScripts ? "scripts/" : "") + resource.getResourceId(), priority));
+	}
 
 	/**
 	 * Generates HTML resource linkages for all resources requested by the page the fragments on
@@ -324,26 +328,26 @@ public abstract class UiUtils {
 		return java.net.URLEncoder.encode(string.toString());
 	}
 
-    public String urlBind(String url, Visit visit) {
-        url = url.replace("{{visitId}}", visit.getId().toString());
-        url = url.replace("{{visit.id}}", visit.getId().toString());
-        url = url.replace("{{visit.visitId}}", visit.getId().toString());
-        url = url.replace("{{visit.uuid}}", visit.getUuid());
-        url = url.replace("{{visitUuid}}", visit.getUuid());
-        url = urlBind(url, visit.getPatient());
-        return url;
-    }
+	public String urlBind(String url, Visit visit) {
+		url = url.replace("{{visitId}}", visit.getId().toString());
+		url = url.replace("{{visit.id}}", visit.getId().toString());
+		url = url.replace("{{visit.visitId}}", visit.getId().toString());
+		url = url.replace("{{visit.uuid}}", visit.getUuid());
+		url = url.replace("{{visitUuid}}", visit.getUuid());
+		url = urlBind(url, visit.getPatient());
+		return url;
+	}
 
-    public String urlBind(String url, Patient patient) {
-        url = url.replace("{{patientId}}", patient.getId().toString());
-        url = url.replace("{{patient.id}}", patient.getId().toString());
-        url = url.replace("{{patient.patientId}}", patient.getId().toString());
-        url = url.replace("{{patient.uuid}}", patient.getUuid());
-        url = url.replace("{{patientUuid}}", patient.getUuid());
-        return url;
-    }
+	public String urlBind(String url, Patient patient) {
+		url = url.replace("{{patientId}}", patient.getId().toString());
+		url = url.replace("{{patient.id}}", patient.getId().toString());
+		url = url.replace("{{patient.patientId}}", patient.getId().toString());
+		url = url.replace("{{patient.uuid}}", patient.getUuid());
+		url = url.replace("{{patientUuid}}", patient.getUuid());
+		return url;
+	}
 
-    public String urlBind(String url, Map<String, Object> bindings) {
+	public String urlBind(String url, Map<String, Object> bindings) {
 		for (Map.Entry<String, Object> binding : bindings.entrySet()) {
 			String key = binding.getKey().replace(" ", "");
 			url = url.replace("{{" + key + "}}", "" + binding.getValue());
@@ -356,16 +360,17 @@ public abstract class UiUtils {
 		return new SimpleDateFormat(WebConstants.DATE_FORMAT_TIMESTAMP).format(date);
 	}
 
-    /**
-     * Formats the specified date as a string using ISO 8601 format ("2014-04-25T01:32:21.196+06:00");
-     * this is a "Javascript-friendly" format, good for when you want to render a Date in Groovy to be parsed by Javascript
-     *
-     * @param date date to format
-     * @return string version of date formatted as ("2014-04-25T01:32:21.196+0600").
-     */
-    public String dateToISOString(Date date) {
-        return new SimpleDateFormat(WebConstants.DATE_FORMAT_ISO).format(date);
-    }
+	/**
+	 * Formats the specified date as a string using ISO 8601 format
+	 * ("2014-04-25T01:32:21.196+06:00"); this is a "Javascript-friendly" format, good for when you
+	 * want to render a Date in Groovy to be parsed by Javascript
+	 *
+	 * @param date date to format
+	 * @return string version of date formatted as ("2014-04-25T01:32:21.196+0600").
+	 */
+	public String dateToISOString(Date date) {
+		return new SimpleDateFormat(WebConstants.DATE_FORMAT_ISO).format(date);
+	}
 
 	/**
 	 * Formats the specified date to a string using the specified format and drops the time

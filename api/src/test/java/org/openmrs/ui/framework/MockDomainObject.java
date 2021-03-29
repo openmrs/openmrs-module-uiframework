@@ -17,53 +17,56 @@ import java.util.List;
 import java.util.Map;
 
 public class MockDomainObject {
-
+	
 	private String name;
+	
 	private List<Integer> numbers;
+	
 	private Map<String, Integer> map;
 	
-	public MockDomainObject() { }
+	public MockDomainObject() {
+	}
 	
-    /**
-     * @return the name
-     */
-    public String getName() {
-    	return name;
-    }
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
 	
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-    	this.name = name;
-    }
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 	
-    /**
-     * @return the numbers
-     */
-    public List<Integer> getNumbers() {
-    	return numbers;
-    }
+	/**
+	 * @return the numbers
+	 */
+	public List<Integer> getNumbers() {
+		return numbers;
+	}
 	
-    /**
-     * @param numbers the numbers to set
-     */
-    public void setNumbers(List<Integer> numbers) {
-    	this.numbers = numbers;
-    }
-
-    /**
-     * @return the map
-     */
-    public Map<String, Integer> getMap() {
-    	return map;
-    }
+	/**
+	 * @param numbers the numbers to set
+	 */
+	public void setNumbers(List<Integer> numbers) {
+		this.numbers = numbers;
+	}
 	
-    /**
-     * @param map the map to set
-     */
-    public void setMap(Map<String, Integer> map) {
-    	this.map = map;
-    }
-		
+	/**
+	 * @return the map
+	 */
+	public Map<String, Integer> getMap() {
+		return map;
+	}
+	
+	/**
+	 * @param map the map to set
+	 */
+	public void setMap(Map<String, Integer> map) {
+		this.map = map;
+	}
+	
 }

@@ -25,6 +25,7 @@ public interface FormEntryExtension extends Extension {
 	
 	/**
 	 * Gets the pages that may be used to enter specific forms (i.e. enter a new form from scratch)
+	 * 
 	 * @param context contains person, patient, (TBD)
 	 * @return
 	 */

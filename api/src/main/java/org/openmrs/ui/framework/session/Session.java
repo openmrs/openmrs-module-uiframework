@@ -7,8 +7,8 @@ import org.openmrs.Role;
 import org.openmrs.ui.framework.WebConstants;
 
 /**
- * The user's OpenMRS UI session. Stores contextual information like the user's role and chosen location,
- * as well as things like recently-viewed patients.
+ * The user's OpenMRS UI session. Stores contextual information like the user's role and chosen
+ * location, as well as things like recently-viewed patients.
  */
 public class Session {
 	

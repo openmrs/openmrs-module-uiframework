@@ -90,8 +90,7 @@ public class UiUtilsTest {
 	 * @see UiUtils#formatDatePretty(java.util.Date)
 	 */
 	@Test
-	public void formatDatePretty_shouldReplaceThePreviousDateWithYesterdayText()
-	    throws Exception {
+	public void formatDatePretty_shouldReplaceThePreviousDateWithYesterdayText() throws Exception {
 		final Locale locale = Locale.ENGLISH;
 		UiUtils ui = Mockito.mock(UiUtils.class);
 		Mockito.when(ui.message(eq("uiframework.yesterday"))).thenReturn("Yesterday");
@@ -101,24 +100,26 @@ public class UiUtilsTest {
 		cal.add(Calendar.DAY_OF_YEAR, -1);
 		Assert.assertEquals("Yesterday", ui.formatDatePretty(cal.getTime()));
 	}
-
-    @Test
-    public void urlBind_shouldProperlyBindPatientAndVisit() {
-
-        UiUtils ui = Mockito.mock(UiUtils.class);
-        Mockito.when(ui.urlBind(anyString(), any(Visit.class))).thenCallRealMethod();
-        Mockito.when(ui.urlBind(anyString(), any(Patient.class))).thenCallRealMethod();
-
-        Patient patient = new Patient(2);
-        patient.setUuid("patient_uuid");
-
-        Visit visit = new Visit(3);
-        visit.setUuid("visit_uuid");
-        visit.setPatient(patient);
-
-        String url = "someUrl.page?patientId={{patientId}}&patientId={{patient.id}}&patient={{patient.uuid}}&patientUuid={{patientUuid}}&patientid={{patient.patientId}}&visitId={{visitId}}&visit.id={{visit.id}}&visit={{visit.uuid}}&visitUuid={{visitUuid}}&visit={{visit.visitId}}";
-        Assert.assertEquals("someUrl.page?patientId=2&patientId=2&patient=patient_uuid&patientUuid=patient_uuid&patientid=2&visitId=3&visit.id=3&visit=visit_uuid&visitUuid=visit_uuid&visit=3", ui.urlBind(url, visit));
-
-    }
-    
+	
+	@Test
+	public void urlBind_shouldProperlyBindPatientAndVisit() {
+		
+		UiUtils ui = Mockito.mock(UiUtils.class);
+		Mockito.when(ui.urlBind(anyString(), any(Visit.class))).thenCallRealMethod();
+		Mockito.when(ui.urlBind(anyString(), any(Patient.class))).thenCallRealMethod();
+		
+		Patient patient = new Patient(2);
+		patient.setUuid("patient_uuid");
+		
+		Visit visit = new Visit(3);
+		visit.setUuid("visit_uuid");
+		visit.setPatient(patient);
+		
+		String url = "someUrl.page?patientId={{patientId}}&patientId={{patient.id}}&patient={{patient.uuid}}&patientUuid={{patientUuid}}&patientid={{patient.patientId}}&visitId={{visitId}}&visit.id={{visit.id}}&visit={{visit.uuid}}&visitUuid={{visitUuid}}&visit={{visit.visitId}}";
+		Assert.assertEquals(
+		    "someUrl.page?patientId=2&patientId=2&patient=patient_uuid&patientUuid=patient_uuid&patientid=2&visitId=3&visit.id=3&visit=visit_uuid&visitUuid=visit_uuid&visit=3",
+		    ui.urlBind(url, visit));
+		
+	}
+	
 }

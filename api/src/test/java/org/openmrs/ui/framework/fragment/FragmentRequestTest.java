@@ -5,9 +5,9 @@ import static junit.framework.TestCase.assertEquals;
 import org.junit.Test;
 
 public class FragmentRequestTest {
-
+	
 	FragmentRequest fragmentRequest;
-
+	
 	/**
 	 * @verifies Whether the mapped fragmentId returns the override value when available
 	 * @see FragmentRequest#getMappedFragmentId()
@@ -17,12 +17,12 @@ public class FragmentRequestTest {
 		fragmentRequest = new FragmentRequest("providerName", "fragmentId");
 		// before override
 		assertEquals("fragmentId", fragmentRequest.getMappedFragmentId());
-
+		
 		fragmentRequest.setFragmentIdOverride("fragmentIdOverride");
-
+		
 		assertEquals("fragmentIdOverride", fragmentRequest.getMappedFragmentId());
 	}
-
+	
 	/**
 	 * @verifies Whether the mapped providername returns the override value when available
 	 * @see FragmentRequest#getMappedProviderName()
@@ -32,10 +32,10 @@ public class FragmentRequestTest {
 		fragmentRequest = new FragmentRequest("providerName", "fragmentId");
 		// before override
 		assertEquals("providerName", fragmentRequest.getMappedProviderName());
-
+		
 		fragmentRequest.setProviderNameOverride("providerNameOverride");
-
+		
 		assertEquals("providerNameOverride", fragmentRequest.getMappedProviderName());
 	}
-
+	
 }

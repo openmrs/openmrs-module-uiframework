@@ -19,9 +19,9 @@ import java.util.Map;
 /**
  * Exposes urls mapped via Spring MVC as pages. Configure this by setting pages to a map from the
  * page name you want to expose (e.g. "xyz") to the Spring request mapping that should satisfy it
- * (e.g. "/module/xyz/xyz.form").
- * Any part of the content that is outside of the comments <!-- START 2.x PAGE CONTENT --> and
- * <!-- END 2.x PAGE CONTENT --> will be trimmed before the page is returned. (Both these are optional.)
+ * (e.g. "/module/xyz/xyz.form"). Any part of the content that is outside of the comments <!-- START
+ * 2.x PAGE CONTENT --> and <!-- END 2.x PAGE CONTENT --> will be trimmed before the page is
+ * returned. (Both these are optional.)
  */
 public class SpringMvcPageViewProvider implements PageViewProvider {
 	

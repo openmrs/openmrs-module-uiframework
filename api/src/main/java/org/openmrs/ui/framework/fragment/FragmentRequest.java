@@ -9,11 +9,11 @@ public class FragmentRequest {
 	private String fragmentId;
 	
 	private FragmentConfiguration configuration;
-
+	
 	private String providerNameOverride;
-
+	
 	private String fragmentIdOverride;
-
+	
 	public FragmentRequest(String providerName, String fragmentId) {
 		this(providerName, fragmentId, null);
 	}
@@ -30,7 +30,7 @@ public class FragmentRequest {
 	
 	public String toString() {
 		return "Fragment Request for " + providerName + ":" + fragmentId + " (mapped to " + providerNameOverride + ":"
-				+ fragmentIdOverride + ")";
+		        + fragmentIdOverride + ")";
 	}
 	
 	/**
@@ -74,47 +74,47 @@ public class FragmentRequest {
 	public void setConfiguration(FragmentConfiguration configuration) {
 		this.configuration = configuration;
 	}
-
+	
 	/**
 	 * @return the providerNameOverride
 	 */
 	public String getProviderNameOverride() {
 		return providerNameOverride;
 	}
-
+	
 	/**
 	 * @param providerNameOverride the providerNameOverride to set
 	 */
 	public void setProviderNameOverride(String providerNameOverride) {
 		this.providerNameOverride = providerNameOverride;
 	}
-
+	
 	/**
 	 * @return the fragmentIdOverride
 	 */
 	public String getFragmentIdOverride() {
 		return fragmentIdOverride;
 	}
-
+	
 	/**
 	 * @param fragmentIdOverride the fragmentIdOverride to set
 	 */
 	public void setFragmentIdOverride(String fragmentIdOverride) {
 		this.fragmentIdOverride = fragmentIdOverride;
 	}
-
+	
 	/**
 	 * @return providerNameOverride ?: providerName
 	 */
 	public String getMappedProviderName() {
 		return providerNameOverride != null ? providerNameOverride : providerName;
 	}
-
+	
 	/**
 	 * @return fragmentIdOverride ?: fragmentId
 	 */
 	public String getMappedFragmentId() {
 		return fragmentIdOverride != null ? fragmentIdOverride : fragmentId;
 	}
-
+	
 }

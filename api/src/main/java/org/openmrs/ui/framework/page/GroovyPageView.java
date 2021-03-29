@@ -41,20 +41,22 @@ public class GroovyPageView implements PageView {
 			log.trace("rendering groovy fragment view with model: " + model);
 		try {
 			return boundTemplate.toString();
-		} catch (RuntimeException ex) {
+		}
+		catch (RuntimeException ex) {
 			APIAuthenticationException authEx = ExceptionUtil.findExceptionInChain(ex, APIAuthenticationException.class);
 			if (authEx != null)
 				throw authEx;
 			
-			ContextAuthenticationException cAuthEx = ExceptionUtil.findExceptionInChain(ex, ContextAuthenticationException.class);
+			ContextAuthenticationException cAuthEx = ExceptionUtil.findExceptionInChain(ex,
+			    ContextAuthenticationException.class);
 			if (cAuthEx != null)
 				throw cAuthEx;
-
-            String message = "Error rendering page view for " + context.getRequest().getPageName() + ". ";
-            message += "Model properties:\n" + OpenmrsUtil.join(model.keySet(), " \n");
-            throw new ViewException(message, ex);
+			
+			String message = "Error rendering page view for " + context.getRequest().getPageName() + ". ";
+			message += "Model properties:\n" + OpenmrsUtil.join(model.keySet(), " \n");
+			throw new ViewException(message, ex);
 		}
-
+		
 	}
 	
 	/**

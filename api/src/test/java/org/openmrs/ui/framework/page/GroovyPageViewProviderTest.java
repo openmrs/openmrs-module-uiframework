@@ -24,25 +24,27 @@ import static org.junit.Assert.assertTrue;
  *
  */
 public class GroovyPageViewProviderTest {
-
-    private GroovyPageViewProvider provider;
-
-    @Before
-    public void setUp() throws Exception {
-        provider = new GroovyPageViewProvider() {
-            @Override
-            public String getViewContents(String name) throws Exception {
-                return "<% def squared = { it * it } %> <html>A view named " + name + ". <% [1:3].each { %>${ it } squared is ${ squared(it) }. <% } %></html>";
-            }
-        };
-    }
-
-    @Test
-    public void testThatViewsAreCachedInProductionMode() throws Exception {
-        PageView first = provider.getView("home");
-        assertNotNull(first);
-
-        PageView second = provider.getView("home");
-        assertTrue(first == second);
-    }
+	
+	private GroovyPageViewProvider provider;
+	
+	@Before
+	public void setUp() throws Exception {
+		provider = new GroovyPageViewProvider() {
+			
+			@Override
+			public String getViewContents(String name) throws Exception {
+				return "<% def squared = { it * it } %> <html>A view named " + name
+				        + ". <% [1:3].each { %>${ it } squared is ${ squared(it) }. <% } %></html>";
+			}
+		};
+	}
+	
+	@Test
+	public void testThatViewsAreCachedInProductionMode() throws Exception {
+		PageView first = provider.getView("home");
+		assertNotNull(first);
+		
+		PageView second = provider.getView("home");
+		assertTrue(first == second);
+	}
 }

@@ -18,11 +18,14 @@ package org.openmrs.ui.framework.fragment;
  * Allows modules to add custom content to FragmentModels
  */
 public interface FragmentModelConfigurator {
-
-    /**
-     * FragmentFactory will call this method before passing the FragmentModel to the fragment controller and view
-     * @param fragmentContext implementations should add any custom content to fragmentContext.getModel()
-     */
-    void configureModel(FragmentContext fragmentContext);
-
+	
+	/**
+	 * FragmentFactory will call this method before passing the FragmentModel to the fragment
+	 * controller and view
+	 * 
+	 * @param fragmentContext implementations should add any custom content to
+	 *            fragmentContext.getModel()
+	 */
+	void configureModel(FragmentContext fragmentContext);
+	
 }

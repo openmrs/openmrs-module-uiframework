@@ -25,26 +25,26 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Registry for {@link ResourceProvider}s, and provides methods for getting resources.
- * Since (as of 1.9) there's no way to wire spring beans to a module servlet, the first instance
- * of this bean that is instantiated at module startup is statically-accessible.  
+ * Registry for {@link ResourceProvider}s, and provides methods for getting resources. Since (as of
+ * 1.9) there's no way to wire spring beans to a module servlet, the first instance of this bean
+ * that is instantiated at module startup is statically-accessible.
  */
 public class ResourceFactory {
-
+	
 	private static ResourceFactory instance;
-
+	
 	private static Map<String, ResourceProvider> resourceProviders;
-
+	
 	private static Set<String> resourceProvidersInDevelopmentMode = new HashSet<String>();
-
+	
 	protected final Logger log = LoggerFactory.getLogger(getClass());
-
+	
 	public ResourceFactory() {
 		// hack to allow our module servlet to access this
 		if (instance == null)
 			instance = this;
 	}
-
+	
 	/**
 	 * This method is a hack to allow our module servlet to access this. Don't count on it.
 	 */
@@ -53,17 +53,18 @@ public class ResourceFactory {
 			new ResourceFactory();
 		return instance;
 	}
-
+	
 	/**
-	 * @param providerName if null, look in all providers (if multiple providers have the resource, an arbitrary one is returned)
+	 * @param providerName if null, look in all providers (if multiple providers have the resource,
+	 *            an arbitrary one is returned)
 	 * @param resourcePath
-	 * @return the requested resource, from the requested provider, or null if not found 
+	 * @return the requested resource, from the requested provider, or null if not found
 	 */
 	public File getResource(String providerName, String resourcePath) {
 		if (resourcePath == null) {
 			return null;
 		}
-
+		
 		if (providerName == null) {
 			for (ResourceProvider provider : resourceProviders.values()) {
 				File ret = provider.getResource(resourcePath);
@@ -78,7 +79,7 @@ public class ResourceFactory {
 			return provider.getResource(resourcePath);
 		}
 	}
-
+	
 	/**
 	 * @param resourcePath
 	 * @return the resource with the given path, from any provider that has it
@@ -86,7 +87,7 @@ public class ResourceFactory {
 	public File getResource(String resourcePath) {
 		return getResource(null, resourcePath);
 	}
-
+	
 	/**
 	 * @see #getResource(String, String)
 	 * @param providerName
@@ -101,30 +102,30 @@ public class ResourceFactory {
 		}
 		return OpenmrsUtil.getFileAsString(file);
 	}
-
+	
 	/**
 	 * @return the resourceProviders
 	 */
 	public Map<String, ResourceProvider> getResourceProviders() {
 		return resourceProviders;
 	}
-
+	
 	/**
 	 * @param resourceProviders the resourceProviders to set
 	 */
 	public void setResourceProviders(Map<String, ResourceProvider> resourceProviders) {
 		ResourceFactory.resourceProviders = resourceProviders;
 	}
-
+	
 	public boolean isResourceProviderInDevelopmentMode(String providerName) {
 		return resourceProvidersInDevelopmentMode.contains(providerName);
 	}
-
+	
 	/**
 	 * Adds the given resource providers to the existing ones. (I.e. this is not a proper setter.)
+	 * 
 	 * @param additional
 	 * @see #addResourceProvider(String, ResourceProvider)
-	 *
 	 * @param additional
 	 */
 	public void setAdditionalResourceProviders(Map<String, ResourceProvider> additional) {
@@ -132,22 +133,23 @@ public class ResourceFactory {
 			addResourceProvider(e.getKey(), e.getValue());
 		}
 	}
-
+	
 	/**
 	 * Registers a Resource Provider.
+	 * 
 	 * @see UiFrameworkUtil#checkAndSetDevelopmentModeForProvider(String, Object)
 	 */
 	public void addResourceProvider(String key, ResourceProvider provider) {
 		if (resourceProviders == null) {
 			resourceProviders = new LinkedHashMap<String, ResourceProvider>();
 		}
-
+		
 		boolean addedInDevMode = UiFrameworkUtil.checkAndSetDevelopmentModeForProvider(key, provider);
 		if (addedInDevMode) {
 			resourceProvidersInDevelopmentMode.add(key);
 		}
-
+		
 		resourceProviders.put(key, provider);
 	}
-
+	
 }

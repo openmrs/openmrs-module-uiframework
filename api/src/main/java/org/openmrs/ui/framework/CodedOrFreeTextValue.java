@@ -94,16 +94,16 @@ public class CodedOrFreeTextValue {
 			return nonCodedValue;
 		}
 	}
-
-    public String getRawValue() {
-        if (codedNameValue != null) {
-            return CONCEPT_NAME_PREFIX + codedNameValue.getUuid();
-        } else if (codedValue != null) {
-            return CONCEPT_PREFIX + codedValue.getUuid();
-        } else {
-            return NON_CODED_PREFIX + nonCodedValue;
-        }
-    }
+	
+	public String getRawValue() {
+		if (codedNameValue != null) {
+			return CONCEPT_NAME_PREFIX + codedNameValue.getUuid();
+		} else if (codedValue != null) {
+			return CONCEPT_PREFIX + codedValue.getUuid();
+		} else {
+			return NON_CODED_PREFIX + nonCodedValue;
+		}
+	}
 	
 	@Override
 	public boolean equals(Object o) {

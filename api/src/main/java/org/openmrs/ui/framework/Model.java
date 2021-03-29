@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A model (in the MVC sense, used by a controller to pass content to a view)
- * (This is based on Spring MVC's ModelMap.)
+ * A model (in the MVC sense, used by a controller to pass content to a view) (This is based on
+ * Spring MVC's ModelMap.)
  */
 public class Model extends LinkedHashMap<String, Object> implements AttributeHolder {
 	
@@ -25,9 +25,8 @@ public class Model extends LinkedHashMap<String, Object> implements AttributeHol
 	}
 	
 	/**
-	 * Copy all attributes in the supplied <code>Map</code> into this <code>Map</code>,
-	 * with existing objects of the same name taking precedence (i.e. not getting
-	 * replaced).
+	 * Copy all attributes in the supplied <code>Map</code> into this <code>Map</code>, with
+	 * existing objects of the same name taking precedence (i.e. not getting replaced).
 	 */
 	public Model mergeAttributes(Map<String, ?> attributes) {
 		if (attributes != null) {

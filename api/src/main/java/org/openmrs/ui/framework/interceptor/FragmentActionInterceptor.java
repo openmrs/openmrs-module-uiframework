@@ -19,10 +19,12 @@ import org.openmrs.ui.framework.fragment.FragmentActionRequest;
 import java.lang.reflect.Method;
 
 /**
- * Interface for fragment action interceptors. When {@link org.openmrs.ui.framework.fragment.FragmentFactory} is
- * handling an action request it will invoke the <code>beforeHandleRequest</code> method of any component which
- * implements this interface, before handling the request using it's associated controller.
+ * Interface for fragment action interceptors. When
+ * {@link org.openmrs.ui.framework.fragment.FragmentFactory} is handling an action request it will
+ * invoke the <code>beforeHandleRequest</code> method of any component which implements this
+ * interface, before handling the request using it's associated controller.
  */
 public interface FragmentActionInterceptor {
+	
 	void beforeHandleRequest(FragmentActionRequest request, Method controllerMethod);
 }

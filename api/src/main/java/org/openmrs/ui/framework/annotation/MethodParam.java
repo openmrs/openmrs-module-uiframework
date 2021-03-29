@@ -18,7 +18,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
  * Indicates that the annotated controller or action method parameter should have its initial value
  * populated by calling the method whose name is in the value of this annotation.

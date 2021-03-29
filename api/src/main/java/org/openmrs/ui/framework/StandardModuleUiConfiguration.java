@@ -37,16 +37,19 @@ import org.openmrs.util.OpenmrsConstants;
 public class StandardModuleUiConfiguration implements UiContextRefreshedCallback {
 	
 	private String moduleId;
+	
 	private Map<String, String> resourceShortcuts;
+	
 	private String openmrsVersion;
+	
 	private List<String> developmentFolders = new ArrayList<String>();
-
-    @Override
-    public String toString() {
-        return getClass().getName() + " for module " + moduleId;
-    }
-
-    /**
+	
+	@Override
+	public String toString() {
+		return getClass().getName() + " for module " + moduleId;
+	}
+	
+	/**
 	 * @return the moduleId
 	 */
 	public String getModuleId() {
@@ -63,40 +66,41 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 	public String getOpenmrsVersion() {
 		return openmrsVersion;
 	}
-
+	
 	public void setOpenmrsVersion(String openmrsVersion) {
 		this.openmrsVersion = openmrsVersion;
 	}
-
+	
 	public List<String> getDevelopmentFolders() {
 		return developmentFolders;
 	}
-
+	
 	public void setDevelopmentFolders(List<String> developmentFolders) {
 		this.developmentFolders = developmentFolders;
 	}
-
-	/**
-     * @return the resourceShortcuts
-     */
-    public Map<String, String> getResourceShortcuts() {
-    	return resourceShortcuts;
-    }
 	
-    /**
-     * @param resourceShortcuts the resourceShortcuts to set
-     */
-    public void setResourceShortcuts(Map<String, String> resourceShortcuts) {
-    	this.resourceShortcuts = resourceShortcuts;
-    }
-
+	/**
+	 * @return the resourceShortcuts
+	 */
+	public Map<String, String> getResourceShortcuts() {
+		return resourceShortcuts;
+	}
+	
+	/**
+	 * @param resourceShortcuts the resourceShortcuts to set
+	 */
+	public void setResourceShortcuts(Map<String, String> resourceShortcuts) {
+		this.resourceShortcuts = resourceShortcuts;
+	}
+	
 	/**
 	 * @see org.openmrs.ui.framework.UiContextRefreshedCallback#afterContextRefreshed(org.openmrs.ui.framework.page.PageFactory,
 	 *      org.openmrs.ui.framework.fragment.FragmentFactory, ResourceFactory)
 	 */
 	@Override
-	public void afterContextRefreshed(PageFactory pageFactory, FragmentFactory fragmentFactory, ResourceFactory resourceFactory) {
-
+	public void afterContextRefreshed(PageFactory pageFactory, FragmentFactory fragmentFactory,
+	        ResourceFactory resourceFactory) {
+		
 		if (StringUtils.isNotBlank(openmrsVersion)) {
 			if (!ModuleUtil.matchRequiredVersions(OpenmrsConstants.OPENMRS_VERSION_SHORT, openmrsVersion)) {
 				return;
@@ -106,7 +110,7 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 		ModuleClassLoader moduleClassLoader = ModuleFactory.getModuleClassLoader(moduleId);
 		if (moduleClassLoader == null)
 			throw new RuntimeException("Failed to get ModuleClassLoader for " + moduleId);
-
+		
 		// standard controller provider for pages
 		{
 			ConventionBasedClasspathPageControllerProvider pcp = new ConventionBasedClasspathPageControllerProvider();
@@ -130,7 +134,7 @@ public class StandardModuleUiConfiguration implements UiContextRefreshedCallback
 			fcp.setDevelopmentFolderNames(developmentFolders);
 			fragmentFactory.addControllerProvider(moduleId, fcp);
 		}
-	
+		
 		// standard view provider for fragments
 		{
 			GroovyFragmentViewProvider fvp = new GroovyFragmentViewProvider();

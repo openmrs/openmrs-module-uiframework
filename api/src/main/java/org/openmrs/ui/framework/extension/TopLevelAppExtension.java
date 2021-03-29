@@ -17,7 +17,7 @@ package org.openmrs.ui.framework.extension;
  * Extensions that should be visible as "Apps" on a user's homepage.
  */
 public class TopLevelAppExtension extends LinkExtension {
-
+	
 	// no different from a plain Link extension
 	
 }

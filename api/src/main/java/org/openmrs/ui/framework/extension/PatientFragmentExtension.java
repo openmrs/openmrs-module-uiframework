@@ -26,6 +26,7 @@ public class PatientFragmentExtension extends PatientExtension {
 	
 	/**
 	 * Subclasses should override this method if they want to only be conditionally enabled.
+	 * 
 	 * @see org.openmrs.ui.framework.extension.Extension#isEnabled(org.openmrs.ui.framework.session.Session)
 	 */
 	@Override

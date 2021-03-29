@@ -38,6 +38,7 @@ public class ExtensionManager {
 	
 	/**
 	 * TODO: allow extensions to be turned off globally, even if they're on the classpath
+	 * 
 	 * @return (for now) all extensions
 	 */
 	private Map<String, Extension> activeExtensions() {
@@ -55,7 +56,7 @@ public class ExtensionManager {
 	}
 	
 	/**
-	 * @return all published {@link ExtensionPoint}s 
+	 * @return all published {@link ExtensionPoint}s
 	 */
 	public Collection<ExtensionPoint> getExtensionPoints() {
 		if (cachedExtensionPoints == null) {
@@ -78,7 +79,8 @@ public class ExtensionManager {
 	}
 	
 	/**
-	 * @param extensionUniqueId an id for the extension (same as a key returned by {@link #getExtensionsByClass(Class)})
+	 * @param extensionUniqueId an id for the extension (same as a key returned by
+	 *            {@link #getExtensionsByClass(Class)})
 	 * @return the {@link Extension} with the given id
 	 */
 	public Extension getExtension(String extensionUniqueId) {
@@ -87,6 +89,7 @@ public class ExtensionManager {
 	
 	/**
 	 * Gets all extensions of a given class (regardless of their specific point)
+	 * 
 	 * @param <T>
 	 * @param clazz
 	 * @return
@@ -103,9 +106,10 @@ public class ExtensionManager {
 	
 	/**
 	 * Gets an ordered list of extension unique ids, currently configured for the given point
+	 * 
 	 * @param pointId
-	 * @return an ordered list of extension unique ids, as currently configured for the given point. If
-	 * the point has not been configured, this returns null.
+	 * @return an ordered list of extension unique ids, as currently configured for the given point.
+	 *         If the point has not been configured, this returns null.
 	 */
 	public List<String> getExtensionPointConfiguration(String pointId) {
 		String gp = Context.getAdministrationService().getGlobalProperty("ui2.extensionConfig." + pointId);
@@ -116,6 +120,7 @@ public class ExtensionManager {
 	 * Saves an ordering of extensions for a given point. If you pass an empty list for uniqueIds
 	 * then the configuration for that extension point is cleared (so that it will return all
 	 * extensions in the default order)
+	 * 
 	 * @param pointId
 	 * @param uniqueIds
 	 */
@@ -138,8 +143,9 @@ public class ExtensionManager {
 	}
 	
 	/**
-	 * Gets extensions for a given class and point combination. The class defines the set of all possible
-	 * extensions, and the point defines which ones are enabled, and how they are ordered. 
+	 * Gets extensions for a given class and point combination. The class defines the set of all
+	 * possible extensions, and the point defines which ones are enabled, and how they are ordered.
+	 * 
 	 * @param extensionClass
 	 * @param pointId possibly null
 	 * @return

@@ -13,8 +13,6 @@
  */
 package org.openmrs.module.uiframework.fragment.controller;
 
-
-
 /**
  * Controller for the helloUser fragment
  */

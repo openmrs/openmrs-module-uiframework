@@ -25,27 +25,28 @@ import static org.mockito.Mockito.verify;
  *
  */
 public class StringToPatientConverterTest {
-
-    private StringToPatientConverter converter;
-    private PatientService patientService;
-
-    @Before
-    public void setUp() throws Exception {
-        patientService = mock(PatientService.class);
-        converter = new StringToPatientConverter();
-        converter.setPatientService(patientService);
-    }
-
-    @Test
-    public void testConvertByPatientId() throws Exception {
-        converter.convert("1234");
-        verify(patientService).getPatient(1234);
-    }
-
-    @Test
-    public void testConvertByPatientUuid() throws Exception {
-        String uuid = "8d793bee-c2cc-11de-8d13-0010c6dffd0f";
-        converter.convert(uuid);
-        verify(patientService).getPatientByUuid(uuid);
-    }
+	
+	private StringToPatientConverter converter;
+	
+	private PatientService patientService;
+	
+	@Before
+	public void setUp() throws Exception {
+		patientService = mock(PatientService.class);
+		converter = new StringToPatientConverter();
+		converter.setPatientService(patientService);
+	}
+	
+	@Test
+	public void testConvertByPatientId() throws Exception {
+		converter.convert("1234");
+		verify(patientService).getPatient(1234);
+	}
+	
+	@Test
+	public void testConvertByPatientUuid() throws Exception {
+		String uuid = "8d793bee-c2cc-11de-8d13-0010c6dffd0f";
+		converter.convert(uuid);
+		verify(patientService).getPatientByUuid(uuid);
+	}
 }

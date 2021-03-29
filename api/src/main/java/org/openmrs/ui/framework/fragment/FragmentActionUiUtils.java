@@ -12,15 +12,15 @@ public class FragmentActionUiUtils extends UiUtils {
 	
 	public FragmentActionUiUtils(MessageSource messageSource, ExtensionManager extensionManager,
 	    ConversionService conversionService, FormatterService formatterService) {
-        if (formatterService != null) {
-            this.formatter = formatterService.getFormatter();
-        }
-        this.messager = new MessagerImpl(Context.getLocale(), messageSource);
-        this.extensionManager = extensionManager;
-        this.conversionService = conversionService;
-        // no fragmentIncluder
-        // no decoratable
-        // no resourceIncluder
-    }
-
+		if (formatterService != null) {
+			this.formatter = formatterService.getFormatter();
+		}
+		this.messager = new MessagerImpl(Context.getLocale(), messageSource);
+		this.extensionManager = extensionManager;
+		this.conversionService = conversionService;
+		// no fragmentIncluder
+		// no decoratable
+		// no resourceIncluder
+	}
+	
 }

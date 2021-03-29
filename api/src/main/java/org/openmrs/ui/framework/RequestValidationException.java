@@ -14,6 +14,7 @@ public abstract class RequestValidationException extends UiFrameworkException {
 	
 	/**
 	 * Override this if you want to signal any global errors
+	 * 
 	 * @return
 	 */
 	public List<String> getGlobalErrorCodes() {
@@ -22,6 +23,7 @@ public abstract class RequestValidationException extends UiFrameworkException {
 	
 	/**
 	 * Override this if you want to signal any field errors
+	 * 
 	 * @return
 	 */
 	public Map<String, List<String>> getFieldErrorCodes() {
@@ -30,6 +32,7 @@ public abstract class RequestValidationException extends UiFrameworkException {
 	
 	/**
 	 * Utility method for subclasses that want to report a single field error
+	 * 
 	 * @param fieldName
 	 * @param errorCode
 	 * @return

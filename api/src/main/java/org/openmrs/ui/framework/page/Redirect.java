@@ -9,7 +9,8 @@ public class Redirect extends PageAction {
 	private String url;
 	
 	/**
-	 * @param applicationUrl an URL starting after the server-plus-context-path part. (e.g. "yourmodule/home.page") 
+	 * @param applicationUrl an URL starting after the server-plus-context-path part. (e.g.
+	 *            "yourmodule/home.page")
 	 */
 	public Redirect(String applicationUrl) {
 		this.url = applicationUrl;
@@ -17,6 +18,7 @@ public class Redirect extends PageAction {
 	
 	/**
 	 * Redirects to the given page
+	 * 
 	 * @param pageName
 	 * @param queryString
 	 */
@@ -27,8 +29,9 @@ public class Redirect extends PageAction {
 	}
 	
 	/**
-	 * The equivalent of redirecting back to the url specified in request. Query string parameters will be included
-	 * but any POST parameter will not be.
+	 * The equivalent of redirecting back to the url specified in request. Query string parameters
+	 * will be included but any POST parameter will not be.
+	 * 
 	 * @param request
 	 */
 	public Redirect(HttpServletRequest request) {

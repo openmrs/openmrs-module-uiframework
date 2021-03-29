@@ -20,16 +20,17 @@ import org.openmrs.ui.framework.UiUtils;
  * UiUtils subclass specifically for pages
  */
 public class PageUiUtils extends UiUtils {
-
+	
 	/**
 	 * Constructs instance from page context
+	 * 
 	 * @param pageContext the page context
 	 */
 	public PageUiUtils(PageContext pageContext) {
 		this.pageContext = pageContext;
 		this.fragmentIncluder = pageContext;
 		this.resourceIncluder = pageContext;
-        this.formatter = pageContext.getFormatter();
+		this.formatter = pageContext.getFormatter();
 		this.messager = pageContext;
 		this.decoratable = pageContext;
 		this.extensionManager = pageContext.getExtensionManager();

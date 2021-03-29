@@ -17,13 +17,13 @@ package org.openmrs.ui.framework.fragment;
 import java.util.Map;
 
 /**
- * Modules can implement this interface to provide possible arguments for fragment controllers, which will be injected
- * by type into the fragment's controller method.
+ * Modules can implement this interface to provide possible arguments for fragment controllers,
+ * which will be injected by type into the fragment's controller method.
  */
 public interface PossibleFragmentControllerArgumentProvider {
-
-    /**
-     * @param possibleArguments Implementations should add new mappings to this map
-     */
-    void addPossibleFragmentControllerArguments(Map<Class<?>, Object> possibleArguments);
+	
+	/**
+	 * @param possibleArguments Implementations should add new mappings to this map
+	 */
+	void addPossibleFragmentControllerArguments(Map<Class<?>, Object> possibleArguments);
 }

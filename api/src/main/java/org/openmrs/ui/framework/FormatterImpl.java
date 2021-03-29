@@ -38,8 +38,9 @@ import static org.openmrs.util.TimeZoneUtil.toTimezone;
 
 
 /**
- * Contains default formatting for most OpenMRS classes, which can be override with {@link FormatterFactory} instances.
- * Do not construct this class directly, but rather use {@link FormatterService#getFormatter()}.
+ * Contains default formatting for most OpenMRS classes, which can be override with
+ * {@link FormatterFactory} instances. Do not construct this class directly, but rather use
+ * {@link FormatterService#getFormatter()}.
  */
 public class FormatterImpl implements Formatter {
 
@@ -64,11 +65,11 @@ public class FormatterImpl implements Formatter {
 		if (o == null)
 			return "";
 
-        String className = o.getClass().getName();
-        Formatter classFormatter = classFormatters.get(getCleanClassName(className));
-        if (classFormatter != null) {
-            return classFormatter.format(o, locale);
-        } else if (o instanceof Date) {
+		String className = o.getClass().getName();
+		Formatter classFormatter = classFormatters.get(getCleanClassName(className));
+		if (classFormatter != null) {
+			return classFormatter.format(o, locale);
+		} else if (o instanceof Date) {
 			return format((Date) o, locale);
 		} else if (o instanceof Role) {
 			return format((Role) o, locale);
@@ -77,13 +78,13 @@ public class FormatterImpl implements Formatter {
 		} else if (o instanceof Person) {
 			return format((Person) o, locale);
 		} else if (o instanceof User) {
-            return format((User) o, locale);
-        } else if (o instanceof Provider) {
-            return format((Provider) o, locale);
-        } else if (o instanceof PatientIdentifierType) {
+			return format((User) o, locale);
+		} else if (o instanceof Provider) {
+			return format((Provider) o, locale);
+		} else if (o instanceof PatientIdentifierType) {
 			return format((PatientIdentifierType) o, locale);
-        } else if (o instanceof PersonAttribute) {
-            return format((PersonAttribute) o, locale);
+		} else if (o instanceof PersonAttribute) {
+			return format((PersonAttribute) o, locale);
 		} else if (o instanceof OpenmrsMetadata) { // this should be after branches for specific metadata
 			return format((OpenmrsMetadata) o, locale);
 		} else if (o instanceof Obs) {
@@ -91,13 +92,13 @@ public class FormatterImpl implements Formatter {
 		} else if (o instanceof PatientIdentifier) {
 			return format((PatientIdentifier) o, locale);
 		} else if (o instanceof PersonName) {
-            return format((PersonName) o, locale);
-        } else if (o instanceof PersonAddress) {
-            return format((PersonAddress) o, locale);
-        } else if (o instanceof Number) {
-            return format((Number) o, locale);
-        } else if (o instanceof Class) {
-            return ((Class) o).getName();
+			return format((PersonName) o, locale);
+		} else if (o instanceof PersonAddress) {
+			return format((PersonAddress) o, locale);
+		} else if (o instanceof Number) {
+			return format((Number) o, locale);
+		} else if (o instanceof Class) {
+			return ((Class) o).getName();
 		} else {
 			return o.toString();
 		}
@@ -143,37 +144,36 @@ public class FormatterImpl implements Formatter {
 	}
 
 	private String format(OpenmrsMetadata md, Locale locale) {
-        String override = getLocalization(locale, md.getClass().getSimpleName(), md.getUuid());
-        return override != null ? override : messageSource.getMessage(md.getName(), null, locale);
+		String override = getLocalization(locale, md.getClass().getSimpleName(), md.getUuid());
+		return override != null ? override : messageSource.getMessage(md.getName(), null, locale);
 	}
 
-    private String getLocalization(Locale locale, String shortClassName, String uuid) {
-        if (messageSource == null) {
-            return null;
-        }
-        shortClassName = getCleanClassName(shortClassName);
+	private String getLocalization(Locale locale, String shortClassName, String uuid) {
+		if (messageSource == null) {
+			return null;
+		}
+		shortClassName = getCleanClassName(shortClassName);
 
+		String code = "ui.i18n." + shortClassName + ".name." + uuid;
+		String localization = messageSource.getMessage(code, null, locale);
+		if (localization == null || localization.equals(code)) {
+			return null;
+		} else {
+			return localization;
+		}
+	}
 
-        String code = "ui.i18n." + shortClassName + ".name." + uuid;
-        String localization = messageSource.getMessage(code, null, locale);
-        if (localization == null || localization.equals(code)) {
-            return null;
-        } else {
-            return localization;
-        }
-    }
+	private String getCleanClassName(String shortClassName) {
+		// in case this is a hibernate proxy, strip off anything after an underscore
+		// ie: EncounterType_$$_javassist_26 needs to be converted to EncounterType
+		int underscoreIndex = shortClassName.indexOf("_$");
+		if (underscoreIndex > 0) {
+			shortClassName = shortClassName.substring(0, underscoreIndex);
+		}
+		return shortClassName;
+	}
 
-    private String getCleanClassName(String shortClassName) {
-        // in case this is a hibernate proxy, strip off anything after an underscore
-        // ie: EncounterType_$$_javassist_26 needs to be converted to EncounterType
-        int underscoreIndex = shortClassName.indexOf("_$");
-        if (underscoreIndex > 0) {
-            shortClassName = shortClassName.substring(0, underscoreIndex);
-        }
-        return shortClassName;
-    }
-
-    private String format(Concept c, Locale locale) {
+	private String format(Concept c, Locale locale) {
 		String override = getLocalization(locale, "Concept", c.getUuid());
 		if (override != null) {
 			return override;
@@ -187,73 +187,70 @@ public class FormatterImpl implements Formatter {
 		return conceptName.getName();
 	}
 
-    private String format(Person p, Locale locale) {
-        if (p == null) {
-            return null;
-        }
+	private String format(Person p, Locale locale) {
+		if (p == null) {
+			return null;
+		}
 
-        return format(p.getPersonName(), locale);
-    }
+		return format(p.getPersonName(), locale);
+	}
 
 	private String format(PersonName n, Locale locale) {
-        // no name, return message
-        if (n == null) {
-            return messageSource.getMessage("uiframework.formatter.noNamePerson", null, locale);
-        }
-        // format via name template if available
-        else if (NameSupportCompatibility.hasDefaultLayoutTemplate()) {
-        	return NameSupportCompatibility.format(n);
-        }
-	    // otherwise, just return full name
-        return n.getFullName();
+		// no name, return message
+		if (n == null) {
+			return messageSource.getMessage("uiframework.formatter.noNamePerson", null, locale);
+		}
+		// format via name template if available
+		else if (NameSupportCompatibility.hasDefaultLayoutTemplate()) {
+			return NameSupportCompatibility.format(n);
+		}
+		// otherwise, just return full name
+		return n.getFullName();
 	}
 
 	private String format(User u, Locale locale) {
-        String un = u.getUsername();
-        if (un == null) {
-            un = u.getSystemId();
-        }
-        return format(u.getPerson(), locale) + " (" + un + ")";
+		String un = u.getUsername();
+		if (un == null) {
+			un = u.getSystemId();
+		}
+		return format(u.getPerson(), locale) + " (" + un + ")";
 	}
 
-    private String format(PersonAttribute pa, Locale locale) {
-        return format(pa.getHydratedObject(), locale);
-    }
+	private String format(PersonAttribute pa, Locale locale) {
+		return format(pa.getHydratedObject(), locale);
+	}
 
 	private String format(Obs o, Locale locale) {
 		if (o.getValueTime() != null && o.getConcept().getDatatype().isTime()) {
 			return UiFrameworkUtil.getTimeFormat(administrationService, locale).format(o.getValueTime());
-		}
-		else if (o.getValueDatetime() != null) {
+		} else if (o.getValueDatetime() != null) {
 			// limitation of Obs.getValueAsString() and java date locale
 			return format(o.getValueDatetime(), locale);
 		}
-        if (o.getConcept() instanceof ConceptNumeric) {
-            String units = ((ConceptNumeric) o.getConcept()).getUnits();
-		    return o.getValueAsString(locale) + (StringUtils.isNotBlank(units) ? " " + units : "");
-        }
-        else {
-        	if (o.hasGroupMembers()) {
-        		StringBuilder sb = new StringBuilder();
-    			for (Obs groupMember : o.getGroupMembers()) {
-    				if (sb.length() > 0) {
-    					sb.append(", ");
-    				}
-    				ConceptName conceptName = groupMember.getConcept().getName(locale);
-    				if (conceptName == null) {
-    					//just get available name in any locale
-    					conceptName = groupMember.getConcept().getName();
-    				}
-    				sb.append(conceptName.getName());
-    				sb.append(": ");
-    				sb.append(groupMember.getValueAsString(locale));
-    			}
-    			return sb.toString();
-        	}
-        	else {
-        		return o.getValueAsString(locale);
-        	}
-        }
+		if (o.getConcept() instanceof ConceptNumeric) {
+			String units = ((ConceptNumeric) o.getConcept()).getUnits();
+			return o.getValueAsString(locale) + (StringUtils.isNotBlank(units) ? " " + units : "");
+		} else {
+			if (o.hasGroupMembers()) {
+				StringBuilder sb = new StringBuilder();
+				for (Obs groupMember : o.getGroupMembers()) {
+					if (sb.length() > 0) {
+						sb.append(", ");
+					}
+					ConceptName conceptName = groupMember.getConcept().getName(locale);
+					if (conceptName == null) {
+						//just get available name in any locale
+						conceptName = groupMember.getConcept().getName();
+					}
+					sb.append(conceptName.getName());
+					sb.append(": ");
+					sb.append(groupMember.getValueAsString(locale));
+				}
+				return sb.toString();
+			} else {
+				return o.getValueAsString(locale);
+			}
+		}
 	}
 
 	private String format(PatientIdentifier pi, Locale locale) {

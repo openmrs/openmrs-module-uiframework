@@ -9,8 +9,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.convert.ConversionService;
 
 /**
- * An implementation of UiUtils with very limited functionality.
- * (Typically this should be used to generate links to pages and fragments, and messages.)  
+ * An implementation of UiUtils with very limited functionality. (Typically this should be used to
+ * generate links to pages and fragments, and messages.)
  */
 public class BasicUiUtils extends UiUtils implements ApplicationListener<ContextRefreshedEvent> {
 	
@@ -25,7 +25,7 @@ public class BasicUiUtils extends UiUtils implements ApplicationListener<Context
 	 * loaded, to allow this object to be injected into converter implementations. Otherwise we would
 	 * do the simpler: @Autowired ConversionService conversionServiceFromSpring; 
 	 */
-
+	
 	public BasicUiUtils() {
 	}
 	

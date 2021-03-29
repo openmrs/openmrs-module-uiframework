@@ -29,14 +29,14 @@ import org.apache.commons.logging.LogFactory;
 import org.openmrs.ui.framework.resource.ResourceFactory;
 import org.openmrs.util.OpenmrsUtil;
 
-
 /**
- * Modeled after ModuleResourcesServlet in the OpenMRS 1.x web application, and used to provide access to
- * the {@link ResourceFactory} in a web context.
+ * Modeled after ModuleResourcesServlet in the OpenMRS 1.x web application, and used to provide
+ * access to the {@link ResourceFactory} in a web context.
  */
 public class ResourceServlet extends HttpServlet {
 	
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
+	
 	private Log log = LogFactory.getLog(this.getClass());
 	
 	private Pattern pathPattern;
@@ -46,7 +46,7 @@ public class ResourceServlet extends HttpServlet {
 	}
 	
 	/**
-	 * Used for caching purposes 
+	 * Used for caching purposes
 	 * 
 	 * @see javax.servlet.http.HttpServlet#getLastModified(javax.servlet.http.HttpServletRequest)
 	 */
@@ -83,7 +83,7 @@ public class ResourceServlet extends HttpServlet {
 			OpenmrsUtil.closeStream(is);
 		}
 	}
-
+	
 	/**
 	 * @param request
 	 * @return the requested file
@@ -104,7 +104,8 @@ public class ResourceServlet extends HttpServlet {
 				providerName = null;
 			return factory.getResource(providerName, resourcePath);
 			
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			if (log.isDebugEnabled())
 				log.debug("Invalid resource path: " + path, ex);
 			return null;

@@ -13,7 +13,6 @@
  */
 package org.openmrs.ui.framework;
 
-
 public class MockDomainSubclass extends MockDomainObject {
 	
 }
