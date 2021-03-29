@@ -117,10 +117,10 @@ public class FormatterImpl implements Formatter {
 	
 	private String format(Date d, Locale locale) {
 		DateFormat df;
-		boolean handleTimezones = BooleanUtils
+		boolean convertTimezones = BooleanUtils
 		        .toBoolean(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS));
 		String clientTimezone = getAuthenticatedUser().getUserProperty("clientTimezone");
-		if (StringUtils.isNotEmpty(clientTimezone) && handleTimezones) {
+		if (convertTimezones) {
 			return (toTimezone(d, administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT),
 			    clientTimezone));
 		}

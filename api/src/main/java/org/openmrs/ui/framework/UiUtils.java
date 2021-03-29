@@ -404,7 +404,7 @@ public abstract class UiUtils {
 	 * @param date the date to format
 	 */
 	public String formatDatetimePretty(Date date) {
-		if (handleTimeZones()) {
+		if (convertTimezones()) {
 			return toTimezone(date, getDatetimeFormat());
 		}
 		return formatDatePretty(date) + " " + DateFormatUtils.format(date, "hh:mm a", locale);
@@ -631,7 +631,7 @@ public abstract class UiUtils {
 	/**
 	 * @return the value of the Global Propriety Handle Timezones <
 	 */
-	public boolean handleTimeZones() {
+	public boolean convertTimezones() {
 		return BooleanUtils.toBoolean(
 		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS));
 		
