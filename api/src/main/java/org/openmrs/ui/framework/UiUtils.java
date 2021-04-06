@@ -16,6 +16,7 @@ import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.util.DateExt;
+import org.openmrs.util.PrivilegeConstants;
 import org.owasp.encoder.Encode;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -655,6 +656,28 @@ public abstract class UiUtils {
 	
 	public String getTimeFormat() {
 		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT);
+	}
+	
+	/**
+	 * @return the value of the User Propriety clientTimezone, that indicates the client timezone
+	 */
+	public String getClientTimezoneProperty() {
+		return Context.getAuthenticatedUser().getUserProperty("clientTimezone");
+	}
+	
+	/**
+	 * Change the user propriety clientTimezone, that have the value of the user timezone.
+	 * 
+	 * @param clientTimezone The client timezone.
+	 */
+	public void setClientTimezoneProprerty(String clientTimezone) {
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			Context.getUserService().setUserProperty(Context.getAuthenticatedUser(), "clientTimezone", clientTimezone);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
 	}
 	
 }
