@@ -661,7 +661,7 @@ public abstract class UiUtils {
 	/**
 	 * @return the value of the User Property clientTimezone, that indicates the client timezone
 	 */
-	public String getClientTimezoneProperty() {
+	public String getClientTimezone() {
 		return Context.getAuthenticatedUser().getUserProperty("clientTimezone");
 	}
 	
@@ -670,7 +670,7 @@ public abstract class UiUtils {
 	 * 
 	 * @param clientTimezone The client timezone.
 	 */
-	public void setClientTimezoneProperty(String clientTimezone) {
+	public void setClientTimezone(String clientTimezone) {
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 			Context.getUserService().setUserProperty(Context.getAuthenticatedUser(), "clientTimezone", clientTimezone);
