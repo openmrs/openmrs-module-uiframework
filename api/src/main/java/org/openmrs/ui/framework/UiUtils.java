@@ -412,8 +412,8 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * Formats a time, in the client timezone with the format in the GP_FORMATTER_TIME_FORMAT Change the
-	 * date to the client timezone, then only use the time and format it with GP_FORMATTER_TIME_FORMAT
+	 * Formats a time, in the client timezone with the format in the GP_FORMATTER_TIME_FORMAT
+	 * Change the date to the client timezone, then only use the time and format it with GP_FORMATTER_TIME_FORMAT
 	 * 
 	 * @param date the date to be converted to client timezone
 	 * @return string version of time with GP_FORMATTER_TIME_FORMAT format ("15:05:00").
@@ -666,7 +666,7 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * Change the user property clientTimezone, that have the value of the user timezone.
+	 * Change the user property clientTimezone, that has the value of the user timezone.
 	 * 
 	 * @param clientTimezone The client timezone.
 	 */
