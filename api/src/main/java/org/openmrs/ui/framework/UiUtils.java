@@ -630,7 +630,7 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * @return the value of the Global Propriety Handle Timezones <
+	 * @return the value of the Global Property GP_TIMEZONE_CONVERSIONS
 	 */
 	public boolean convertTimezones() {
 		return BooleanUtils.toBoolean(
@@ -659,14 +659,14 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * @return the value of the User Propriety clientTimezone, that indicates the client timezone
+	 * @return the value of the User Property clientTimezone, that indicates the client timezone
 	 */
 	public String getClientTimezoneProperty() {
 		return Context.getAuthenticatedUser().getUserProperty("clientTimezone");
 	}
 	
 	/**
-	 * Change the user propriety clientTimezone, that have the value of the user timezone.
+	 * Change the user property clientTimezone, that have the value of the user timezone.
 	 * 
 	 * @param clientTimezone The client timezone.
 	 */

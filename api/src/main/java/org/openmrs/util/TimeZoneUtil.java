@@ -70,8 +70,7 @@ public class TimeZoneUtil {
 	 * @return The date formated as RFC 3339.
 	 */
 	public static String toRFC3339(Date date) {
-		return toTimezone(date,
-		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT));
+		return ISODateTimeFormat.dateTime().print(new DateTime(date.getTime(), UTC));
 	}
 	
 	/**
