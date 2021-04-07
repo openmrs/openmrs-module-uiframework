@@ -33,11 +33,11 @@ import static org.joda.time.DateTimeZone.UTC;
 public class TimeZoneUtil {
 	
 	/**
-	 * Convert a date to the client timezone, and format it, to be readable to for the user. .
+	 * Convert a date to the client timezone, and format it, to be readable to for the user.
 	 * 
 	 * @param date The date.
 	 * @param format the format to be used on the date
-	 * @return string with the date on the client timezone, formatted and ready to be displayed.
+	 * @return string with the date in the client timezone, formatted and ready to be displayed.
 	 */
 	public static String toTimezone(Date date, String format) {
 		String clientTimezone = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
@@ -52,7 +52,7 @@ public class TimeZoneUtil {
 	 * @param format the format to be used on the date
 	 * @param timezone The tz database name, eg. "Europe/Zurich", if for some reason that param is null,
 	 *            it will use UTC.
-	 * @return string with the date on the client timezone, formatted and ready to be displayed.
+	 * @return string with the date in the client timezone, formatted and ready to be displayed.
 	 */
 	public static String toTimezone(Date date, String format, String timezone) {
 		if (StringUtils.isEmpty(timezone)) {

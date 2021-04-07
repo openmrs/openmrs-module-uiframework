@@ -391,8 +391,7 @@ public abstract class UiUtils {
 		} else if (dateExt.isDayBefore(today)) {
 			return message("uiframework.yesterday");
 		} else {
-			if (BooleanUtils.toBoolean(
-			    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS))) {
+			if (convertTimezones()) {
 				return formatDateWithClientTimezone(date);
 			}
 			return format(dateExt.getDateWithoutTime());
@@ -635,8 +634,7 @@ public abstract class UiUtils {
 	public boolean convertTimezones() {
 		return BooleanUtils.toBoolean(
 		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS));
-		
-	}
+		}
 	
 	public String getJSDatetimeFormat() {
 		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATETIME_FORMAT);
