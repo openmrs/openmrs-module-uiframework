@@ -661,7 +661,7 @@ public abstract class UiUtils {
 	 */
 	public String getClientTimezone() {
 		return Context.getAuthenticatedUser().getUserProperty(
-		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_client_Timezone));
+		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE));
 	}
 	
 	/**
@@ -673,7 +673,7 @@ public abstract class UiUtils {
 		try {
 			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
 			Context.getUserService().setUserProperty(Context.getAuthenticatedUser(),
-			    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_client_Timezone),
+			    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE),
 			    clientTimezone);
 		}
 		finally {

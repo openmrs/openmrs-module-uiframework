@@ -41,7 +41,7 @@ public class TimeZoneUtil {
 	 */
 	public static String toTimezone(Date date, String format) {
 		String clientTimezone = Context.getAuthenticatedUser().getUserProperty(
-		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_client_Timezone));
+		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE));
 		return toTimezone(date, format, clientTimezone);
 	}
 	

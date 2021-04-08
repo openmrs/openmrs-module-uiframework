@@ -146,7 +146,7 @@ public class FormatterImplTest {
 		when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT))
 		        .thenReturn("dd.MMM.yyyy");
 		when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS)).thenReturn("true");
-		when(administrationService.getGlobalProperty(UiFrameworkConstants.UP_client_Timezone)).thenReturn("clientTimezone");
+		when(administrationService.getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE)).thenReturn("clientTimezone");
 		Locale locale = Locale.ENGLISH;
 		Date date = new DateTime("2011-08-16T00:00:00Z").toDate();
 		String output = formatter.format(date, locale);
@@ -264,7 +264,7 @@ public class FormatterImplTest {
 		@Override
 		protected User getAuthenticatedUser() {
 			User mockedUser = new User();
-			mockedUser.setUserProperty(administrationService.getGlobalProperty(UiFrameworkConstants.UP_client_Timezone),
+			mockedUser.setUserProperty(administrationService.getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE),
 			    "Pacific/Kiritimati");
 			return mockedUser;
 		}

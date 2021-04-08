@@ -35,6 +35,6 @@ public class UiFrameworkConstants {
 	public static final String MAP_RESOURCE_EXTENSION_POINT_ID = "org.openmrs.ui.framework.mapResource";
 	
 	//The name of the user property that save the client timezone.
-	public static final String UP_client_Timezone = "uiframework.client.timezone";
+	public static final String UP_CLIENT_TIMEZONE = "uiframework.client.timezone";
 	
 }
