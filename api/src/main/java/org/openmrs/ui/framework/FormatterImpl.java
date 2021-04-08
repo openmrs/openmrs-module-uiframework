@@ -119,8 +119,9 @@ public class FormatterImpl implements Formatter {
 		DateFormat df;
 		boolean convertTimezones = BooleanUtils
 		        .toBoolean(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS));
-		String clientTimezone = getAuthenticatedUser().getUserProperty("clientTimezone");
 		if (convertTimezones) {
+			String clientTimezone = getAuthenticatedUser()
+			        .getUserProperty(administrationService.getGlobalProperty(UiFrameworkConstants.UP_client_Timezone));
 			return (toTimezone(d, administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT),
 			    clientTimezone));
 		}
