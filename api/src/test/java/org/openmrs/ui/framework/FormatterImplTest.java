@@ -36,7 +36,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.joda.time.DateTimeZone.UTC;
 import static org.openmrs.util.TimeZoneUtil.toTimezone;
 
 /**
@@ -147,6 +146,7 @@ public class FormatterImplTest {
 		when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT))
 		        .thenReturn("dd.MMM.yyyy");
 		when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS)).thenReturn("true");
+		when(administrationService.getGlobalProperty(UiFrameworkConstants.UP_client_Timezone)).thenReturn("clientTimezone");
 		Locale locale = Locale.ENGLISH;
 		Date date = new DateTime("2011-08-16T00:00:00Z").toDate();
 		String output = formatter.format(date, locale);
@@ -264,7 +264,8 @@ public class FormatterImplTest {
 		@Override
 		protected User getAuthenticatedUser() {
 			User mockedUser = new User();
-			mockedUser.setUserProperty("clientTimezone", "Pacific/Kiritimati");
+			mockedUser.setUserProperty(administrationService.getGlobalProperty(UiFrameworkConstants.UP_client_Timezone),
+			    "Pacific/Kiritimati");
 			return mockedUser;
 		}
 	}

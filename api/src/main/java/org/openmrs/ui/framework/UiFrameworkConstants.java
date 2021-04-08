@@ -28,7 +28,7 @@ public class UiFrameworkConstants {
 	public static final String GP_FORMATTER_JS_DATETIME_FORMAT = "uiframework.formatter.JSdateAndTimeFormat";
 	
 	public static final String GP_FORMATTER_JS_DATE_FORMAT = "uiframework.formatter.JSdateFormat";
-
+	
 	//To use timezones this GP should be true.
 	public final static String GP_TIMEZONE_CONVERSIONS = "timezone.conversions";
 	

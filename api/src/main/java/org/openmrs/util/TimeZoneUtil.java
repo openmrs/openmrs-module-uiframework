@@ -40,7 +40,8 @@ public class TimeZoneUtil {
 	 * @return string with the date in the client timezone, formatted and ready to be displayed.
 	 */
 	public static String toTimezone(Date date, String format) {
-		String clientTimezone = Context.getAuthenticatedUser().getUserProperty("clientTimezone");
+		String clientTimezone = Context.getAuthenticatedUser().getUserProperty(
+		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_client_Timezone));
 		return toTimezone(date, format, clientTimezone);
 	}
 	
@@ -55,7 +56,7 @@ public class TimeZoneUtil {
 	 */
 	public static String toTimezone(Date date, String format, String timezone) {
 		if (StringUtils.isEmpty(timezone)) {
-			timezone = "UTC";
+			timezone = UTC.toString();
 		}
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format, Context.getLocale());
 		dateFormat.setTimeZone(TimeZone.getTimeZone(timezone));
