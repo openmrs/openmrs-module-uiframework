@@ -149,7 +149,6 @@ public class FormatterImplTest {
 		when(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS)).thenReturn("true");
 		Locale locale = Locale.ENGLISH;
 		Date date = new DateTime("2011-08-16T00:00:00Z").toDate();
-		//Date date = new Date();
 		String output = formatter.format(date, locale);
 		assertThat(output, is("16.Aug.2011"));
 	}

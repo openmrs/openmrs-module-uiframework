@@ -90,7 +90,7 @@
 		</description>
 	</globalProperty>
 
-	//This GP should be removed once the timezone.conversions GP is provided by Core, UIFR depends from core.
+	//TODO this GP should be removed once the timezone.conversions GP is provided by Core, UIFR depends from core.
 	<globalProperty>
 		<property>timezone.conversions</property>
 		<defaultValue>false</defaultValue>
