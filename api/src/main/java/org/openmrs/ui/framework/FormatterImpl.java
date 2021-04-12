@@ -1,18 +1,18 @@
 package org.openmrs.ui.framework;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Calendar;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.openmrs.Concept;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptNumeric;
@@ -33,6 +33,8 @@ import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.formatter.FormatterFactory;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
+
+import static org.openmrs.util.TimeZoneUtil.toTimezone;
 
 /**
  * Contains default formatting for most OpenMRS classes, which can be override with
@@ -115,6 +117,14 @@ public class FormatterImpl implements Formatter {
 	
 	private String format(Date d, Locale locale) {
 		DateFormat df;
+		boolean convertTimezones = BooleanUtils
+		        .toBoolean(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS));
+		if (convertTimezones) {
+			String clientTimezone = getAuthenticatedUser()
+			        .getUserProperty(administrationService.getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE));
+			return (toTimezone(d, administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT),
+			    clientTimezone));
+		}
 		if (hasTimeComponent(d)) {
 			df = UiFrameworkUtil.getDateTimeFormat(administrationService, locale);
 		} else {
@@ -275,8 +285,8 @@ public class FormatterImpl implements Formatter {
 				}
 			}
 			
-			List<List<Map<String, String>>> lines = (List<List<Map<String, String>>>) MethodUtils.invokeExactMethod(
-			    addressTemplate, "getLines", null);
+			List<List<Map<String, String>>> lines = (List<List<Map<String, String>>>) MethodUtils
+			        .invokeExactMethod(addressTemplate, "getLines", null);
 			String layoutToken = (String) MethodUtils.invokeExactMethod(addressTemplate, "getLayoutToken", null);
 			for (List<Map<String, String>> line : lines) {
 				String addressLine = "";
@@ -325,4 +335,7 @@ public class FormatterImpl implements Formatter {
 		classFormatters.put(forClass, formatter);
 	}
 	
+	protected User getAuthenticatedUser() {
+		return Context.getAuthenticatedUser();
+	}
 }

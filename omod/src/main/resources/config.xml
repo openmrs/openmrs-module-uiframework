@@ -89,7 +89,23 @@
 			Format used by Javascript functions for dates that have a time component
 		</description>
 	</globalProperty>
-	
+
+	//TODO this GP should be removed once the timezone.conversions GP is provided by Core.
+	<globalProperty>
+		<property>timezone.conversions</property>
+		<defaultValue>false</defaultValue>
+		<description>When set to true dates are sent from the server to the client as UTC dates and parsed from the client to the server as holding the client timezone information.
+		</description>
+	</globalProperty>
+
+	<globalProperty>
+		<property>uiframework.client.timezone</property>
+		<defaultValue>clientTimezone</defaultValue>
+		<description>The name of the user property that save the client timezone.
+		</description>
+	</globalProperty>
+
+
 	<servlet>
 		<servlet-name>resource</servlet-name>
 		<servlet-class>org.openmrs.module.uiframework.ResourceServlet</servlet-class>

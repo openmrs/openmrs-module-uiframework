@@ -1,5 +1,6 @@
 package org.openmrs.ui.framework;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -15,6 +16,7 @@ import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
 import org.openmrs.ui.framework.resource.Resource;
 import org.openmrs.ui.framework.util.DateExt;
+import org.openmrs.util.PrivilegeConstants;
 import org.owasp.encoder.Encode;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -29,6 +31,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+
+import static org.openmrs.util.TimeZoneUtil.toTimezone;
 
 /**
  * Utility methods that should be available in view technologies for pages and fragments
@@ -92,8 +96,8 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * Generates HTML resource linkages for all resources requested by the page the fragments on
-	 * this request
+	 * Generates HTML resource linkages for all resources requested by the page the fragments on this
+	 * request
 	 * 
 	 * @return the html
 	 */
@@ -163,8 +167,8 @@ public abstract class UiUtils {
 	public String includeFragment(String providerName, String fragmentId, Map<String, Object> config) throws PageAction {
 		MapResourceExtension resource = mapResource(providerName, fragmentId);
 		
-		return fragmentIncluder.includeFragment(new FragmentRequest(resource.getProviderId(), resource.getResourceId(),
-		        config));
+		return fragmentIncluder
+		        .includeFragment(new FragmentRequest(resource.getProviderId(), resource.getResourceId(), config));
 	}
 	
 	public void decorateWith(String providerName, String fragmentId) {
@@ -174,8 +178,8 @@ public abstract class UiUtils {
 	public void decorateWith(String providerName, String fragmentId, Map<String, Object> config) {
 		MapResourceExtension resource = mapResource(providerName, fragmentId);
 		
-		decoratable.setDecorateWith(new FragmentRequest(resource.getProviderId(), "decorator/" + resource.getResourceId(),
-		        config));
+		decoratable.setDecorateWith(
+		    new FragmentRequest(resource.getProviderId(), "decorator/" + resource.getResourceId(), config));
 	}
 	
 	private MapResourceExtension mapResource(String providerName, String fragmentId) {
@@ -301,8 +305,8 @@ public abstract class UiUtils {
 		if (providerName == null) {
 			providerName = "*";
 		}
-		StringBuilder sb = new StringBuilder("/" + contextPath() + "/" + providerName + "/" + controllerName + "/" + action
-		        + ".action?");
+		StringBuilder sb = new StringBuilder(
+		        "/" + contextPath() + "/" + providerName + "/" + controllerName + "/" + action + ".action?");
 		String successUrl = null;
 		if (args != null) {
 			for (Map.Entry<String, ?> e : args.entrySet()) {
@@ -358,9 +362,9 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * Formats the specified date as a string using ISO 8601 format
-	 * ("2014-04-25T01:32:21.196+06:00"); this is a "Javascript-friendly" format, good for when you
-	 * want to render a Date in Groovy to be parsed by Javascript
+	 * Formats the specified date as a string using ISO 8601 format ("2014-04-25T01:32:21.196+06:00");
+	 * this is a "Javascript-friendly" format, good for when you want to render a Date in Groovy to be
+	 * parsed by Javascript
 	 * 
 	 * @param date date to format
 	 * @return string version of date formatted as ("2014-04-25T01:32:21.196+0600").
@@ -370,9 +374,9 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * Formats the specified date to a string using the specified format and drops the time
-	 * component, the text 'Today' is returned, if the date matches the previous date or the text
-	 * Yesterday is returned if the date matches the previous day of the year.
+	 * Formats the specified date to a string using the specified format and drops the time component,
+	 * the text 'Today' is returned, if the date matches the previous date or the text Yesterday is
+	 * returned if the date matches the previous day of the year.
 	 * 
 	 * @param date the date to format
 	 * @should replace the current date with today text
@@ -387,6 +391,9 @@ public abstract class UiUtils {
 		} else if (dateExt.isDayBefore(today)) {
 			return message("uiframework.yesterday");
 		} else {
+			if (convertTimezones()) {
+				return formatDateWithClientTimezone(date);
+			}
 			return format(dateExt.getDateWithoutTime());
 		}
 	}
@@ -397,7 +404,31 @@ public abstract class UiUtils {
 	 * @param date the date to format
 	 */
 	public String formatDatetimePretty(Date date) {
+		if (convertTimezones()) {
+			return toTimezone(date, getDatetimeFormat());
+		}
 		return formatDatePretty(date) + " " + DateFormatUtils.format(date, "hh:mm a", locale);
+	}
+	
+	/**
+	 * Formats a time, in the client timezone with the format in the GP_FORMATTER_TIME_FORMAT
+	 * Change the date to the client timezone, then only use the time and format it with GP_FORMATTER_TIME_FORMAT
+	 * 
+	 * @param date the date to be converted to client timezone
+	 * @return string version of time with GP_FORMATTER_TIME_FORMAT format ("15:05:00").
+	 */
+	public String formatTimeWithClientTimezone(Date date) {
+		return toTimezone(date, getTimeFormat());
+	}
+	
+	/**
+	 * Formats a date, in the client timezone with the format in the GP_FORMATTER_DATE_FORMAT
+	 * 
+	 * @param date the date to be converted to client timezone
+	 * @return string version of date with GP_FORMATTER_DATE_FORMAT format, only date without time.
+	 */
+	public String formatDateWithClientTimezone(Date date) {
+		return toTimezone(date, getDateFormat());
 	}
 	
 	public String format(Object o) {
@@ -566,8 +597,8 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * Validates target with validator. If any errors are found, this throws an exception which can
-	 * be caught by the UI Framework
+	 * Validates target with validator. If any errors are found, this throws an exception which can be
+	 * caught by the UI Framework
 	 * 
 	 * @param target
 	 * @param validator
@@ -588,7 +619,66 @@ public abstract class UiUtils {
 		return Context.getLocale();
 	}
 	
+	/**
+	 * Change the current locale.
+	 * 
+	 * @param locale The locale.
+	 */
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
+	
+	/**
+	 * @return the value of the Global Property GP_TIMEZONE_CONVERSIONS
+	 */
+	public boolean convertTimezones() {
+		return BooleanUtils.toBoolean(
+		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS));
+		}
+	
+	public String getJSDatetimeFormat() {
+		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATETIME_FORMAT);
+	}
+	
+	public String getJSDateFormat() {
+		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATE_FORMAT);
+	}
+	
+	public String getDatetimeFormat() {
+		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT);
+	}
+	
+	public String getDateFormat() {
+		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT);
+	}
+	
+	public String getTimeFormat() {
+		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT);
+	}
+	
+	/**
+	 * @return the value of the User Property clientTimezone, that indicates the client timezone
+	 */
+	public String getClientTimezone() {
+		return Context.getAuthenticatedUser().getUserProperty(
+		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE));
+	}
+	
+	/**
+	 * Change the user property clientTimezone, that has the value of the user timezone.
+	 * 
+	 * @param clientTimezone The client timezone.
+	 */
+	public void setClientTimezone(String clientTimezone) {
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+			Context.getUserService().setUserProperty(Context.getAuthenticatedUser(),
+			    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE),
+			    clientTimezone);
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.EDIT_USERS);
+		}
+	}
+	
 }

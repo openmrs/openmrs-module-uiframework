@@ -29,6 +29,12 @@ public class UiFrameworkConstants {
 	
 	public static final String GP_FORMATTER_JS_DATE_FORMAT = "uiframework.formatter.JSdateFormat";
 	
+	//To use timezones this GP should be true.
+	public final static String GP_TIMEZONE_CONVERSIONS = "timezone.conversions";
+	
 	public static final String MAP_RESOURCE_EXTENSION_POINT_ID = "org.openmrs.ui.framework.mapResource";
+	
+	//The name of the user property that save the client timezone.
+	public static final String UP_CLIENT_TIMEZONE = "uiframework.client.timezone";
 	
 }
