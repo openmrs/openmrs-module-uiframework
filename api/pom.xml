@@ -13,7 +13,7 @@
 	<description />
 
 	<dependencies>
-		<!-- Add other dependencies from parent's pom: <dependency> <groupId>org.other.library</groupId> 
+		<!-- Add other dependencies from parent's pom: <dependency> <groupId>org.other.library</groupId>
 			<artifactId>library-name</artifactId> </dependency> -->
 
 		<!-- Begin OpenMRS core -->
@@ -65,7 +65,7 @@
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-core-asl</artifactId>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -74,11 +74,17 @@
             <groupId>com.github.jknack</groupId>
             <artifactId>handlebars</artifactId>
         </dependency>
-        
+
         <dependency>
            <groupId>org.owasp.encoder</groupId>
            <artifactId>encoder</artifactId>
            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.owasp.encoder</groupId>
+            <artifactId>encoder</artifactId>
+            <version>1.2.3</version>
         </dependency>
 
 	</dependencies>
