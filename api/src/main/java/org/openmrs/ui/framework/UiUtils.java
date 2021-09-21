@@ -397,7 +397,20 @@ public abstract class UiUtils {
 			return format(dateExt.getDateWithoutTime());
 		}
 	}
-	
+
+	/**
+	 * Formats a date without any timezone conversion
+	 *
+	 * @param date the date to format
+	 * @return date formatted
+	 */
+	public String formatDateWithoutTimezoneConversion(Date date) {
+		String dateFormatGP = Context.getAdministrationService()
+				.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT, "dd.MMM.yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatGP, Context.getLocale());
+		return dateFormat.format(date);
+	}
+
 	/**
 	 * Formats a date with this format: dd MMM yyyy hh:mm a
 	 * 
