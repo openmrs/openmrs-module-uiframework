@@ -8,8 +8,8 @@ public interface AttributeHolder {
 	public Object getAttribute(String name);
 	
 	/**
-	 * Assert that all the given attribute-related expressions are satisfied, otherwise an exception
-	 * is thrown.
+	 * Assert that all the given attribute-related expressions are satisfied, otherwise an exception is
+	 * thrown.
 	 * 
 	 * @see AttributeHolderUtil#unsatisfiedExpressions(AttributeHolder, String[])
 	 * @param expressions

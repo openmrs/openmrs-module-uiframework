@@ -97,8 +97,8 @@ public class PageFactory {
 	}
 	
 	/**
-	 * Allow modules to override page handling via {@link PageRequestMapper}s. Sets this internal
-	 * page provider and name on request
+	 * Allow modules to override page handling via {@link PageRequestMapper}s. Sets this internal page
+	 * provider and name on request
 	 * 
 	 * @param request
 	 */
@@ -190,8 +190,8 @@ public class PageFactory {
 	}
 	
 	/**
-	 * Invokes the appropriate method on the controller to handle this page request NB. If you
-	 * change the supported parameter classes, make sure to update the documentation on the wiki
+	 * Invokes the appropriate method on the controller to handle this page request NB. If you change
+	 * the supported parameter classes, make sure to update the documentation on the wiki
 	 * 
 	 * @param context the page context
 	 * @return the controller output
@@ -252,8 +252,8 @@ public class PageFactory {
 	}
 	
 	/**
-	 * @param viewProviderAndName null indicates we should use the default view for request,
-	 *            otherwise this should be "providerName:viewName"
+	 * @param viewProviderAndName null indicates we should use the default view for request, otherwise
+	 *            this should be "providerName:viewName"
 	 * @param request
 	 * @return
 	 * @should get a view from the requested provider
@@ -404,8 +404,8 @@ public class PageFactory {
 	}
 	
 	/**
-	 * Sets the model configurators for this page factory. Usually these are autowired but this is
-	 * used for testing.
+	 * Sets the model configurators for this page factory. Usually these are autowired but this is used
+	 * for testing.
 	 * 
 	 * @param modelConfigurators the model configurators
 	 */
@@ -414,8 +414,8 @@ public class PageFactory {
 	}
 	
 	/**
-	 * Sets the page controller argument providers for this page factory. Usually these are
-	 * autowired but this is used for testing.
+	 * Sets the page controller argument providers for this page factory. Usually these are autowired
+	 * but this is used for testing.
 	 * 
 	 * @param possiblePageControllerArgumentProviders the page controller argument providers
 	 */
@@ -425,8 +425,8 @@ public class PageFactory {
 	}
 	
 	/**
-	 * Sets the page request interceptors for this page factory. Usually these are autowired but
-	 * this is used for testing.
+	 * Sets the page request interceptors for this page factory. Usually these are autowired but this is
+	 * used for testing.
 	 * 
 	 * @param pageRequestInterceptors the page request interceptors
 	 */

@@ -15,16 +15,16 @@ public abstract class SingleClassHibernateDAO<T> implements SingleClassDAO<T> {
 	protected Class<T> mappedClass;
 	
 	/**
-	 * Marked private because you *must* provide the class at runtime when instantiating one of
-	 * these, using the next constructor
+	 * Marked private because you *must* provide the class at runtime when instantiating one of these,
+	 * using the next constructor
 	 */
 	@SuppressWarnings("unused")
 	private SingleClassHibernateDAO() {
 	}
 	
 	/**
-	 * You must call this before using any of the data access methods, since it's not actually
-	 * possible to write them all with compile-time class information.
+	 * You must call this before using any of the data access methods, since it's not actually possible
+	 * to write them all with compile-time class information.
 	 * 
 	 * @param mappedClass
 	 */

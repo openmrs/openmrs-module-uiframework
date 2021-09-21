@@ -110,8 +110,8 @@ public class FormatterService {
 	}
 	
 	/**
-	 * Used for testing. Real usage is to instantiate a Spring bean implementing FormatterFactory,
-	 * and it will be autowired.
+	 * Used for testing. Real usage is to instantiate a Spring bean implementing FormatterFactory, and
+	 * it will be autowired.
 	 * 
 	 * @param classFormatter
 	 */

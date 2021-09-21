@@ -13,15 +13,14 @@ import org.openmrs.ui.framework.Formatter;
 public interface FormatterFactory {
 	
 	/**
-	 * @return the fully-qualified classname that a formatter created by this instance should be
-	 *         used to format.
+	 * @return the fully-qualified classname that a formatter created by this instance should be used to
+	 *         format.
 	 */
 	String getForClass();
 	
 	/**
-	 * Lower numbers are higher precedence, as in
-	 * org.springframework.core.Ordered#HIGHEST_PRECEDENCE and
-	 * org.springframework.core.Ordered#LOWEST_PRECEDENCE
+	 * Lower numbers are higher precedence, as in org.springframework.core.Ordered#HIGHEST_PRECEDENCE
+	 * and org.springframework.core.Ordered#LOWEST_PRECEDENCE
 	 * 
 	 * @return
 	 */

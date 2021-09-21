@@ -22,9 +22,8 @@ public class DevelopmentClassLoader extends ClassLoader {
 	List<File> classDirectories;
 	
 	/**
-	 * Constructs a class loader that will automatically load classes from one specific package from
-	 * the given location on disk, and delegate to the regular OpenmrsClassLoader for all other
-	 * classes
+	 * Constructs a class loader that will automatically load classes from one specific package from the
+	 * given location on disk, and delegate to the regular OpenmrsClassLoader for all other classes
 	 * 
 	 * @param classDirectory
 	 * @param reloadablePackage

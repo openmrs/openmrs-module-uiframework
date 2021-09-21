@@ -79,8 +79,7 @@ public class SpringMvcView implements PageView, FragmentView {
 	}
 	
 	/**
-	 * Does an include based on the HttpServletRequest and response underlying the original page
-	 * request
+	 * Does an include based on the HttpServletRequest and response underlying the original page request
 	 * 
 	 * @param context
 	 * @return
@@ -88,8 +87,8 @@ public class SpringMvcView implements PageView, FragmentView {
 	private String doRender(PageContext context, boolean allowRedirects) {
 		HttpServletRequest request = context.getRequest().getRequest();
 		RequestDispatcher dispatcher = request.getRequestDispatcher(requestMapping);
-		ContentCapturingHttpServletResponse response = new ContentCapturingHttpServletResponse(context.getRequest()
-		        .getResponse());
+		ContentCapturingHttpServletResponse response = new ContentCapturingHttpServletResponse(
+		        context.getRequest().getResponse());
 		try {
 			dispatcher.include(request, response);
 			
@@ -144,8 +143,8 @@ public class SpringMvcView implements PageView, FragmentView {
 	}
 	
 	/**
-	 * To aid 1.x/2.x compatibility, allow a comment to indicate when the content to include starts
-	 * and ends
+	 * To aid 1.x/2.x compatibility, allow a comment to indicate when the content to include starts and
+	 * ends
 	 * 
 	 * @return
 	 * @should trim content before starting comment
@@ -164,9 +163,8 @@ public class SpringMvcView implements PageView, FragmentView {
 	}
 	
 	/**
-	 * Idea copied from
-	 * org.apache.taglibs.standard.tag.common.core.ImportSupport$ImportResponseWrapper Captures
-	 * content written to the writer, as well as redirects.
+	 * Idea copied from org.apache.taglibs.standard.tag.common.core.ImportSupport$ImportResponseWrapper
+	 * Captures content written to the writer, as well as redirects.
 	 */
 	class ContentCapturingHttpServletResponse extends HttpServletResponseWrapper {
 		

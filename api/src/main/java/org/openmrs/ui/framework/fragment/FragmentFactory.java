@@ -182,8 +182,8 @@ public class FragmentFactory {
 		context.setView(view);
 		
 		if (context.getController().equals(emptyController) && context.getView() == null) {
-			throw new RuntimeException("Cannot find controller or view for fragment: "
-			        + context.getRequest().getFragmentId());
+			throw new RuntimeException(
+			        "Cannot find controller or view for fragment: " + context.getRequest().getFragmentId());
 		}
 		
 		// Fragments are allowed to have no view (their controller can still affect the shared
@@ -198,8 +198,8 @@ public class FragmentFactory {
 	}
 	
 	/**
-	 * If one {@link FragmentRequest} "redirects" to another (by having its controller method return
-	 * a new FragmentRequest) and the FragmentRequest that it returns includes exactly the same
+	 * If one {@link FragmentRequest} "redirects" to another (by having its controller method return a
+	 * new FragmentRequest) and the FragmentRequest that it returns includes exactly the same
 	 * configuration as the original request, we need to remove the "decorator" attribute from the
 	 * replacement configuration because the fragmework is already applying that decoration.
 	 * 

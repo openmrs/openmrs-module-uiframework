@@ -26,8 +26,8 @@ import org.openmrs.ui.framework.AttributeHolder;
 public interface EncounterHandlingFormEntryExtension extends FormEntryExtension {
 	
 	/**
-	 * Gets the pages that may be used to open an already-entered encounter. The framework will
-	 * append encounterId=x to this page
+	 * Gets the pages that may be used to open an already-entered encounter. The framework will append
+	 * encounterId=x to this page
 	 * 
 	 * @param context contains person, patient, (TBD)
 	 * @return

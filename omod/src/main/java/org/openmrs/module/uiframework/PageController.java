@@ -100,8 +100,8 @@ public class PageController {
 		}
 		int index = path.indexOf("/");
 		if (index < 0) {
-			throw new IllegalArgumentException("page request must have at least provider/pageName, but this does not: "
-			        + request.getRequestURI());
+			throw new IllegalArgumentException(
+			        "page request must have at least provider/pageName, but this does not: " + request.getRequestURI());
 		}
 		String providerName = path.substring(0, index);
 		String pageName = path.substring(index + 1);

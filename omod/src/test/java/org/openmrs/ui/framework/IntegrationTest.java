@@ -69,15 +69,15 @@ public class IntegrationTest extends BaseModuleWebContextSensitiveTest {
 	/**
 	 * TODO Fix this test
 	 * 
-	 * @Test public void shouldDisplayAUserDefinedPage() throws Exception { UserDefinedPageView page
-	 *       = new UserDefinedPageView("welcome", "Welcome ${context.authenticatedUser}!");
+	 * @Test public void shouldDisplayAUserDefinedPage() throws Exception { UserDefinedPageView page =
+	 *       new UserDefinedPageView("welcome", "Welcome ${context.authenticatedUser}!");
 	 *       page.setTemplateType(WebConstants.DEFAULT_USER_DEFINED_TEMPLATE_TYPE);
 	 *       page.setUuid("random-uuid"); page.setCreator(Context.getAuthenticatedUser());
-	 *       page.setDateCreated(new Date()); dao.saveOrUpdate(page); MockHttpSession httpSession =
-	 *       new MockHttpSession(); Session session = sessionFactory.getSession(httpSession);
-	 *       PageRequest req = new PageRequest("userdefined", "welcome", new
-	 *       MockHttpServletRequest(), new MockHttpServletResponse(), session); String html =
-	 *       pageFactory.handle(req); Assert.assertTrue(html.indexOf("Welcome admin!") > -1); }
+	 *       page.setDateCreated(new Date()); dao.saveOrUpdate(page); MockHttpSession httpSession = new
+	 *       MockHttpSession(); Session session = sessionFactory.getSession(httpSession); PageRequest
+	 *       req = new PageRequest("userdefined", "welcome", new MockHttpServletRequest(), new
+	 *       MockHttpServletResponse(), session); String html = pageFactory.handle(req);
+	 *       Assert.assertTrue(html.indexOf("Welcome admin!") > -1); }
 	 */
 	
 	@Test

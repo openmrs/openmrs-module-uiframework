@@ -20,8 +20,7 @@ package org.openmrs.ui.framework.page;
 public interface PageModelConfigurator {
 	
 	/**
-	 * PageFactory will call this method before passing the PageModel to the page controller and
-	 * view
+	 * PageFactory will call this method before passing the PageModel to the page controller and view
 	 * 
 	 * @param pageContext implementations should add any custom content to pageContext.getModel()
 	 */

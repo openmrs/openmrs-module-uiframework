@@ -66,8 +66,8 @@ public class ModuleResourceProvider implements ResourceProvider {
 			}
 			return null;
 		} else {
-			ModuleClassLoader mcl = moduleClassLoader != null ? moduleClassLoader : (ModuleClassLoader) getClass()
-			        .getClassLoader();
+			ModuleClassLoader mcl = moduleClassLoader != null ? moduleClassLoader
+			        : (ModuleClassLoader) getClass().getClassLoader();
 			
 			// force OpenMRS to expand this resource from the jar, if available.
 			// ideally we'd only look in this module, but this will also look in required modules...
