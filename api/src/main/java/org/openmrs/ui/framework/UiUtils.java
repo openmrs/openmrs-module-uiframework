@@ -405,9 +405,7 @@ public abstract class UiUtils {
 	 * @return date formatted
 	 */
 	public String formatDateWithoutTimezoneConversion(Date date) {
-		String dateFormatGP = Context.getAdministrationService()
-				.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT, "dd.MMM.yyyy");
-		SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatGP, Context.getLocale());
+		SimpleDateFormat dateFormat = new SimpleDateFormat(getDateFormat(), Context.getLocale());
 		return dateFormat.format(date);
 	}
 
