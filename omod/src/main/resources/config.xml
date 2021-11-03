@@ -48,6 +48,10 @@
 		<lang>ht</lang>
 		<file>messages_ht.properties</file>
 	</messages>
+	<messages>
+		<lang>es</lang>
+		<file>messages_es.properties</file>
+	</messages>
 	<!-- /Internationalization -->
 
     <globalProperty>
