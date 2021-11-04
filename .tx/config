@@ -1,5 +1,5 @@
 [main]
-host = https://www.transifex.com
+host = https://www.transifex.com/
 
 [OpenMRS.uiframework-module]
 file_filter = api/src/main/resources/messages_<lang>.properties
