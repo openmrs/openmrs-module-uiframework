@@ -47,6 +47,7 @@ public class SessionFactory {
 					}
 				}
 			}
+			session.setHttpSession(httpSession);
 			return session;
 		}
 	}
@@ -70,10 +71,12 @@ public class SessionFactory {
 			ret = null;
 		}
 		
-		if (ret != null)
+		if (ret != null) {
+			ret.setHttpSession(httpSession);
 			return ret;
-		else
+		} else {
 			return ensureSession(httpSession);
+		}
 	}
 	
 	/**
