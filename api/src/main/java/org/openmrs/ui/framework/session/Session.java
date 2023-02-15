@@ -55,4 +55,7 @@ public class Session {
 		return (T) httpSession.getAttribute(name);
 	}
 	
+	public void setHttpSession(HttpSession httpSession) {
+		this.httpSession = httpSession;
+	}
 }
