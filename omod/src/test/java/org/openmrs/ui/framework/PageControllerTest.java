@@ -43,8 +43,8 @@ public class PageControllerTest {
 		Session uiSession = new Session(session);
 		
 		PageFactory pageFactory = mock(PageFactory.class);
-		when(pageFactory.handle(any(PageRequest.class))).thenThrow(
-		    new FileDownload("download.txt", "text/plain", "File contents".getBytes()));
+		when(pageFactory.handle(any(PageRequest.class)))
+		        .thenThrow(new FileDownload("download.txt", "text/plain", "File contents".getBytes()));
 		
 		SessionFactory sessionFactory = mock(SessionFactory.class);
 		when(sessionFactory.getSession(session)).thenReturn(uiSession);

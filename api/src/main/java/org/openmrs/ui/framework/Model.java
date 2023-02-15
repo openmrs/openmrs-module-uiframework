@@ -25,8 +25,8 @@ public class Model extends LinkedHashMap<String, Object> implements AttributeHol
 	}
 	
 	/**
-	 * Copy all attributes in the supplied <code>Map</code> into this <code>Map</code>, with
-	 * existing objects of the same name taking precedence (i.e. not getting replaced).
+	 * Copy all attributes in the supplied <code>Map</code> into this <code>Map</code>, with existing
+	 * objects of the same name taking precedence (i.e. not getting replaced).
 	 */
 	public Model mergeAttributes(Map<String, ?> attributes) {
 		if (attributes != null) {

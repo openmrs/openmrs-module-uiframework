@@ -20,8 +20,8 @@ package org.openmrs.ui.framework.fragment;
 public interface FragmentModelConfigurator {
 	
 	/**
-	 * FragmentFactory will call this method before passing the FragmentModel to the fragment
-	 * controller and view
+	 * FragmentFactory will call this method before passing the FragmentModel to the fragment controller
+	 * and view
 	 * 
 	 * @param fragmentContext implementations should add any custom content to
 	 *            fragmentContext.getModel()

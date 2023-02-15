@@ -59,8 +59,8 @@ public class UiFrameworkActivator extends BaseModuleActivator implements ModuleA
 	
 	/**
 	 * Every time the spring context is refreshed, we make callbacks to any
-	 * {@link UiContextRefreshedCallback} beans that are managed by Spring. The main purpose of this
-	 * is to that modules can be configured to use the UI Framework through simple usage of
+	 * {@link UiContextRefreshedCallback} beans that are managed by Spring. The main purpose of this is
+	 * to that modules can be configured to use the UI Framework through simple usage of
 	 * {@link StandardModuleUiConfiguration}.
 	 * 
 	 * @see org.openmrs.module.BaseModuleActivator#contextRefreshed()

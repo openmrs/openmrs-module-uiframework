@@ -108,8 +108,8 @@ public class ExtensionManager {
 	 * Gets an ordered list of extension unique ids, currently configured for the given point
 	 * 
 	 * @param pointId
-	 * @return an ordered list of extension unique ids, as currently configured for the given point.
-	 *         If the point has not been configured, this returns null.
+	 * @return an ordered list of extension unique ids, as currently configured for the given point. If
+	 *         the point has not been configured, this returns null.
 	 */
 	public List<String> getExtensionPointConfiguration(String pointId) {
 		String gp = Context.getAdministrationService().getGlobalProperty("ui2.extensionConfig." + pointId);
@@ -117,9 +117,9 @@ public class ExtensionManager {
 	}
 	
 	/**
-	 * Saves an ordering of extensions for a given point. If you pass an empty list for uniqueIds
-	 * then the configuration for that extension point is cleared (so that it will return all
-	 * extensions in the default order)
+	 * Saves an ordering of extensions for a given point. If you pass an empty list for uniqueIds then
+	 * the configuration for that extension point is cleared (so that it will return all extensions in
+	 * the default order)
 	 * 
 	 * @param pointId
 	 * @param uniqueIds

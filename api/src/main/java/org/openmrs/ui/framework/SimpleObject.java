@@ -29,8 +29,8 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 	}
 	
 	/**
-	 * Convenience constructor for creating a {@link SimpleObject} representing
-	 * {@link OpenmrsMetadata}, which will set 'id' and 'label' properties
+	 * Convenience constructor for creating a {@link SimpleObject} representing {@link OpenmrsMetadata},
+	 * which will set 'id' and 'label' properties
 	 * 
 	 * @param metadata
 	 */
@@ -41,9 +41,9 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 	}
 	
 	/**
-	 * Utility method to create a {@link SimpleObject} given a varargs style list of property names
-	 * and values. The array passed in must have even length. Every other element (starting from the
-	 * 0-index one) must be a String (representing a property name) and be followed by its value.
+	 * Utility method to create a {@link SimpleObject} given a varargs style list of property names and
+	 * values. The array passed in must have even length. Every other element (starting from the 0-index
+	 * one) must be a String (representing a property name) and be followed by its value.
 	 * 
 	 * @param propertyNamesAndValues
 	 * @return
@@ -58,15 +58,15 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 	}
 	
 	/**
-	 * Builds a simplified version of the object passed in, such that the result can be
-	 * automatically converted to json without worrying about hibernate proxies, loops in the object
-	 * graph, etc. Takes the specified properties from the given object, formats them using
-	 * {@link UiUtils} and builds a {@link SimpleObject} out of them.
+	 * Builds a simplified version of the object passed in, such that the result can be automatically
+	 * converted to json without worrying about hibernate proxies, loops in the object graph, etc. Takes
+	 * the specified properties from the given object, formats them using {@link UiUtils} and builds a
+	 * {@link SimpleObject} out of them.
 	 * 
 	 * @param fromObject the bean to simplify
 	 * @param ui
-	 * @param propertiesToInclude properties to include in the returned object. dot-separated to
-	 *            refer to subproperties, ending with :message to call ui.message on them
+	 * @param propertiesToInclude properties to include in the returned object. dot-separated to refer
+	 *            to subproperties, ending with :message to call ui.message on them
 	 * @return
 	 */
 	public static SimpleObject fromObject(Object fromObject, UiUtils ui, String... propertiesToInclude) {
@@ -78,17 +78,18 @@ public class SimpleObject extends LinkedHashMap<String, Object> {
 	}
 	
 	/**
-	 * Like {@link #fromObject(Object, UiUtils, String...)}, but takes in a collection of objects
-	 * and returns a List of {@link SimpleObject}s
+	 * Like {@link #fromObject(Object, UiUtils, String...)}, but takes in a collection of objects and
+	 * returns a List of {@link SimpleObject}s
 	 * 
 	 * @param fromCollection
 	 * @param ui
-	 * @param propertiesToInclude properties to include in the returned objects. dot-separated to
-	 *            refer to subproperties, ending with :message to call ui.message on them
+	 * @param propertiesToInclude properties to include in the returned objects. dot-separated to refer
+	 *            to subproperties, ending with :message to call ui.message on them
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<SimpleObject> fromCollection(Collection<?> fromCollection, UiUtils ui, String... propertiesToInclude) {
+	public static List<SimpleObject> fromCollection(Collection<?> fromCollection, UiUtils ui,
+	        String... propertiesToInclude) {
 		Map<String, Set<String>> propertiesByLevel = splitIntoLevels(propertiesToInclude);
 		return (List<SimpleObject>) fromObjectHelper(fromCollection, ui, "", propertiesByLevel);
 	}

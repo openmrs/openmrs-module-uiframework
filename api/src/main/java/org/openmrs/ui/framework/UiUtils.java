@@ -397,10 +397,10 @@ public abstract class UiUtils {
 			return format(dateExt.getDateWithoutTime());
 		}
 	}
-
+	
 	/**
 	 * Formats a date without any timezone conversion
-	 *
+	 * 
 	 * @param date the date to format
 	 * @return date formatted
 	 */
@@ -408,7 +408,7 @@ public abstract class UiUtils {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(getDateFormat(), Context.getLocale());
 		return dateFormat.format(date);
 	}
-
+	
 	/**
 	 * Formats a date with this format: dd MMM yyyy hh:mm a
 	 * 
@@ -422,8 +422,8 @@ public abstract class UiUtils {
 	}
 	
 	/**
-	 * Formats a time, in the client timezone with the format in the GP_FORMATTER_TIME_FORMAT
-	 * Change the date to the client timezone, then only use the time and format it with GP_FORMATTER_TIME_FORMAT
+	 * Formats a time, in the client timezone with the format in the GP_FORMATTER_TIME_FORMAT Change the
+	 * date to the client timezone, then only use the time and format it with GP_FORMATTER_TIME_FORMAT
 	 * 
 	 * @param date the date to be converted to client timezone
 	 * @return string version of time with GP_FORMATTER_TIME_FORMAT format ("15:05:00").
@@ -645,7 +645,7 @@ public abstract class UiUtils {
 	public boolean convertTimezones() {
 		return BooleanUtils.toBoolean(
 		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS));
-		}
+	}
 	
 	public String getJSDatetimeFormat() {
 		return Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATETIME_FORMAT);

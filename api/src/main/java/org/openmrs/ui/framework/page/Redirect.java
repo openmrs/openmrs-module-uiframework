@@ -29,8 +29,8 @@ public class Redirect extends PageAction {
 	}
 	
 	/**
-	 * The equivalent of redirecting back to the url specified in request. Query string parameters
-	 * will be included but any POST parameter will not be.
+	 * The equivalent of redirecting back to the url specified in request. Query string parameters will
+	 * be included but any POST parameter will not be.
 	 * 
 	 * @param request
 	 */

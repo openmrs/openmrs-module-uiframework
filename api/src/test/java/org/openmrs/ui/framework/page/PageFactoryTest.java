@@ -143,8 +143,8 @@ public class PageFactoryTest {
 	public void process_shouldSetCustomModelProperties() throws Exception {
 		MockHttpSession httpSession = new MockHttpSession();
 		Session session = new Session(httpSession);
-		String result = factory.handle(new PageRequest("somemodule", "groovy", new MockHttpServletRequest(),
-		        new MockHttpServletResponse(), session));
+		String result = factory.handle(
+		    new PageRequest("somemodule", "groovy", new MockHttpServletRequest(), new MockHttpServletResponse(), session));
 		assertThat(result, new Contains("Testing Success!!!"));
 	}
 	
@@ -201,8 +201,8 @@ public class PageFactoryTest {
 		
 		Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/mirebalais\\.css.*\" type=\"text/css\"/>")
 		        .matcher(output).find());
-		Assert.assertTrue(Pattern.compile("<link rel=\"stylesheet\" href=\".*/emr\\.css.*\" type=\"text/css\"/>")
-		        .matcher(output).find());
+		Assert.assertTrue(
+		    Pattern.compile("<link rel=\"stylesheet\" href=\".*/emr\\.css.*\" type=\"text/css\"/>").matcher(output).find());
 		Assert.assertTrue(output.indexOf("emr.css") < output.indexOf("mirebalais.css"));
 		
 		Assert.assertTrue(Pattern.compile("<script type=\"text/javascript\" src=\".*/mirebalais/mirebalais-utils\\.js.*\"")
@@ -272,8 +272,8 @@ public class PageFactoryTest {
 				};
 			} else if ("groovy".equals(name)) {
 				try {
-					Template template = new SimpleTemplateEngine(getClass().getClassLoader())
-					        .createTemplate("<html><head><%= ui.resourceLinks() %></head><body>Testing ${ varInjectedByConfigurator } and ${ varInjectedByInterceptor }</body>");
+					Template template = new SimpleTemplateEngine(getClass().getClassLoader()).createTemplate(
+					    "<html><head><%= ui.resourceLinks() %></head><body>Testing ${ varInjectedByConfigurator } and ${ varInjectedByInterceptor }</body>");
 					return new GroovyPageView(template, "somemodule:groovy");
 				}
 				catch (Exception ex) {

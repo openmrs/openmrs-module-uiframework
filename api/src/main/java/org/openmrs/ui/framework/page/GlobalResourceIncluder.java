@@ -22,9 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * To use this class, instantiate a bean in your module's application context, for example:
- * 
- * <pre>
+ * To use this class, instantiate a bean in your module's application context, for example: <pre>
  * <bean class="org.openmrs.ui.framework.page.GlobalResourceIncluder>
  *     <property name="resources">
  *         <list>

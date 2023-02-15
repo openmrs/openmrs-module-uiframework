@@ -131,8 +131,8 @@ public class PageContext implements ResourceIncluder, Messager, Decoratable, Fra
 	}
 	
 	/**
-	 * Requests that this fragment be decorated with another one. (The output of this fragment will
-	 * be passed to the decorator as "content".)
+	 * Requests that this fragment be decorated with another one. (The output of this fragment will be
+	 * passed to the decorator as "content".)
 	 * 
 	 * @param fragmentRequest
 	 */

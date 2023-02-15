@@ -84,8 +84,8 @@ public class FragmentActionController {
 	@RequestMapping("/action/**")
 	public String handleUrlStartingWithAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
 	        @RequestParam(value = "successUrl", required = false) String successUrl,
-	        @RequestParam(value = "failureUrl", required = false) String failureUrl, HttpServletRequest request,
-	        Model model, HttpServletResponse response) throws Exception {
+	        @RequestParam(value = "failureUrl", required = false) String failureUrl, HttpServletRequest request, Model model,
+	        HttpServletResponse response) throws Exception {
 		// everything after the contextPath, e.g. "/action/emr/registration/checkin.form"
 		String path = request.getServletPath();
 		path = path.substring("/action/".length(), path.lastIndexOf("."));
@@ -95,8 +95,8 @@ public class FragmentActionController {
 	@RequestMapping("**/*.action")
 	public String handleUrlWithDotAction(@RequestParam(value = "returnFormat", required = false) String returnFormat,
 	        @RequestParam(value = "successUrl", required = false) String successUrl,
-	        @RequestParam(value = "failureUrl", required = false) String failureUrl, HttpServletRequest request,
-	        Model model, HttpServletResponse response) throws Exception {
+	        @RequestParam(value = "failureUrl", required = false) String failureUrl, HttpServletRequest request, Model model,
+	        HttpServletResponse response) throws Exception {
 		// everything after the contextPath, e.g. "/emr/registration/checkin.action"
 		String path = request.getServletPath();
 		path = path.substring(1, path.lastIndexOf(".action"));
@@ -261,8 +261,8 @@ public class FragmentActionController {
 				model.addAttribute("html", result);
 				return SHOW_HTML_VIEW;
 			} else {
-				throw new RuntimeException("Don't know how to handle fragment action result type: "
-				        + resultObject.getClass());
+				throw new RuntimeException(
+				        "Don't know how to handle fragment action result type: " + resultObject.getClass());
 			}
 		}
 	}

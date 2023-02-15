@@ -138,8 +138,8 @@ public class PageRequest implements AttributeHolder {
 	}
 	
 	/**
-	 * This method actually gets a <em>parameter</em> from the HTTP Request (not an attribute), but
-	 * the method must be named this way due to the AttributeHolder interface.
+	 * This method actually gets a <em>parameter</em> from the HTTP Request (not an attribute), but the
+	 * method must be named this way due to the AttributeHolder interface.
 	 * 
 	 * @see org.openmrs.ui.framework.AttributeHolder#getAttribute(java.lang.String)
 	 */
@@ -186,8 +186,8 @@ public class PageRequest implements AttributeHolder {
 	
 	/**
 	 * @param name
-	 * @return the value of a cookie in the HttpServletRequest with the given name (or null if none
-	 *         has that name)
+	 * @return the value of a cookie in the HttpServletRequest with the given name (or null if none has
+	 *         that name)
 	 * @since 2.2
 	 */
 	public String getCookieValue(String name) {

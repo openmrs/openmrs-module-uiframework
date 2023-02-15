@@ -112,8 +112,11 @@ public class ConfigurationResourceProviderTest {
 			
 			System.setProperty(OPENMRS_APPLICATION_DATA_DIRECTORY, testDir.getCanonicalPath());
 			try {
-				Assert.assertEquals(TEST_CONTENTS, FileUtils.readFileToString(provider.getResource(new File(OpenmrsUtil
-				        .getDirectoryInApplicationDataDirectory("configuration"), FILE_NAME).getAbsolutePath()), "UTF-8"));
+				Assert.assertEquals(TEST_CONTENTS,
+				    FileUtils.readFileToString(provider.getResource(
+				        new File(OpenmrsUtil.getDirectoryInApplicationDataDirectory("configuration"), FILE_NAME)
+				                .getAbsolutePath()),
+				        "UTF-8"));
 			}
 			finally {
 				System.clearProperty(OPENMRS_APPLICATION_DATA_DIRECTORY);

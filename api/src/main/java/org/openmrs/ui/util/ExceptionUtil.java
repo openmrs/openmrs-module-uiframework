@@ -6,8 +6,8 @@ package org.openmrs.ui.util;
 public class ExceptionUtil {
 	
 	/**
-	 * Finds the first exception of type clazz in the chain, and returns it. (Or null, if no
-	 * exception of that type occurs in the chain.)
+	 * Finds the first exception of type clazz in the chain, and returns it. (Or null, if no exception
+	 * of that type occurs in the chain.)
 	 * 
 	 * @param <T>
 	 * @param ex

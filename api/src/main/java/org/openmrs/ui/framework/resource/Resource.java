@@ -40,8 +40,8 @@ public class Resource implements Comparable<Resource> {
 	}
 	
 	/**
-	 * Indicates you want the framework to search across all {@link ResourceProvider}s for one with
-	 * the given path
+	 * Indicates you want the framework to search across all {@link ResourceProvider}s for one with the
+	 * given path
 	 * 
 	 * @param resourcePath
 	 */

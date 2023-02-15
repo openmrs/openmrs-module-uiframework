@@ -134,8 +134,7 @@ public class UiFrameworkUtil {
 	/**
 	 * Determines what parameters to use when calling the given controller or action method
 	 * 
-	 * @param controller if any @MethodParam annotations are present, the method will be called on
-	 *            this
+	 * @param controller if any @MethodParam annotations are present, the method will be called on this
 	 * @param method the controller or action method whose parameters we need to determine
 	 * @param argumentsByType parameters to look up by type
 	 * @param conversionService
@@ -143,8 +142,8 @@ public class UiFrameworkUtil {
 	 * @return an array of the right number of objects to do controllerMethod.invoke
 	 */
 	public static Object[] determineControllerMethodParameters(Object controller, Method method,
-	        Map<Class<?>, Object> argumentsByType, ConversionService conversionService, ApplicationContext applicationContext)
-	        throws RequestValidationException {
+	        Map<Class<?>, Object> argumentsByType, ConversionService conversionService,
+	        ApplicationContext applicationContext) throws RequestValidationException {
 		Class<?>[] types = method.getParameterTypes();
 		int numParams = types.length;
 		Object[] ret = new Object[numParams];
@@ -167,8 +166,8 @@ public class UiFrameworkUtil {
 	/**
 	 * Determines the appropriate value to a method argument, for a given type and annotations
 	 * 
-	 * @param controller if any @MethodParam annotations are present, the method will be called on
-	 *            this object
+	 * @param controller if any @MethodParam annotations are present, the method will be called on this
+	 *            object
 	 * @param valuesByType
 	 * @param methodParam
 	 * @param conversionService
@@ -256,7 +255,8 @@ public class UiFrameworkUtil {
 				if (authEx != null)
 					throw authEx;
 				else
-					throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(), ex);
+					throw new UiFrameworkException(param + " couldn't be converted to " + methodParam.getParameterType(),
+					        ex);
 			}
 		}
 		
@@ -276,8 +276,8 @@ public class UiFrameworkUtil {
 				throw new MissingRequiredCookieException(cookieName);
 			}
 			try {
-				ret = conversionService.convert(cookieValue, TypeDescriptor.forObject(cookieValue), new TypeDescriptor(
-				        methodParam));
+				ret = conversionService.convert(cookieValue, TypeDescriptor.forObject(cookieValue),
+				    new TypeDescriptor(methodParam));
 			}
 			catch (ConversionException ex) {
 				APIAuthenticationException authEx = findCause(ex, APIAuthenticationException.class);
@@ -509,17 +509,16 @@ public class UiFrameworkUtil {
 	/**
 	 * Sets the developmentFolder property on an appropriate factory object in order to facilitate
 	 * developers automatically having changes to pages and controllers picked up by the application
-	 * live during development This supports a couple of different mechanisms, based on properties
-	 * set at runtime. These properties can be specified either in the OpenMRS runtime properties
-	 * file, or as system properties 1. For developers who tend to check out their code into a
-	 * single folder, organized by module id, they can specify:
+	 * live during development This supports a couple of different mechanisms, based on properties set
+	 * at runtime. These properties can be specified either in the OpenMRS runtime properties file, or
+	 * as system properties 1. For developers who tend to check out their code into a single folder,
+	 * organized by module id, they can specify:
 	 * uiFramework.developmentFolder=/path/to/where/developer/keeps/their/modules/checked/out Any
-	 * modules whose code exists in this folder, under either "moduleId" or
-	 * "openmrs-module-moduleId" will be included if they are uiframework-enabled and started 2. As
-	 * an optional restriction to this, one can specify
-	 * uiFramework.developmentModules=comma,separated,module,ids This will have the effect of
-	 * limiting the modules included using option 1 to only those specified using option 2 3. As an
-	 * alternative (or addition) to this, in the event that the developer wants more specific
+	 * modules whose code exists in this folder, under either "moduleId" or "openmrs-module-moduleId"
+	 * will be included if they are uiframework-enabled and started 2. As an optional restriction to
+	 * this, one can specify uiFramework.developmentModules=comma,separated,module,ids This will have
+	 * the effect of limiting the modules included using option 1 to only those specified using option 2
+	 * 3. As an alternative (or addition) to this, in the event that the developer wants more specific
 	 * control over the module/folder combinations, they can specify one or more properties in the
 	 * format of: uiFramework.development.${moduleId}=/path/to/where/the/code/to/this/module/resides
 	 * 
@@ -571,10 +570,10 @@ public class UiFrameworkUtil {
 	}
 	
 	/**
-	 * Checks whether or not the passed baseFolder exists and has the property subdirectory
-	 * structure to server as a dev folder If it does, it indicates that this should server as a
-	 * resource provider in development mode, and returns true If it does not, or if problems occur
-	 * while trying to perform the operation, it returns false
+	 * Checks whether or not the passed baseFolder exists and has the property subdirectory structure to
+	 * server as a dev folder If it does, it indicates that this should server as a resource provider in
+	 * development mode, and returns true If it does not, or if problems occur while trying to perform
+	 * the operation, it returns false
 	 */
 	private static boolean addPossibleDevFolder(String baseFolder, String key, Object provider) {
 		
@@ -668,8 +667,9 @@ public class UiFrameworkUtil {
 	public static DateFormat getDateFormat(AdministrationService administrationService, Locale locale) {
 		String defaultFormat = "dd.MMM.yyyy";
 		if (administrationService != null) {
-			return new SimpleDateFormat(administrationService.getGlobalProperty(
-			    UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT, defaultFormat), locale);
+			return new SimpleDateFormat(
+			        administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT, defaultFormat),
+			        locale);
 		} else {
 			return new SimpleDateFormat(defaultFormat, locale);
 		}
@@ -678,8 +678,8 @@ public class UiFrameworkUtil {
 	public static DateFormat getDateTimeFormat(AdministrationService administrationService, Locale locale) {
 		String defaultFormat = "dd.MMM.yyyy, HH:mm:ss";
 		if (administrationService != null) {
-			return new SimpleDateFormat(administrationService.getGlobalProperty(
-			    UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT, defaultFormat), locale);
+			return new SimpleDateFormat(administrationService
+			        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT, defaultFormat), locale);
 		} else {
 			return new SimpleDateFormat(defaultFormat, locale);
 		}
@@ -688,8 +688,9 @@ public class UiFrameworkUtil {
 	public static DateFormat getTimeFormat(AdministrationService administrationService, Locale locale) {
 		String defaultFormat = "hh:mm a";
 		if (administrationService != null) {
-			return new SimpleDateFormat(administrationService.getGlobalProperty(
-			    UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT, defaultFormat), locale);
+			return new SimpleDateFormat(
+			        administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT, defaultFormat),
+			        locale);
 		} else {
 			return new SimpleDateFormat(defaultFormat, locale);
 		}

@@ -8,12 +8,11 @@ public interface PageRequestMapper {
 	
 	/**
 	 * Implementations should call {@link PageRequest#setProviderNameOverride(String)} and
-	 * {@link PageRequest#setPageNameOverride(String)}, and return true if they want to remap a
-	 * request, or return false if they didn't remap it.
+	 * {@link PageRequest#setPageNameOverride(String)}, and return true if they want to remap a request,
+	 * or return false if they didn't remap it.
 	 * 
 	 * @param request may have its providerNameOverride and pageNameOverride set
-	 * @return true if this page was mapped (by overriding the provider and/or page), false
-	 *         otherwise
+	 * @return true if this page was mapped (by overriding the provider and/or page), false otherwise
 	 */
 	boolean mapRequest(PageRequest request);
 	

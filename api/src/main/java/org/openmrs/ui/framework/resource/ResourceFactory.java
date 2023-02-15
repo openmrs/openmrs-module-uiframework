@@ -55,8 +55,8 @@ public class ResourceFactory {
 	}
 	
 	/**
-	 * @param providerName if null, look in all providers (if multiple providers have the resource,
-	 *            an arbitrary one is returned)
+	 * @param providerName if null, look in all providers (if multiple providers have the resource, an
+	 *            arbitrary one is returned)
 	 * @param resourcePath
 	 * @return the requested resource, from the requested provider, or null if not found
 	 */
