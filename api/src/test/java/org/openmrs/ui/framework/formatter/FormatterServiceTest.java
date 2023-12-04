@@ -9,7 +9,6 @@ import org.openmrs.ui.framework.Formatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.Ordered;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Locale;
 
@@ -24,7 +23,6 @@ public class FormatterServiceTest extends BaseModuleContextSensitiveTest {
 	private FormatterService formatterService;
 	
 	@Test
-	@DirtiesContext
 	public void testFormatting() throws Exception {
 		HandlebarsFormatterFactory classFormatter = new HandlebarsFormatterFactory();
 		classFormatter.setForClass("org.openmrs.Obs");
@@ -49,25 +47,23 @@ public class FormatterServiceTest extends BaseModuleContextSensitiveTest {
 	}
 	
 	@Test
-	@DirtiesContext
 	public void testMessage() throws Exception {
 		MessageSource messageSource = mock(MessageSource.class);
-		
+		FormatterService messageFormatterService = new FormatterService();
+		messageFormatterService.setMessageSource(messageSource);
 		HandlebarsFormatterFactory classFormatter = new HandlebarsFormatterFactory();
 		classFormatter.setForClass("org.openmrs.Obs");
 		classFormatter.setTemplate("{{ message 'testing.123.testing' }} something");
-		formatterService.addClassFormatter(classFormatter);
+		messageFormatterService.addClassFormatter(classFormatter);
 		
 		Context.setLocale(Locale.ENGLISH);
-		Formatter formatter = formatterService.getFormatter();
-		formatterService.setMessageSource(messageSource);
+		Formatter formatter = messageFormatterService.getFormatter();
 		
-		String result = formatter.format(new Obs(), Locale.ENGLISH);
+		formatter.format(new Obs(), Locale.ENGLISH);
 		verify(messageSource).getMessage("testing.123.testing", null, Locale.ENGLISH);
 	}
 	
 	@Test
-	@DirtiesContext
 	public void testOrder() throws Exception {
 		HandlebarsFormatterFactory wrongFormatter1 = new HandlebarsFormatterFactory();
 		wrongFormatter1.setForClass("org.openmrs.Obs");
