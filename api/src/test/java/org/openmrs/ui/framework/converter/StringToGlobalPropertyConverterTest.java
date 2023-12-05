@@ -11,7 +11,7 @@ public class StringToGlobalPropertyConverterTest extends BaseModuleContextSensit
 	public void convert_shouldConvertStringToGlobalProperty() {
 		StringToGlobalPropertyConverter converter = new StringToGlobalPropertyConverter();
 		GlobalProperty prop = converter.convert("locale.allowed.list");
-		Assert.assertEquals("en", prop.getPropertyValue());
+		Assert.assertEquals("en_GB", prop.getPropertyValue());
 	}
 	
 	@Test

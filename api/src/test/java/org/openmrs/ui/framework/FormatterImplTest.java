@@ -194,7 +194,7 @@ public class FormatterImplTest {
 		ConceptDatatype numericDatatype = new ConceptDatatype();
 		numericDatatype.setHl7Abbreviation("NM");
 		conceptNumeric.setDatatype(numericDatatype);
-		conceptNumeric.setPrecise(true);
+		conceptNumeric.setAllowDecimal(true);
 		
 		Obs numericObs = new Obs();
 		numericObs.setConcept(conceptNumeric);
@@ -214,7 +214,7 @@ public class FormatterImplTest {
 		ConceptDatatype numericDatatype = new ConceptDatatype();
 		numericDatatype.setHl7Abbreviation("NM");
 		conceptNumeric.setDatatype(numericDatatype);
-		conceptNumeric.setPrecise(true);
+		conceptNumeric.setAllowDecimal(true);
 		
 		Obs numericObs = new Obs();
 		numericObs.setConcept(conceptNumeric);

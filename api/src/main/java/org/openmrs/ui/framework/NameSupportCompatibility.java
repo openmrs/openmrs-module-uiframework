@@ -3,7 +3,7 @@ package org.openmrs.ui.framework;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.PersonName;
-import org.openmrs.layout.web.name.NameSupport;
+import org.openmrs.layout.name.NameSupport;
 import org.openmrs.util.OpenmrsClassLoader;
 
 import java.lang.reflect.Method;

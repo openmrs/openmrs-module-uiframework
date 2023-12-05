@@ -11,7 +11,6 @@ import org.openmrs.api.context.ServiceContext;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.openmrs.ui.framework.fragment.FragmentActionUiUtils;
 import org.springframework.context.MessageSource;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Map;
 
@@ -20,7 +19,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@DirtiesContext
 public class SimpleObjectTest {
 	
 	private UiUtils ui;
