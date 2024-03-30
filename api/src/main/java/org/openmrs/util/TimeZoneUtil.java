@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import static org.joda.time.DateTimeZone.UTC;
+import static org.openmrs.ui.framework.UiFrameworkConstants.GET_GLOBAL_PROPERTIES;
 
 /**
  * Helps provide tools to support recommended OpenMRS time zones conventions.
@@ -40,8 +41,10 @@ public class TimeZoneUtil {
 	 * @return string with the date in the client timezone, formatted and ready to be displayed.
 	 */
 	public static String toTimezone(Date date, String format) {
+		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 		String clientTimezone = Context.getAuthenticatedUser().getUserProperty(
 		    Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE));
+		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 		return toTimezone(date, format, clientTimezone);
 	}
 	

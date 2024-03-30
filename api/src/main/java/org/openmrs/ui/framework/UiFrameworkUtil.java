@@ -54,6 +54,8 @@ import org.springframework.web.bind.annotation.ValueConstants;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import static org.openmrs.ui.framework.UiFrameworkConstants.GET_GLOBAL_PROPERTIES;
+
 public class UiFrameworkUtil {
 	
 	private static Log log = LogFactory.getLog(UiFrameworkUtil.class);
@@ -667,9 +669,11 @@ public class UiFrameworkUtil {
 	public static DateFormat getDateFormat(AdministrationService administrationService, Locale locale) {
 		String defaultFormat = "dd.MMM.yyyy";
 		if (administrationService != null) {
-			return new SimpleDateFormat(
-			        administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT, defaultFormat),
-			        locale);
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			String globalProperty = administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT,
+			    defaultFormat);
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			return new SimpleDateFormat(globalProperty, locale);
 		} else {
 			return new SimpleDateFormat(defaultFormat, locale);
 		}
@@ -678,8 +682,11 @@ public class UiFrameworkUtil {
 	public static DateFormat getDateTimeFormat(AdministrationService administrationService, Locale locale) {
 		String defaultFormat = "dd.MMM.yyyy, HH:mm:ss";
 		if (administrationService != null) {
-			return new SimpleDateFormat(administrationService
-			        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT, defaultFormat), locale);
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			String globalProperty = administrationService
+			        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT, defaultFormat);
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			return new SimpleDateFormat(globalProperty, locale);
 		} else {
 			return new SimpleDateFormat(defaultFormat, locale);
 		}
@@ -688,9 +695,11 @@ public class UiFrameworkUtil {
 	public static DateFormat getTimeFormat(AdministrationService administrationService, Locale locale) {
 		String defaultFormat = "hh:mm a";
 		if (administrationService != null) {
-			return new SimpleDateFormat(
-			        administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT, defaultFormat),
-			        locale);
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			String globalProperty = administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT,
+			    defaultFormat);
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			return new SimpleDateFormat(globalProperty, locale);
 		} else {
 			return new SimpleDateFormat(defaultFormat, locale);
 		}

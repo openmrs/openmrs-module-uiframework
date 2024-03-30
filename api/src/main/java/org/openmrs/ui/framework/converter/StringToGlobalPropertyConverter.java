@@ -5,6 +5,8 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.context.Context;
 import org.springframework.core.convert.converter.Converter;
 
+import static org.openmrs.ui.framework.UiFrameworkConstants.GET_GLOBAL_PROPERTIES;
+
 /**
  * Note that this converts based on property name, not on id
  */
@@ -15,6 +17,9 @@ public class StringToGlobalPropertyConverter implements Converter<String, Global
 		if (StringUtils.isBlank(propertyName)) {
 			return null;
 		}
-		return Context.getAdministrationService().getGlobalPropertyObject(propertyName);
+		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		GlobalProperty globalPropertyObject = Context.getAdministrationService().getGlobalPropertyObject(propertyName);
+		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		return globalPropertyObject;
 	}
 }

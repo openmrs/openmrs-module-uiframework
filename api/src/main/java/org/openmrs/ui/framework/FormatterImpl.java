@@ -34,6 +34,7 @@ import org.openmrs.ui.framework.formatter.FormatterFactory;
 import org.openmrs.ui.framework.formatter.FormatterService;
 import org.springframework.context.MessageSource;
 
+import static org.openmrs.ui.framework.UiFrameworkConstants.GET_GLOBAL_PROPERTIES;
 import static org.openmrs.util.TimeZoneUtil.toTimezone;
 
 /**
@@ -117,6 +118,7 @@ public class FormatterImpl implements Formatter {
 	
 	private String format(Date d, Locale locale) {
 		DateFormat df;
+		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 		boolean convertTimezones = BooleanUtils
 		        .toBoolean(administrationService.getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS));
 		if (convertTimezones) {
@@ -130,6 +132,7 @@ public class FormatterImpl implements Formatter {
 		} else {
 			df = UiFrameworkUtil.getDateFormat(administrationService, locale);
 		}
+		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 		return df.format(d);
 	}
 	
@@ -276,7 +279,9 @@ public class FormatterImpl implements Formatter {
 				Object templates = MethodUtils.invokeExactMethod(addressSupport, "getAddressTemplate", null);
 				addressTemplate = ((List<?>) templates).get(0);
 			} else {
+				Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 				String templateName = administrationService.getGlobalProperty(ADDRESS_LAYOUT_TEMPLATE_NAME_GP);
+				Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 				if (templateName != null) {
 					addressTemplate = MethodUtils.invokeExactMethod(addressSupport, "getLayoutTemplateByName", templateName);
 				}

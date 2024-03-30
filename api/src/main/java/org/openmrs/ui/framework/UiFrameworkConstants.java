@@ -37,4 +37,6 @@ public class UiFrameworkConstants {
 	//The name of the user property that save the client timezone.
 	public static final String UP_CLIENT_TIMEZONE = "uiframework.client.timezone";
 	
+	public static final String GET_GLOBAL_PROPERTIES = "Get Global Properties";
+	
 }

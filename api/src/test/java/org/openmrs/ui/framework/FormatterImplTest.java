@@ -22,9 +22,10 @@ import org.openmrs.ConceptNumeric;
 import org.openmrs.EncounterType;
 import org.openmrs.Obs;
 import org.openmrs.Role;
-import org.openmrs.api.AdministrationService;
 import org.openmrs.User;
-import org.powermock.api.mockito.PowerMockito;
+import org.openmrs.api.AdministrationService;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.springframework.context.MessageSource;
 
 import java.text.SimpleDateFormat;
@@ -54,6 +55,7 @@ public class FormatterImplTest {
 		administrationService = mock(AdministrationService.class);
 		messageSource = new MockMessageSource();
 		formatter = new MockFormatter(messageSource, administrationService);
+		Context.setUserContext(new UserContext());
 	}
 	
 	@Test

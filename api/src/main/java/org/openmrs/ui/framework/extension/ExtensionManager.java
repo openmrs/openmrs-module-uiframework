@@ -17,6 +17,8 @@ import org.openmrs.util.OpenmrsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static org.openmrs.ui.framework.UiFrameworkConstants.GET_GLOBAL_PROPERTIES;
+
 /**
  * Manager for extension points
  */
@@ -112,7 +114,9 @@ public class ExtensionManager {
 	 *         the point has not been configured, this returns null.
 	 */
 	public List<String> getExtensionPointConfiguration(String pointId) {
+		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 		String gp = Context.getAdministrationService().getGlobalProperty("ui2.extensionConfig." + pointId);
+		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 		return gp == null ? null : Arrays.asList(gp.split(","));
 	}
 	
@@ -126,7 +130,9 @@ public class ExtensionManager {
 	 */
 	public void saveExtensionPointConfiguration(String pointId, String... uniqueIds) {
 		AdministrationService service = Context.getAdministrationService();
+		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
 		GlobalProperty gp = service.getGlobalPropertyObject("ui2.extensionConfig." + pointId);
+		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 		if (uniqueIds.length == 0) {
 			if (gp != null)
 				service.purgeGlobalProperty(gp);
