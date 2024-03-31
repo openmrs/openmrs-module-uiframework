@@ -114,9 +114,14 @@ public class ExtensionManager {
 	 *         the point has not been configured, this returns null.
 	 */
 	public List<String> getExtensionPointConfiguration(String pointId) {
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		String gp = Context.getAdministrationService().getGlobalProperty("ui2.extensionConfig." + pointId);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		String gp;
+		try {
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			gp = Context.getAdministrationService().getGlobalProperty("ui2.extensionConfig." + pointId);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		}
 		return gp == null ? null : Arrays.asList(gp.split(","));
 	}
 	
@@ -129,22 +134,26 @@ public class ExtensionManager {
 	 * @param uniqueIds
 	 */
 	public void saveExtensionPointConfiguration(String pointId, String... uniqueIds) {
-		AdministrationService service = Context.getAdministrationService();
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		GlobalProperty gp = service.getGlobalPropertyObject("ui2.extensionConfig." + pointId);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		if (uniqueIds.length == 0) {
-			if (gp != null)
-				service.purgeGlobalProperty(gp);
-		} else {
-			for (String id : uniqueIds) {
-				if (activeExtensions().get(id) == null)
-					throw new IllegalArgumentException("No extension found for id: " + id);
+		try {
+			AdministrationService service = Context.getAdministrationService();
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			GlobalProperty gp = service.getGlobalPropertyObject("ui2.extensionConfig." + pointId);
+			if (uniqueIds.length == 0) {
+				if (gp != null)
+					service.purgeGlobalProperty(gp);
+			} else {
+				for (String id : uniqueIds) {
+					if (activeExtensions().get(id) == null)
+						throw new IllegalArgumentException("No extension found for id: " + id);
+				}
+				if (gp == null)
+					gp = new GlobalProperty("ui2.extensionConfig." + pointId);
+				gp.setPropertyValue(OpenmrsUtil.join(Arrays.asList(uniqueIds), ","));
+				service.saveGlobalProperty(gp);
 			}
-			if (gp == null)
-				gp = new GlobalProperty("ui2.extensionConfig." + pointId);
-			gp.setPropertyValue(OpenmrsUtil.join(Arrays.asList(uniqueIds), ","));
-			service.saveGlobalProperty(gp);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
 		}
 	}
 	

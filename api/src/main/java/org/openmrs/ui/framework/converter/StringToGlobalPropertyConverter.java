@@ -17,9 +17,14 @@ public class StringToGlobalPropertyConverter implements Converter<String, Global
 		if (StringUtils.isBlank(propertyName)) {
 			return null;
 		}
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		GlobalProperty globalPropertyObject = Context.getAdministrationService().getGlobalPropertyObject(propertyName);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		GlobalProperty globalPropertyObject;
+		try {
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			globalPropertyObject = Context.getAdministrationService().getGlobalPropertyObject(propertyName);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		}
 		return globalPropertyObject;
 	}
 }

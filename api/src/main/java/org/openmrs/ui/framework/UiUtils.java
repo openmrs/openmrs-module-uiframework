@@ -644,50 +644,80 @@ public abstract class UiUtils {
 	 * @return the value of the Global Property GP_TIMEZONE_CONVERSIONS
 	 */
 	public boolean convertTimezones() {
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		String globalProperty = Context.getAdministrationService()
-		        .getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		String globalProperty;
+		try {
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			globalProperty = Context.getAdministrationService()
+			        .getGlobalProperty(UiFrameworkConstants.GP_TIMEZONE_CONVERSIONS);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		}
 		return BooleanUtils.toBoolean(globalProperty);
 	}
 	
 	public String getJSDatetimeFormat() {
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		String globalProperty = Context.getAdministrationService()
-		        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATETIME_FORMAT);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		String globalProperty;
+		try {
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			globalProperty = Context.getAdministrationService()
+			        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATETIME_FORMAT);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		}
 		return globalProperty;
 	}
 	
 	public String getJSDateFormat() {
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		String globalProperty = Context.getAdministrationService()
-		        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATE_FORMAT);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		String globalProperty;
+		try {
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			globalProperty = Context.getAdministrationService()
+			        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_JS_DATE_FORMAT);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		}
 		return globalProperty;
 	}
 	
 	public String getDatetimeFormat() {
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		String globalProperty = Context.getAdministrationService()
-		        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		String globalProperty;
+		try {
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			globalProperty = Context.getAdministrationService()
+			        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		}
 		return globalProperty;
 	}
 	
 	public String getDateFormat() {
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		String globalProperty = Context.getAdministrationService()
-		        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		String globalProperty;
+		try {
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			globalProperty = Context.getAdministrationService()
+			        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		}
 		return globalProperty;
 	}
 	
 	public String getTimeFormat() {
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		String globalProperty = Context.getAdministrationService()
-		        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		String globalProperty;
+		try {
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			globalProperty = Context.getAdministrationService()
+			        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		}
 		return globalProperty;
 	}
 	
@@ -695,10 +725,14 @@ public abstract class UiUtils {
 	 * @return the value of the User Property clientTimezone, that indicates the client timezone
 	 */
 	public String getClientTimezone() {
-		Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-		String globalProperty = Context.getAdministrationService()
-		        .getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE);
-		Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		String globalProperty;
+		try {
+			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			globalProperty = Context.getAdministrationService().getGlobalProperty(UiFrameworkConstants.UP_CLIENT_TIMEZONE);
+		}
+		finally {
+			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+		}
 		return Context.getAuthenticatedUser().getUserProperty(globalProperty);
 	}
 	

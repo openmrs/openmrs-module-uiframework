@@ -669,10 +669,15 @@ public class UiFrameworkUtil {
 	public static DateFormat getDateFormat(AdministrationService administrationService, Locale locale) {
 		String defaultFormat = "dd.MMM.yyyy";
 		if (administrationService != null) {
-			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-			String globalProperty = administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT,
-			    defaultFormat);
-			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			String globalProperty;
+			try {
+				Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+				globalProperty = administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATE_FORMAT,
+				    defaultFormat);
+			}
+			finally {
+				Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			}
 			return new SimpleDateFormat(globalProperty, locale);
 		} else {
 			return new SimpleDateFormat(defaultFormat, locale);
@@ -682,10 +687,15 @@ public class UiFrameworkUtil {
 	public static DateFormat getDateTimeFormat(AdministrationService administrationService, Locale locale) {
 		String defaultFormat = "dd.MMM.yyyy, HH:mm:ss";
 		if (administrationService != null) {
-			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-			String globalProperty = administrationService
-			        .getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT, defaultFormat);
-			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			String globalProperty;
+			try {
+				Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+				globalProperty = administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_DATETIME_FORMAT,
+				    defaultFormat);
+			}
+			finally {
+				Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			}
 			return new SimpleDateFormat(globalProperty, locale);
 		} else {
 			return new SimpleDateFormat(defaultFormat, locale);
@@ -695,10 +705,15 @@ public class UiFrameworkUtil {
 	public static DateFormat getTimeFormat(AdministrationService administrationService, Locale locale) {
 		String defaultFormat = "hh:mm a";
 		if (administrationService != null) {
-			Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
-			String globalProperty = administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT,
-			    defaultFormat);
-			Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			String globalProperty;
+			try {
+				Context.addProxyPrivilege(GET_GLOBAL_PROPERTIES);
+				globalProperty = administrationService.getGlobalProperty(UiFrameworkConstants.GP_FORMATTER_TIME_FORMAT,
+				    defaultFormat);
+			}
+			finally {
+				Context.removeProxyPrivilege(GET_GLOBAL_PROPERTIES);
+			}
 			return new SimpleDateFormat(globalProperty, locale);
 		} else {
 			return new SimpleDateFormat(defaultFormat, locale);
