@@ -16,6 +16,7 @@ package org.openmrs.module.uiframework;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.context.Context;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.WebConstants;
 import org.openmrs.ui.framework.page.FileDownload;
@@ -26,6 +27,7 @@ import org.openmrs.ui.framework.page.Redirect;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
 import org.openmrs.ui.util.ExceptionUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.owasp.encoder.Encode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,6 +119,7 @@ public class PageController {
 		}
 		PageRequest pageRequest = new PageRequest(providerName, pageName, request, response, session);
 		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			String html = pageFactory.handle(pageRequest);
 			model.addAttribute("html", html);
 			return SHOW_HTML_VIEW;
@@ -174,6 +177,9 @@ public class PageController {
 			model.addAttribute("rootStacktrace", Encode.forHtml(sw.toString()));
 			
 			return "/module/uiframework/uiError";
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 		}
 	}
 	
