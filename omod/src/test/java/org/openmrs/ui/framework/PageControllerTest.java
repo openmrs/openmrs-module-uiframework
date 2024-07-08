@@ -15,6 +15,8 @@ package org.openmrs.ui.framework;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.UserContext;
 import org.openmrs.module.uiframework.PageController;
 import org.openmrs.ui.framework.page.FileDownload;
 import org.openmrs.ui.framework.page.PageFactory;
@@ -52,6 +54,8 @@ public class PageControllerTest {
 		PageController controller = new PageController();
 		controller.setPageFactory(pageFactory);
 		controller.setSessionFactory(sessionFactory);
+		
+		Context.setUserContext(new UserContext());
 		
 		controller.handlePath("somemodule/download", request, response, new ExtendedModelMap(), session);
 		
