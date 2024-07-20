@@ -1,54 +1,39 @@
-# this build is designed to replicate the Travis CI workflow
-name: Java CI with Maven
+name: Build with Maven
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ master ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
-  java-8:
-
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [8, 11, 17]
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 8
-        uses: actions/setup-java@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
         with:
-          java-version: '8'
-          distribution: 'adopt'
-          cache: maven
-      - name: Build with Maven
-        run: mvn clean install --file pom.xml
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
 
-  java-11:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
         with:
-          java-version: '11'
-          distribution: 'adopt'
-          cache: maven
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Install dependencies
+        run: mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true --batch-mode --show-version --file pom.xml
+
       - name: Build with Maven
-        run: mvn clean install --file pom.xml
-
-  java-17:
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-          cache: maven
-      - name: Build with Maven
-        run: mvn clean install --file pom.xml
+        run: mvn test --batch-mode --file pom.xml
