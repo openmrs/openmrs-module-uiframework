@@ -44,7 +44,7 @@
 
     <properties>
         <openmrsPlatformVersion>2.0.0</openmrsPlatformVersion>
-        <springVersion>4.1.4.RELEASE</springVersion>
+        <springVersion>6.1.13</springVersion>
         <handlebarsVersion>1.3.1</handlebarsVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
