@@ -14,6 +14,7 @@ import org.openmrs.GlobalProperty;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.api.context.Context;
 import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -112,8 +113,14 @@ public class ExtensionManager {
 	 *         the point has not been configured, this returns null.
 	 */
 	public List<String> getExtensionPointConfiguration(String pointId) {
-		String gp = Context.getAdministrationService().getGlobalProperty("ui2.extensionConfig." + pointId);
-		return gp == null ? null : Arrays.asList(gp.split(","));
+		try {
+			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+			String gp = Context.getAdministrationService().getGlobalProperty("ui2.extensionConfig." + pointId);
+			return gp == null ? null : Arrays.asList(gp.split(","));
+		}
+		finally {
+			Context.removeProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
+		}
 	}
 	
 	/**
