@@ -114,6 +114,7 @@ public class ExtensionManager {
 	 */
 	public List<String> getExtensionPointConfiguration(String pointId) {
 		try {
+			// we proxy this because this method ends up being called from the AuthenticationUI login page
 			Context.addProxyPrivilege(PrivilegeConstants.GET_GLOBAL_PROPERTIES);
 			String gp = Context.getAdministrationService().getGlobalProperty("ui2.extensionConfig." + pointId);
 			return gp == null ? null : Arrays.asList(gp.split(","));
