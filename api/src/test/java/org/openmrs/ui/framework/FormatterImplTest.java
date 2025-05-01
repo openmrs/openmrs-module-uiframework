@@ -24,7 +24,6 @@ import org.openmrs.Obs;
 import org.openmrs.Role;
 import org.openmrs.api.AdministrationService;
 import org.openmrs.User;
-import org.powermock.api.mockito.PowerMockito;
 import org.springframework.context.MessageSource;
 
 import java.text.SimpleDateFormat;
