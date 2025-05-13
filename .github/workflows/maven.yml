@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java-version }}
-          distribution: 'temurin'
+          distribution: 'corretto'
           cache: maven
         
       - name: Build with Maven
