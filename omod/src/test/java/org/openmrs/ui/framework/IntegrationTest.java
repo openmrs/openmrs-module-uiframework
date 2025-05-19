@@ -13,7 +13,7 @@
  */
 package org.openmrs.ui.framework;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openmrs.ui.framework.annotation.InjectBeans;
 import org.openmrs.ui.framework.page.PageAction;
 import org.openmrs.ui.framework.page.PageContext;
@@ -25,7 +25,7 @@ import org.openmrs.ui.framework.page.PageViewProvider;
 import org.openmrs.ui.framework.session.Session;
 import org.openmrs.ui.framework.session.SessionFactory;
 import org.openmrs.ui.framework.test.ClassWithAutowiredAnnotations;
-import org.openmrs.web.test.BaseModuleWebContextSensitiveTest;
+import org.openmrs.web.test.jupiter.BaseModuleWebContextSensitiveTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;

@@ -2,10 +2,10 @@ package org.openmrs.ui.framework.page;
 
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.matchers.Contains;
 import org.openmrs.ui.framework.ProviderAndName;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.interceptor.PageRequestInterceptor;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PageFactoryTest {
 	
@@ -145,7 +145,7 @@ public class PageFactoryTest {
 		Session session = new Session(httpSession);
 		String result = factory.handle(
 		    new PageRequest("somemodule", "groovy", new MockHttpServletRequest(), new MockHttpServletResponse(), session));
-		assertThat(result, new Contains("Testing Success!!!"));
+		assertThat(result, Matchers.containsString("Testing Success!!!"));
 	}
 	
 	@Test

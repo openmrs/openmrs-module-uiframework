@@ -2,10 +2,9 @@ package org.openmrs.ui.framework.fragment;
 
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
-import org.junit.Assert;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.matchers.Contains;
 import org.openmrs.ui.framework.UiFrameworkException;
 import org.openmrs.ui.framework.fragment.action.FragmentActionResult;
 import org.openmrs.ui.framework.fragment.action.SuccessResult;
@@ -24,6 +23,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class FragmentFactoryTest {
 	
@@ -61,9 +64,9 @@ public class FragmentFactoryTest {
 	 */
 	@Test
 	public void getController_shouldGetAControllerFromTheSpecifiedProvider() throws Exception {
-		Assert.assertNotNull(factory.getController(new FragmentRequest("somemodule", "somefragment")));
-		Assert.assertNull(factory.getController(new FragmentRequest("somemodule", "otherfragment")));
-		Assert.assertNull(factory.getController(new FragmentRequest("othermodule", "somefragment")));
+		assertNotNull(factory.getController(new FragmentRequest("somemodule", "somefragment")));
+		assertNull(factory.getController(new FragmentRequest("somemodule", "otherfragment")));
+		assertNull(factory.getController(new FragmentRequest("othermodule", "somefragment")));
 	}
 	
 	/**
@@ -72,9 +75,9 @@ public class FragmentFactoryTest {
 	 */
 	@Test
 	public void getController_shouldGetAControllerFromAnyProviderIfNoneSpecified() throws Exception {
-		Assert.assertNotNull(factory.getController(new FragmentRequest("*", "somefragment")));
-		Assert.assertNotNull(factory.getController(new FragmentRequest("*", "otherfragment")));
-		Assert.assertNull(factory.getController(new FragmentRequest("*", "nothingwiththisname")));
+		assertNotNull(factory.getController(new FragmentRequest("*", "somefragment")));
+		assertNotNull(factory.getController(new FragmentRequest("*", "otherfragment")));
+		assertNull(factory.getController(new FragmentRequest("*", "nothingwiththisname")));
 	}
 	
 	/**
@@ -92,9 +95,9 @@ public class FragmentFactoryTest {
 	 */
 	@Test
 	public void getView_shouldGetAViewFromTheRequestedProvider() throws Exception {
-		Assert.assertNotNull(factory.getView(new FragmentRequest("somemodule", "somefragment"), null));
-		Assert.assertNull(factory.getView(new FragmentRequest("somemodule", "otherfragment"), null));
-		Assert.assertNull(factory.getView(new FragmentRequest("othermodule", "somefragment"), null));
+		assertNotNull(factory.getView(new FragmentRequest("somemodule", "somefragment"), null));
+		assertNull(factory.getView(new FragmentRequest("somemodule", "otherfragment"), null));
+		assertNull(factory.getView(new FragmentRequest("othermodule", "somefragment"), null));
 	}
 	
 	/**
@@ -103,9 +106,9 @@ public class FragmentFactoryTest {
 	 */
 	@Test
 	public void getView_shouldGetAViewFromAnyProviderIfNoneIsSpecified() throws Exception {
-		Assert.assertNotNull(factory.getView(new FragmentRequest("*", "somefragment"), null));
-		Assert.assertNotNull(factory.getView(new FragmentRequest("*", "otherfragment"), null));
-		Assert.assertNull(factory.getView(new FragmentRequest("*", "nothingwiththisname"), null));
+		assertNotNull(factory.getView(new FragmentRequest("*", "somefragment"), null));
+		assertNotNull(factory.getView(new FragmentRequest("*", "otherfragment"), null));
+		assertNull(factory.getView(new FragmentRequest("*", "nothingwiththisname"), null));
 	}
 	
 	/**
@@ -125,7 +128,7 @@ public class FragmentFactoryTest {
 		FragmentContext fragmentContext = new FragmentContext(fragmentRequest, pageContext);
 		
 		String result = factory.process(fragmentContext);
-		Assert.assertThat(result, new Contains("Testing Success!!!"));
+		assertThat(result, Matchers.containsString(("Testing Success!!!")));
 	}
 	
 	private PageContext buildPageContext() {
@@ -322,13 +325,13 @@ public class FragmentFactoryTest {
 	public class ControllerAndActionThatTakeIntegerType {
 		
 		public void controller(Integer injected, Long notInjected) {
-			Assert.assertNotNull("Integer argument was not injected", injected);
-			Assert.assertNull("Long argument should not have been injected", notInjected);
+			assertNotNull("Integer argument was not injected", injected);
+			assertNull("Long argument should not have been injected", notInjected);
 		}
 		
 		public FragmentActionResult action(Integer injected, Long notInjected) {
-			Assert.assertNotNull("Integer argument was not injected", injected);
-			Assert.assertNull("Long argument should not have been injected", notInjected);
+			assertNotNull("Integer argument was not injected", injected);
+			assertNull("Long argument should not have been injected", notInjected);
 			return new SuccessResult();
 		}
 	}
@@ -336,8 +339,8 @@ public class FragmentFactoryTest {
 	public class ActionThatTakeServletRequestResponse {
 		
 		public FragmentActionResult action(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-			Assert.assertNotNull("HttpServletRequest argument was not injected", httpRequest);
-			Assert.assertNotNull("HttpServletResponse argument was not injected", httpResponse);
+			assertNotNull("HttpServletRequest argument was not injected", httpRequest);
+			assertNotNull("HttpServletResponse argument was not injected", httpResponse);
 			return new SuccessResult();
 		}
 	}

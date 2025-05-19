@@ -28,7 +28,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.ui.ExtendedModelMap;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,7 +55,7 @@ public class PageControllerTest {
 		controller.setPageFactory(pageFactory);
 		controller.setSessionFactory(sessionFactory);
 		
-		Context.setUserContext(new UserContext());
+		Context.setUserContext(new UserContext(Context.getAuthenticationScheme()));
 		
 		controller.handlePath("somemodule/download", request, response, new ExtendedModelMap(), session);
 		
