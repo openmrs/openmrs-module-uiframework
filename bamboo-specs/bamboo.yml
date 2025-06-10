@@ -27,22 +27,8 @@ stages:
 Build and Test JDK 17:
   key: BTJ17
   tasks:
-  - script:
-      interpreter: SHELL
-      scripts:
-      - |-
-        #!/bin/bash -eu
-
-        set -x
-
-        export IMAGE=${bamboo.build.docker.image.id}
-
-        docker pull ${IMAGE}
-
-        docker run -v m2-repo:/root/.m2/repository -v ${PWD}:/module --rm -w="/module" ${IMAGE} bash -c 'chmod -R 777 .'
-      description: Resolve file permissions
   - checkout:
-      force-clean-build: 'true'
+      force-clean-build: 'false'
       description: Checkout default repository
   - script:
       interpreter: SHELL
@@ -62,22 +48,8 @@ Build and Test JDK 17:
 Build and Test JDK 24:
   key: BTJ24
   tasks:
-  - script:
-      interpreter: SHELL
-      scripts:
-      - |-
-        #!/bin/bash -eu
-
-        set -x
-
-        export IMAGE=${bamboo.build.docker.image.id}
-
-        docker pull ${IMAGE}
-
-        docker run -v m2-repo:/root/.m2/repository -v ${PWD}:/module --rm -w="/module" ${IMAGE} bash -c 'chmod -R 777 .'
-      description: Resolve file permissions
   - checkout:
-      force-clean-build: 'true'
+      force-clean-build: 'false'
       description: Checkout default repository
   - script:
       interpreter: SHELL
@@ -97,22 +69,8 @@ Build and Test JDK 24:
 Build and Test JDK 21:
   key: BTJ21
   tasks:
-  - script:
-      interpreter: SHELL
-      scripts:
-      - |-
-        #!/bin/bash -eu
-
-        set -x
-
-        export IMAGE=${bamboo.build.docker.image.id}
-
-        docker pull ${IMAGE}
-
-        docker run -v m2-repo:/root/.m2/repository -v ${PWD}:/module --rm -w="/module" ${IMAGE} bash -c 'chmod -R 777 .'
-      description: Resolve file permissions
   - checkout:
-      force-clean-build: 'true'
+      force-clean-build: 'false'
       description: Checkout default repository
   - script:
       interpreter: SHELL
@@ -132,22 +90,8 @@ Build and Test JDK 21:
 Build and Test JDK 8:
   key: BTJ8
   tasks:
-  - script:
-      interpreter: SHELL
-      scripts:
-      - |-
-        #!/bin/bash -eu
-
-        set -x
-
-        export IMAGE=${bamboo.build.docker.image.id}
-
-        docker pull ${IMAGE}
-
-        docker run -v m2-repo:/root/.m2/repository -v ${PWD}:/module --rm -w="/module" ${IMAGE} bash -c 'chmod -R 777 .'
-      description: Resolve file permissions
   - checkout:
-      force-clean-build: 'true'
+      force-clean-build: 'false'
       description: Checkout default repository
   - script:
       interpreter: SHELL
@@ -167,22 +111,8 @@ Build and Test JDK 8:
 Build and Test JDK 11:
   key: BTJ11
   tasks:
-  - script:
-      interpreter: SHELL
-      scripts:
-      - |-
-        #!/bin/bash -eu
-
-        set -x
-
-        export IMAGE=${bamboo.build.docker.image.id}
-
-        docker pull ${IMAGE}
-
-        docker run -v m2-repo:/root/.m2/repository -v ${PWD}:/module --rm -w="/module" ${IMAGE} bash -c 'chmod -R 777 .'
-      description: Resolve file permissions
   - checkout:
-      force-clean-build: 'true'
+      force-clean-build: 'false'
       description: Checkout default repository
   - script:
       interpreter: SHELL
@@ -202,22 +132,8 @@ Build and Test JDK 11:
 Deploy to Maven:
   key: DTM
   tasks:
-  - script:
-      interpreter: SHELL
-      scripts:
-      - |-
-        #!/bin/bash -eu
-
-        set -x
-
-        export IMAGE=${bamboo.build.docker.image.id}
-
-        docker pull ${IMAGE}
-
-        docker run -v m2-repo:/root/.m2/repository -v ${PWD}:/module --rm -w="/module" ${IMAGE} bash -c 'chmod -R 777 .'
-      description: Resolve file permissions
   - checkout:
-      force-clean-build: 'true'
+      force-clean-build: 'false'
       description: Checkout default repository
   - script:
       interpreter: SHELL
@@ -237,27 +153,13 @@ Deploy to Maven:
 Release to Maven:
   key: RTM
   tasks:
-  - script:
-      interpreter: SHELL
-      scripts:
-      - |-
-        #!/bin/bash -eu
-
-        set -x
-
-        export IMAGE=${bamboo.build.docker.image.id}
-
-        docker pull ${IMAGE}
-
-        docker run -v m2-repo:/root/.m2/repository -v ${PWD}:/module --rm -w="/module" ${IMAGE} bash -c 'chmod -R 777 .'
-      description: Resolve file permissions
   - checkout:
-      force-clean-build: 'true'
+      force-clean-build: 'false'
       description: Checkout Default Repository
   - checkout:
       repository: Git
       path: release-scripts
-      force-clean-build: 'true'
+      force-clean-build: 'false'
       description: Checkout Default Repository
   - script:
       interpreter: SHELL
